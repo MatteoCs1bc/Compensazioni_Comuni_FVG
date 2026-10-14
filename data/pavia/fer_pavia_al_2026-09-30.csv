@@ -1,0 +1,18 @@
+n,anno,tipo,denominazione,localizzazione,potenza_mw,sup_complessiva_ha,sup_recintata_ha,sup_agricola_mitigazione_ha,ente,stato,provvedimento,note
+0,ante 2020,FV,San Mauro - Selvuzzis,San Mauro Selvuzzis,,0.78,7.3,0.775889,,Realizzato,,"Potenza non indicata; sup. recintata come da tabella comunale (7,3)"
+1,2021,BESS,BESS - Udine Sud,Persereano - SR 354,200,9.06,,9.056765,Ministero della Transizione Ecologica,Realizzato,Decreto n. 55/13/2022,
+2,2021,FV,Contessa - Agrivoltaico,Selvuzzis,27.16,45.75,42.2453,,Ministero dell'ambiente e della sicurezza energetica,In corso,VIA conclusa con Decreto n. 5062/AMB del 08/10/2021,
+3,2022,FV,Santo Stefano,Stazione Terna,,0.35,,,RFVG Servizio Transizione Energetica,Autorizzato,Decreto n. 3866/GRFVG del 29/07/2022,Sottostazione elettrica
+4,2022,FV,Cjase Sterpet,a sud della ZIU / a sud di Risano,50.15552,38.68,32.17,32.665923,RFVG Servizio Transizione Energetica,Realizzato,Decreto n. 43543/GRFVG del 26/09/2023,Più lotti; sup. agricola con mitigazione comprende anche la riga 5
+5,2022,FV,Compensazione (Cjase Sterpet),Pavia di Udine,0.4,1.1,1.1,,RFVG Servizio Transizione Energetica,Autorizzato,Decreto n. 43543/GRFVG del 26/09/2023,Impianto da 400 kWp previsto come misura di compensazione
+7,2023,FV,Marconi,via Marconi snc (SP78),3.10255,,2.53,,Comune di Pavia di Udine (PAS),Autorizzato,PAS del 09/08/2024,Zona S/E
+8,2024,FV,Risano,Risano via Lumignacco,4.356,6.15,5.03,5.290619,RFVG Servizio Transizione Energetica,Realizzato,Decreto n. 18458/GRFVG del 10/04/2025,
+10,2025,BIOMETANO,Biogas,,,4.7,,4.743537,Comune di Pavia di Udine (PAS),Realizzato,PAS del 14/01/2025,
+12,2025,FV,Tombis,via Tombis - Lauzacco,0.6213,1.05,,,Comune di Pavia di Udine (PAS),Autorizzato,,Zona D2
+13,2025,FV,Crimea,via Crimea - Percoto,6.25,9.38,7.98,9.233131,RFVG Servizio Transizione Energetica,Autorizzato,AU Decreto 17640/GRFVG del 02/04/2026,
+16,2025,BESS,"BESS ""Persereano"" o ampliamento Stazione Terna",Stazione Terna,90,8.0,,3.631602,Ministero dell'ambiente e della sicurezza energetica,Autorizzato,AU Decreto 37803 del 13/07/2026,"8,0 ha di cui 3,5 per il BESS e 4,5 per la SE (in parte a Santa Maria la Longa)"
+17,2026,FV,Fotovoltaico Risano,Risano,5.76,7.68,,,Comune di Pavia di Udine (PAS),Archiviata,,
+18,2026,FV,Agrivoltaico - Moline,Lauzacco,7.68,6.6,,,Comune di Pavia di Udine (Edilizia libera),Archiviata,,
+19,2026,BESS,EAGLE 1,Stazione Terna,190,10.66,,,RFVG Servizio Transizione Energetica,In corso,,
+20,2025,BESS,BESS Udine Sud,Ampliamento Stazione Terna,137.75,0.8,,0.633933,Ministero dell'ambiente e della sicurezza energetica,Autorizzato,AU Decreto 40713 del 27/07/2026,
+21,2026,BESS,Lauzacco,Lauzacco,30.09,1.5,,,RFVG Servizio Transizione Energetica,In corso,,

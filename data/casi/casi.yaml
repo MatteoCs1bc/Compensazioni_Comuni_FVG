@@ -1,0 +1,63 @@
+# Casi FVG documentati. Ogni campo numerico ha la fonte.
+- id: atlas_solar_1
+  titolo: "Agrivoltaico Atlas Solar 1 – Bicinicco e Santa Maria la Longa"
+  comuni: [Bicinicco, Santa Maria la Longa, Palmanova]
+  tipo: Agrivoltaico
+  potenza_mw: 13.336
+  procedura: "Autorizzazione unica (L.R. 19/2012) + VIA statale"
+  stato: "Autorizzato (AU n. 43585/GRFVG del 13/09/2024); verifica di ottemperanza in corso (2025)"
+  compensazione_eur: 180000
+  compensazione_descrizione: >
+    Una tantum, ripartita 37,16% Bicinicco e 62,84% Santa Maria la Longa; i Comuni realizzano gli
+    interventi e li rendicontano alla società. In più 10 kW di pannelli per Comune.
+    Convenzione da firmare prima dell'inizio lavori.
+  promesso: "Fino al 3% del VAN dei proventi, misure per tutta la vita dell'impianto (dichiarazione di impegno, 22/12/2022)"
+  lezioni:
+    - "Il Comune di Santa Maria la Longa ha dato parere negativo (saturazione del limite del PRGC): superato in conferenza di servizi «a posizioni prevalenti», con variante urbanistica imposta dall'AU."
+    - "Da un impegno «fino al 3%» si è arrivati a 180.000 € una tantum, circa lo 0,3% dei proventi stimati su 30 anni."
+    - "Il Comune ha dichiarato per iscritto di non poter esaminare la documentazione in 13 giorni lavorativi con un solo tecnico in ufficio."
+  fonti:
+    - "Decreto AU n. 43585/GRFVG del 13/09/2024, art. 9 e 16"
+    - "Dichiarazione di impegno e bozza di convenzione Atlas Solar 1, 22/12/2022"
+    - "Parere Comune di Santa Maria la Longa, 04/08/2022; nota del Sindaco 15/07/2025 (MASE-2025-0138348)"
+
+- id: udine_san_gottardo
+  titolo: "Fotovoltaico su ex discarica – Udine, San Gottardo"
+  comuni: [Udine]
+  tipo: Fotovoltaico
+  potenza_mw: 2.955
+  procedura: "Autorizzazione unica con variante urbanistica"
+  stato: "Condivisione dell'iniziativa con delibera CC n. 52 del 27/07/2020"
+  compensazione_eur: null
+  compensazione_descrizione: "Rinviata a una convenzione successiva."
+  lezioni:
+    - "Sito oggi «area idonea» (ex discarica, L.R. 2/2025 art. 2 lett. k)."
+    - "Il Consiglio ha respinto la cessione gratuita di energia alle famiglie in difficoltà: le compensazioni non possono essere benefici monetari diretti. La strada legittima per quel risultato è una CER."
+  fonti: ["Comune di Udine, delibera CC n. 52/2020 e allegati"]
+
+- id: san_giovanni_natisone
+  titolo: "Fotovoltaico «San Giovanni al Natisone 1 e 2» – Chiron Energy"
+  comuni: [San Giovanni al Natisone]
+  tipo: Fotovoltaico
+  potenza_mw: 5.696
+  procedura: "Verifica di assoggettabilità a VIA (SCR/2091); due impianti da circa 2,85 MW"
+  stato: "Integrazioni consegnate il 24/09/2026; osservazioni degli enti entro il 16/10/2026"
+  compensazione_eur: null
+  compensazione_descrizione: "Nessun atto sulle compensazioni agli atti consultati."
+  lezioni:
+    - "Due impianti sotto i 3 MW invece di uno da 5,7 MW: va chiarito l'effetto sull'iter e sulle compensazioni (ciascuno sopra 1 MW)."
+    - "Vicino a stabilimento industriale: probabile area idonea (L.R. 2/2025 art. 2 lett. i)."
+  fonti: ["Regione FVG, SVA/SCR/2091, note del 10/09/2026 e 25/09/2026"]
+
+- id: pavia_di_udine
+  titolo: "Pavia di Udine – nodo della stazione Terna «Udine Sud»"
+  comuni: [Pavia di Udine]
+  tipo: "FV, agrivoltaico, BESS, biometano"
+  potenza_mw: null
+  procedura: "Varie (AU regionali, AU ministeriali, PAS comunali)"
+  stato: "Scheda dedicata"
+  compensazione_eur: null
+  compensazione_descrizione: "Stima APE FVG (24/02/2026) per FV, BESS e biometano; nell'AU di Cjase Sterpet un impianto da 400 kWp previsto come compensazione."
+  lezioni:
+    - "Il primo Comune FVG che chiede una stima tecnica indipendente prima di negoziare."
+  fonti: ["APE FVG prot. 5960.EPEC del 24/02/2026", "Comune di Pavia di Udine, elenco FER al 30/09/2026"]

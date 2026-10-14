@@ -1,0 +1,101 @@
+# Regole e parametri per il calcolo delle compensazioni.
+# Ogni voce ha la fonte e la data di verifica. Quando una norma cambia,
+# si aggiorna questo file, non il codice.
+
+aggiornato_al: 2026-10-14
+
+default_fvg:
+  ore_equivalenti:            # MWh prodotti per MW installato in un anno
+    fotovoltaico: 1337        # PVGIS, stima APE FVG per Pavia di Udine (8.518,6 MWh / 6,37 MWp)
+    agrivoltaico: 1337        # come sopra, da affinare con tracker / altezza moduli
+    eolico: 2000              # valore dell'esempio "Ci sarà un bel clima"; in FVG va verificato sito per sito (atlante RSE)
+  prezzo_eur_mwh: 116.07      # PUN medio 2025 usato da APE FVG (nostra analisi GME: 115,9)
+  vita_utile_anni: 30         # APE FVG calcola su 30 anni (vedi nota); bozza Atlas: "almeno 30 anni"
+  tasso_sconto: 0.0           # metodo APE: nessuna attualizzazione
+  autoconsumo_quota: 0.0
+  bess:
+    capex_eur_mw: 700000      # APE FVG, impianto 1 Pavia
+    vita_utile_anni: 17.5     # APE FVG, metodo €/MW/anno
+fonte_default: "Agenzia per l'Energia del FVG, prot. 5960.EPEC del 24/02/2026, stima compensazioni per il Comune di Pavia di Udine"
+nota_vita_utile: >
+  Nella stima APE FVG l'intestazione della colonna indica "vita utile 20 anni",
+  ma i totali sono calcolati su 30 anni (es. 29.662,70 €/anno x 30 = 889.881 €).
+  Il tool usa 30 anni come default e lascia l'utente libero di cambiarlo.
+
+metodi:
+  agenzia:
+    nome: "Metodo Agenzia per l'Energia FVG (predefinito)"
+    tipo: produzione
+    percentuale: 0.03
+    base: "proventi annui stimati (produzione x prezzo) x anni di vita utile, senza attualizzazione"
+    fonte: "APE FVG, prot. 5960.EPEC del 24/02/2026"
+    natura: prassi
+  tufer_pas:
+    nome: "TU FER - PAS sopra 1 MW"
+    tipo: produzione
+    min: 0.01
+    max: 0.03
+    base: "valore economico della produzione attesa nella vita utile, al netto dell'autoconsumo"
+    fonte: "D.Lgs. 190/2024, art. 8, c. 4, lett. m), n. 2 (testo coordinato v7, dopo D.Lgs. 178/2025)"
+    natura: legge
+  tufer_au:
+    nome: "TU FER - Autorizzazione unica"
+    tipo: produzione
+    min: 0.01
+    max: 0.04
+    base: "come sopra, fissata in conferenza di servizi"
+    fonte: "D.Lgs. 190/2024, art. 9, c. 10, lett. d)"
+    natura: legge
+  lr_fvg_au:
+    nome: "L.R. FVG 2/2025 - AU sopra 1 MW (minimo)"
+    tipo: produzione
+    min: 0.03
+    base: "proventi"
+    fonte: "L.R. FVG 2/2025, art. 5, c. 1, lett. i) (testo vigente dal 21/10/2025)"
+    natura: legge
+  bel_clima:
+    nome: "Metodo «Ci sarà un bel clima» (4% dei proventi annui)"
+    tipo: produzione
+    percentuale: 0.04
+    base: "proventi annui; esempio: 10 pale da 6 MW x 2.000 h x 80 €/MWh x 4% = 384.000 €/anno"
+    fonte: "Ci sarà un bel clima"
+    natura: proposta
+  bess_capex:
+    nome: "BESS - percentuale sull'investimento"
+    tipo: bess
+    min: 0.01
+    max: 0.03
+    default: 0.03
+    fonte: "APE FVG, prot. 5960.EPEC del 24/02/2026 (metodo 1)"
+    natura: prassi
+  bess_annuo:
+    nome: "BESS - quota annua per MW"
+    tipo: bess
+    min_eur_mw_anno: 1000
+    max_eur_mw_anno: 5000
+    default_eur_mw_anno: 4000
+    fonte: "APE FVG (metodo 2.A)"
+    natura: prassi
+  bess_una_tantum:
+    nome: "BESS - una tantum per MW"
+    tipo: bess
+    standalone_min: 20000
+    standalone_max: 60000
+    colocated_min: 10000
+    colocated_max: 40000
+    default_eur_mw: 40000
+    fonte: "APE FVG (metodo 2.B), prassi di mercato 2023-2025"
+    natura: prassi
+
+fattori_negoziali:
+  aumentano: [area agricola di pregio, vincolo paesaggistico, vicinanza a centri abitati, area non industriale, forte impatto visivo, opposizione delle comunità locali]
+  riducono: [area industriale, brownfield, sito già compromesso, co-location con impianto fotovoltaico esistente]
+  fonte: "APE FVG, prot. 5960.EPEC del 24/02/2026"
+
+vincoli_dm_2010:
+  testo: >
+    Le misure compensative non possono essere meramente patrimoniali: vanno orientate
+    a miglioramento ambientale, efficienza energetica, diffusione delle rinnovabili e
+    sensibilizzazione dei cittadini (DM 10/9/2010, Allegato 2). Niente versamenti
+    in denaro senza scopo.
+  fonte: "DM 10 settembre 2010, Allegato 2"

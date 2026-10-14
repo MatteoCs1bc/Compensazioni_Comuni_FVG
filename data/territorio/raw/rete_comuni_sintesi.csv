@@ -1,0 +1,216 @@
+comune,aree_cabina,area_principale,quota_area_principale,gestori,km2_comune,progetti_sulle_aree,mw_richiesti_sulle_aree,cabine_invertite,sezioni_invertite,sezioni_oltre_5pct,comune_diviso,flusso_invertito,stato_indicativo
+Aiello Del Friuli,1,AC001E01001,0.99,e-distribuzione,13.622030508807,18.0,447.55024,1,2,2,False,True,Inversione frequente
+Amaro,1,AC001E01019,0.999,e-distribuzione,33.497948225271166,5.0,5.84707,2,3,3,False,True,Inversione frequente
+Ampezzo,1,AC001E01600,1.0,e-distribuzione,73.19639260771858,0.0,0.0,1,1,1,False,True,Inversione frequente
+Andreis,1,AC001E01599,1.0,e-distribuzione,26.468036005120155,2.0,0.46238,1,1,0,False,True,Inversione occasionale
+Aquileia,2,AC001E00849,0.823,e-distribuzione,36.46624232911408,19.0,102.32077000000001,0,0,0,True,False,Pressione moderata
+Arba,1,AC001E01592,0.847,e-distribuzione,14.497040231609866,5.0,82.5958,1,2,2,False,True,Inversione frequente
+Arta Terme,1,AC001E01019,0.987,e-distribuzione,42.634586329780205,5.0,5.84707,2,3,3,False,True,Inversione frequente
+Artegna,1,AC001E01015,1.0,e-distribuzione,10.896435258614884,1.0,111.9,1,2,1,False,True,Inversione frequente
+Attimis,1,AC001E01014,1.0,e-distribuzione,33.05780329354521,4.0,8.7516,1,2,1,False,True,Inversione frequente
+Aviano,4,AC001E01593,0.56,e-distribuzione,112.98558839857527,8.0,28.322799999999997,3,5,3,True,True,Inversione frequente
+Azzano Decimo,2,AC001E01586,0.797,e-distribuzione,51.49803119751441,12.0,96.31792000000002,1,1,0,True,True,Inversione occasionale
+Bagnaria Arsa,2,AC001E01001,0.713,e-distribuzione,19.170111952979173,29.0,507.60756999999995,1,2,2,True,True,Inversione frequente
+Barcis,2,AC001E01599,0.926,e-distribuzione,103.13629713924216,2.0,0.46238,2,4,3,True,True,Inversione frequente
+Basiliano,3,AC001E01003,0.423,e-distribuzione,42.46885958746864,24.0,455.76486,5,9,6,True,True,Inversione frequente
+Bertiolo,2,AC001E01003,0.765,e-distribuzione,26.093598190486745,18.0,108.84022,2,4,4,True,True,Inversione frequente
+Bicinicco,2,AC001E01001,0.772,e-distribuzione,15.72137229824232,25.0,492.09083999999996,1,2,2,True,True,Inversione frequente
+Bordano,1,AC001E01019,0.943,e-distribuzione,15.409341961008783,5.0,5.84707,2,3,3,False,True,Inversione frequente
+Brugnera,1,AC001E00876,0.991,e-distribuzione,29.40290570014468,2.0,18.00185,1,2,2,False,True,Inversione frequente
+Budoia,1,AC001E01589,0.998,e-distribuzione,37.366079817713896,2.0,0.62849,0,0,0,False,False,Pressione moderata
+Buja,1,AC001E01015,0.995,e-distribuzione,25.38395069476829,1.0,111.9,1,2,1,False,True,Inversione frequente
+Buttrio,1,AC001E01006,0.991,e-distribuzione,17.948564996322474,11.0,73.47865,1,2,2,False,True,Inversione frequente
+Camino Al Tagliamento,1,AC001E01003,0.878,e-distribuzione,22.73325887651177,11.0,64.29962,2,4,4,False,True,Inversione frequente
+Campoformido,1,AC001E01008,0.995,e-distribuzione,22.115290451270248,9.0,272.09524,2,3,2,False,True,Inversione frequente
+Campolongo Tapogliano,2,AC001E01001,0.529,e-distribuzione,10.935159175725492,29.0,507.60756999999995,1,2,2,True,True,Inversione frequente
+Caneva,2,AC001E01588,0.867,e-distribuzione,41.741190905555065,6.0,5.76649,1,2,1,True,True,Inversione frequente
+Capriva Del Friuli,1,AC001E01000,1.0,e-distribuzione,6.190285627576963,3.0,22.937,1,1,0,False,True,Inversione occasionale
+Carlino,1,AC001E00997,0.985,e-distribuzione,30.481574456656915,7.0,318.32444000000004,0,0,0,False,False,Forte pressione autorizzativa
+Casarsa Della Delizia,1,AC001E01004,0.991,e-distribuzione,20.527822810649752,3.0,17.759999999999998,1,2,2,False,True,Inversione frequente
+Cassacco,1,AC001E01014,0.986,e-distribuzione,11.560694968165128,4.0,8.7516,1,2,1,False,True,Inversione frequente
+Castelnovo Del Friuli,1,AC001E01017,1.0,e-distribuzione,22.69020629189311,2.0,3.8489,1,1,0,False,True,Inversione occasionale
+Castions Di Strada,2,AC001E01002,0.898,e-distribuzione,33.38123163165716,14.0,362.86504,0,0,0,True,False,Forte pressione autorizzativa
+Cavasso Nuovo,1,AC001E01592,0.935,e-distribuzione,10.498047811627714,5.0,82.5958,1,2,2,False,True,Inversione frequente
+Cavazzo Carnico,1,AC001E01019,1.0,e-distribuzione,38.75121090097712,5.0,5.84707,2,3,3,False,True,Inversione frequente
+Cercivento,1,AC129E00001,1.0,SECAB,15.234322120769557,5.0,0.68925,0,0,0,False,False,Pressione moderata
+Cervignano Del Friuli,1,AC001E00998,0.993,e-distribuzione,28.820432043943903,11.0,60.05733,0,0,0,False,False,Pressione moderata
+Chions,2,AC001E00854,0.877,e-distribuzione,33.379184296482975,12.0,96.31792000000002,1,1,0,True,True,Inversione occasionale
+Chiopris-Viscone,3,AC001E01005,0.451,e-distribuzione,8.98620423435405,23.0,484.96067999999997,3,5,4,True,True,Inversione frequente
+Chiusaforte,1,AC001E01018,0.996,e-distribuzione,99.80513015972808,8.0,1.69663,1,1,1,False,True,Inversione frequente
+Cimolais,4,AC001E01602,0.6,e-distribuzione,101.3424795476295,3.0,0.66018,1,1,0,True,True,Inversione occasionale
+Cividale Del Friuli,2,AC001E01009,0.902,e-distribuzione,50.85479617541756,6.0,30.5826,2,4,4,True,True,Inversione frequente
+Claut,5,AC001E01599,0.705,e-distribuzione,166.21250924717484,3.0,0.66018,2,2,1,True,True,Inversione frequente
+Clauzetto,1,AC001E01017,0.994,e-distribuzione,28.248675657981067,2.0,3.8489,1,1,0,False,True,Inversione occasionale
+Codroipo,1,AC001E01003,0.98,e-distribuzione,74.60906330514435,11.0,64.29962,2,4,4,False,True,Inversione frequente
+Colloredo Di Monte Albano,3,AC001E01016,0.48,e-distribuzione,21.489643898152675,9.0,234.2229,3,5,1,True,True,Inversione frequente
+Comeglians,1,AC001E01021,0.994,e-distribuzione,19.52382111773277,7.0,2.93,2,4,3,False,True,Inversione frequente
+Cordenons,3,AC001E01590,0.544,e-distribuzione,57.32378834003281,13.0,113.43572999999999,3,5,3,True,True,Inversione frequente
+Cordovado,2,AC001E00854,0.969,e-distribuzione,12.262292351632452,19.0,92.81938000000001,2,3,2,True,True,Inversione frequente
+Cormons,2,AC001E01000,0.906,e-distribuzione,35.12221389409129,5.0,37.41044,2,3,2,True,True,Inversione frequente
+Corno Di Rosazzo,1,AC001E01005,0.992,e-distribuzione,12.647919518532,2.0,14.47344,1,2,2,False,True,Inversione frequente
+Coseano,1,AC001E01010,0.982,e-distribuzione,24.178833832102367,4.0,119.37,1,2,0,False,True,Inversione occasionale
+Dignano,2,AC001E01010,0.562,e-distribuzione,27.092541569790143,8.0,122.3229,2,3,0,True,True,Inversione occasionale
+Doberdo' Del Lago,2,AC001E00996,0.791,e-distribuzione,26.447218878943364,9.0,342.5701,1,2,1,True,True,Inversione frequente
+Dogna,1,AC001E01018,0.995,e-distribuzione,69.57383742525207,8.0,1.69663,1,1,1,False,True,Inversione frequente
+Dolegna Del Collio,1,AC001E01005,0.977,e-distribuzione,13.013450895877394,2.0,14.47344,1,2,2,False,True,Inversione frequente
+Drenchia,1,AC001E01009,0.965,e-distribuzione,12.660277133217582,4.0,16.10916,1,2,2,False,True,Inversione frequente
+Duino-Aurisina,2,AC001E00996,0.77,e-distribuzione,45.97023489559416,0.0,0.0,0,0,0,True,False,Nessun segnale
+Enemonzo,2,AC001E01600,0.58,e-distribuzione,23.485058587598918,5.0,5.84707,3,4,4,True,True,Inversione frequente
+Erto E Casso,1,AC001E01597,0.99,e-distribuzione,52.50132718906257,0.0,0.0,0,0,0,False,False,Nessun segnale
+Faedis,3,AC001E01014,0.584,e-distribuzione,46.78738951968896,19.0,81.28085,2,4,3,True,True,Inversione frequente
+Fagagna,1,AC001E01010,0.996,e-distribuzione,37.256017919825005,4.0,119.37,1,2,0,False,True,Inversione occasionale
+Fanna,1,AC001E01592,1.0,e-distribuzione,10.136568420380542,5.0,82.5958,1,2,2,False,True,Inversione frequente
+Farra D'Isonzo,2,AC001E01000,0.944,e-distribuzione,10.426501138914562,12.0,365.50710000000004,2,3,1,True,True,Inversione frequente
+Fiume Veneto,2,AC001E01586,0.559,e-distribuzione,35.559284953761114,6.0,44.836999999999996,1,2,1,True,True,Inversione frequente
+Fiumicello Villa Vicentina,2,AC001E00849,0.574,e-distribuzione,29.261354546191757,19.0,102.32077000000001,0,0,0,True,False,Pressione moderata
+Flaibano,2,AC001E01003,0.561,e-distribuzione,17.19801451776473,15.0,183.66962,3,6,4,True,True,Inversione frequente
+Fogliano Redipuglia,1,AC001E00999,1.0,e-distribuzione,8.325184983157751,9.0,342.5701,1,2,1,False,True,Inversione frequente
+Fontanafredda,3,AC001E01587,0.456,e-distribuzione,45.92855961777476,9.0,29.182290000000002,3,6,1,True,True,Inversione frequente
+Forgaria Nel Friuli,1,AC001E01017,0.922,e-distribuzione,29.23416599307569,2.0,3.8489,1,1,0,False,True,Inversione occasionale
+Forni Avoltri,2,AC001E01021,0.958,e-distribuzione,81.13207734748735,7.0,2.93,2,4,3,True,True,Inversione frequente
+Forni Di Sopra,1,AC001E01601,0.997,e-distribuzione,80.34462853751575,1.0,0.1978,0,0,0,False,False,Pressione moderata
+Forni Di Sotto,1,AC001E01600,0.997,e-distribuzione,94.09392405159576,0.0,0.0,1,1,1,False,True,Inversione frequente
+Frisanco,2,AC001E01599,0.631,e-distribuzione,61.24397054318047,7.0,83.05818,2,3,2,True,True,Inversione frequente
+Gemona Del Friuli,1,AC001E01015,0.968,e-distribuzione,56.297021772435286,1.0,111.9,1,2,1,False,True,Inversione frequente
+Gonars,1,AC001E01001,1.0,e-distribuzione,20.04723873458814,18.0,447.55024,1,2,2,False,True,Inversione frequente
+Gorizia,1,AC003E00003,0.983,AcegasApsAmga,41.09000790100241,1.0,1.983,1,2,2,False,True,Inversione frequente
+Gradisca D'Isonzo,1,AC001E00999,0.998,e-distribuzione,11.213713603320905,9.0,342.5701,1,2,1,False,True,Inversione frequente
+Grado,1,AC001E00849,0.45,e-distribuzione,118.95926916447029,8.0,42.26344,0,0,0,False,False,Pressione moderata
+Grimacco,1,AC001E01009,0.973,e-distribuzione,16.33878943515335,4.0,16.10916,1,2,2,False,True,Inversione frequente
+Latisana,2,AC001E00855,0.672,e-distribuzione,37.80037032141233,9.0,37.73046,1,2,2,True,True,Inversione frequente
+Lauco,2,AC001E01021,0.504,e-distribuzione,34.55051137978376,12.0,8.77707,4,7,6,True,True,Inversione frequente
+Lestizza,2,AC001E01002,0.711,e-distribuzione,34.07421678642956,18.0,108.84022,2,4,4,True,True,Inversione frequente
+Lignano Sabbiadoro,1,AC001E00848,0.919,e-distribuzione,16.031920375568813,0.0,0.0,0,0,0,False,False,Nessun segnale
+Lusevera,3,AC001E01018,0.43,e-distribuzione,52.008089043607605,13.0,122.34823,3,5,3,True,True,Inversione frequente
+Magnano In Riviera,2,AC001E01015,0.955,e-distribuzione,8.61320168573474,5.0,120.6516,2,4,2,True,True,Inversione frequente
+Majano,1,AC001E01016,0.985,e-distribuzione,28.36552561739369,4.0,2.9529,1,1,0,False,True,Inversione occasionale
+Malborghetto Valbruna,2,AC001E01020,0.963,e-distribuzione,124.43474501625664,13.0,1.92863,2,3,3,True,True,Inversione frequente
+Maniago,1,AC001E01592,0.978,e-distribuzione,69.33726031753562,5.0,82.5958,1,2,2,False,True,Inversione frequente
+Manzano,1,AC001E01006,0.979,e-distribuzione,30.382859820700038,11.0,73.47865,1,2,2,False,True,Inversione frequente
+Marano Lagunare,3,AC001E00997,0.078,e-distribuzione,85.5239800229501,16.0,356.05490000000003,1,2,2,True,True,Inversione frequente
+Mariano Del Friuli,1,AC001E01000,0.994,e-distribuzione,8.35639785907231,3.0,22.937,1,1,0,False,True,Inversione occasionale
+Martignacco,2,AC001E01008,0.614,e-distribuzione,26.79713633308608,13.0,391.46524,3,5,2,True,True,Inversione frequente
+Medea,2,AC001E01000,0.974,e-distribuzione,7.460786112359881,12.0,365.50710000000004,2,3,1,True,True,Inversione frequente
+Meduno,2,AC001E01017,0.847,e-distribuzione,31.327978669626013,7.0,86.4447,2,3,2,True,True,Inversione frequente
+Mereto Di Tomba,2,AC001E01010,0.606,e-distribuzione,27.31321045181279,15.0,183.66962,3,6,4,True,True,Inversione frequente
+Moggio Udinese,2,AC001E01018,0.945,e-distribuzione,143.96030413348868,13.0,7.5437,3,4,4,True,True,Inversione frequente
+Moimacco,1,AC001E01009,0.986,e-distribuzione,11.76845869316154,4.0,16.10916,1,2,2,False,True,Inversione frequente
+Monfalcone,2,AC001E00996,0.526,e-distribuzione,20.776447845542915,4.0,36.29922,1,1,0,True,True,Inversione occasionale
+Monrupino,1,AC001E00994,0.987,e-distribuzione,12.611181564060075,0.0,0.0,0,0,0,False,False,Nessun segnale
+Montenars,1,AC001E01015,0.993,e-distribuzione,20.69564241318771,1.0,111.9,1,2,1,False,True,Inversione frequente
+Montereale Valcellina,4,AC001E01593,0.618,e-distribuzione,67.86344151796196,11.0,110.29011,4,7,5,True,True,Inversione frequente
+Moraro,1,AC001E01000,1.0,e-distribuzione,3.4911264843029133,3.0,22.937,1,1,0,False,True,Inversione occasionale
+Morsano Al Tagliamento,2,AC001E00855,0.644,e-distribuzione,32.21264319641077,12.0,55.49046,2,4,4,True,True,Inversione frequente
+Mortegliano,1,AC001E01002,0.988,e-distribuzione,29.973622476874883,7.0,44.5406,0,0,0,False,False,Pressione moderata
+Moruzzo,1,AC001E01010,0.997,e-distribuzione,17.86205759580657,4.0,119.37,1,2,0,False,True,Inversione occasionale
+Mossa,1,AC001E01000,0.983,e-distribuzione,6.166804401980649,3.0,22.937,1,1,0,False,True,Inversione occasionale
+Muggia,1,AC001E00993,0.967,e-distribuzione,13.5191274326449,1.0,8.8,0,0,0,False,False,Pressione moderata
+Muzzana Del Turgnano,2,AC001E00997,0.801,e-distribuzione,24.28894860980259,14.0,362.86504,0,0,0,True,False,Forte pressione autorizzativa
+Nimis,1,AC001E01014,1.0,e-distribuzione,33.8998614050922,4.0,8.7516,1,2,1,False,True,Inversione frequente
+Osoppo,1,AC001E01015,0.854,e-distribuzione,21.74534027977392,1.0,111.9,1,2,1,False,True,Inversione frequente
+Ovaro,2,AC001E01021,0.94,e-distribuzione,58.33025879223444,7.0,2.93,3,5,4,True,True,Inversione frequente
+Pagnacco,1,AC001E01013,0.985,e-distribuzione,14.958122212603026,3.0,20.54648,1,1,0,False,True,Inversione occasionale
+Palazzolo Dello Stella,1,AC001E00855,0.998,e-distribuzione,34.26623128078678,9.0,37.73046,1,2,2,False,True,Inversione frequente
+Palmanova,1,AC001E01001,1.0,e-distribuzione,13.12315367756202,18.0,447.55024,1,2,2,False,True,Inversione frequente
+Paluzza,1,AC129E00001,0.995,SECAB,69.7256063825606,5.0,0.68925,0,0,0,False,False,Pressione moderata
+Pasian Di Prato,1,AC001E01008,1.0,e-distribuzione,15.145994657376423,9.0,272.09524,2,3,2,False,True,Inversione frequente
+Pasiano Di Pordenone,2,AC001E00876,0.788,e-distribuzione,45.44844810656811,4.0,59.230850000000004,1,2,2,True,True,Inversione frequente
+Paularo,2,AC001E01019,0.89,e-distribuzione,84.20341669169046,13.0,7.5437,3,4,4,True,True,Inversione frequente
+Pavia Di Udine,2,AC001E01007,0.786,e-distribuzione,34.566715731114584,28.0,492.36896,1,2,2,True,True,Inversione frequente
+Pinzano Al Tagliamento,2,AC001E01017,0.689,e-distribuzione,21.736513794666653,5.0,9.74353,2,3,2,True,True,Inversione frequente
+Pocenia,2,AC001E01002,0.74,e-distribuzione,23.94670535268034,16.0,82.27106,1,2,2,True,True,Inversione frequente
+Polcenigo,1,AC001E01589,0.993,e-distribuzione,49.66833199950415,2.0,0.62849,0,0,0,False,False,Pressione moderata
+Pontebba,1,AC001E01018,0.997,e-distribuzione,97.48454702129033,8.0,1.69663,1,1,1,False,True,Inversione frequente
+Porcia,1,AC001E01587,0.997,e-distribuzione,30.063492246053816,3.0,23.4158,2,4,0,False,True,Inversione occasionale
+Pordenone,3,AC001E01587,0.595,e-distribuzione,38.365944019394256,9.0,68.25280000000001,3,6,1,True,True,Inversione frequente
+Porpetto,2,AC001E00997,0.638,e-distribuzione,18.09357669982336,25.0,765.87468,1,2,2,True,True,Inversione frequente
+Povoletto,2,AC001E01014,0.771,e-distribuzione,38.65060311488752,15.0,65.17169,1,2,1,True,True,Inversione frequente
+Pozzuolo Del Friuli,3,AC001E01007,0.637,e-distribuzione,34.2790359334315,33.0,735.52615,2,3,2,True,True,Inversione frequente
+Pradamano,2,AC001E01007,0.626,e-distribuzione,16.365869603895824,28.0,475.3104,0,0,0,True,False,Forte pressione autorizzativa
+Prata Di Pordenone,2,AC001E00876,0.922,e-distribuzione,22.755389547472937,2.0,18.00185,1,2,2,True,True,Inversione frequente
+Prato Carnico,2,AC001E01021,0.788,e-distribuzione,81.24711127397624,7.0,2.93,2,4,3,True,True,Inversione frequente
+Pravisdomini,3,AC001E00854,0.512,e-distribuzione,16.027776922246808,12.0,96.31792000000002,1,1,0,True,True,Inversione occasionale
+Precenicco,1,AC001E00855,0.97,e-distribuzione,27.137457040914715,9.0,37.73046,1,2,2,False,True,Inversione frequente
+Premariacco,4,AC001E01009,0.479,e-distribuzione,39.78392547272574,28.0,160.48134,3,6,6,True,True,Inversione frequente
+Preone,2,AC001E01600,0.567,e-distribuzione,22.652618952918125,5.0,5.84707,3,4,4,True,True,Inversione frequente
+Prepotto,2,AC001E01009,0.881,e-distribuzione,32.44812653473544,6.0,30.5826,2,4,4,True,True,Inversione frequente
+Pulfero,1,AC001E01009,0.987,e-distribuzione,48.24128318603731,4.0,16.10916,1,2,2,False,True,Inversione frequente
+Ragogna,1,AC001E01016,0.834,e-distribuzione,22.019248342354864,4.0,2.9529,1,1,0,False,True,Inversione occasionale
+Ravascletto,1,AC129E00001,0.985,SECAB,26.653991707686217,5.0,0.68925,0,0,0,False,False,Pressione moderata
+Raveo,1,AC001E01600,0.987,e-distribuzione,12.24362686368171,0.0,0.0,1,1,1,False,True,Inversione frequente
+Reana Del Rojale,2,AC001E01013,0.508,e-distribuzione,20.316241629740325,7.0,29.29808,2,3,1,True,True,Inversione frequente
+Remanzacco,1,AC001E01012,0.991,e-distribuzione,30.51206191935507,11.0,56.42009,0,0,0,False,False,Pressione moderata
+Resia,1,AC001E01018,0.998,e-distribuzione,118.85814548409364,8.0,1.69663,1,1,1,False,True,Inversione frequente
+Resiutta,1,AC001E01018,1.0,e-distribuzione,19.919635475803226,8.0,1.69663,1,1,1,False,True,Inversione frequente
+Rigolato,1,AC001E01021,0.999,e-distribuzione,29.651066333490935,7.0,2.93,2,4,3,False,True,Inversione frequente
+Rive D'Arcano,2,AC001E01016,0.588,e-distribuzione,22.49458971276015,8.0,122.3229,2,3,0,True,True,Inversione occasionale
+Rivignano Teor,3,AC001E00855,0.532,e-distribuzione,47.62657526751559,27.0,146.57068,3,6,6,True,True,Inversione frequente
+Romans D'Isonzo,1,AC001E00999,0.936,e-distribuzione,15.638570089209567,9.0,342.5701,1,2,1,False,True,Inversione frequente
+Ronchi Dei Legionari,3,AC001E00999,0.678,e-distribuzione,16.618674033024828,13.0,378.86932,2,3,1,True,True,Inversione frequente
+Ronchis,1,AC001E00855,1.0,e-distribuzione,18.58699876914741,9.0,37.73046,1,2,2,False,True,Inversione frequente
+Roveredo In Piano,3,AC001E01591,0.548,e-distribuzione,16.118853776147873,9.0,51.27622,3,5,0,True,True,Inversione occasionale
+Ruda,2,AC001E00998,0.917,e-distribuzione,19.097630866891123,20.0,402.62743,1,2,1,True,True,Inversione frequente
+Sacile,1,AC001E01588,0.977,e-distribuzione,32.580966162538815,4.0,5.138,1,2,1,False,True,Inversione frequente
+Sagrado,1,AC001E00999,0.995,e-distribuzione,13.737755273676914,9.0,342.5701,1,2,1,False,True,Inversione frequente
+San Canzian D'Isonzo,3,AC001E00849,0.459,e-distribuzione,33.47245397727228,21.0,421.13276,2,3,1,True,True,Inversione frequente
+San Daniele Del Friuli,1,AC001E01016,0.926,e-distribuzione,34.70208266311483,4.0,2.9529,1,1,0,False,True,Inversione occasionale
+San Dorligo Della Valle - Dolina,1,AC001E00993,0.983,e-distribuzione,24.022948012584504,1.0,8.8,0,0,0,False,False,Pressione moderata
+San Floriano Del Collio,1,AC001E01000,0.946,e-distribuzione,11.32409426484647,3.0,22.937,1,1,0,False,True,Inversione occasionale
+San Giorgio Della Richinvelda,2,AC001E01011,0.868,e-distribuzione,48.605095431767,8.0,88.49043,2,4,4,True,True,Inversione frequente
+San Giorgio Di Nogaro,1,AC001E00997,0.996,e-distribuzione,25.821404166412464,7.0,318.32444000000004,0,0,0,False,False,Forte pressione autorizzativa
+San Giovanni Al Natisone,1,AC001E01005,0.973,e-distribuzione,24.110955277688067,2.0,14.47344,1,2,2,False,True,Inversione frequente
+San Leonardo,1,AC001E01009,1.0,e-distribuzione,27.399924137828737,4.0,16.10916,1,2,2,False,True,Inversione frequente
+San Lorenzo Isontino,1,AC001E01000,1.0,e-distribuzione,4.533691490355294,3.0,22.937,1,1,0,False,True,Inversione occasionale
+San Martino Al Tagliamento,1,AC001E01004,0.947,e-distribuzione,17.63675750366192,3.0,17.759999999999998,1,2,2,False,True,Inversione frequente
+San Pier D'Isonzo,1,AC001E00999,1.0,e-distribuzione,8.886734728763967,9.0,342.5701,1,2,1,False,True,Inversione frequente
+San Pietro Al Natisone,1,AC001E01009,1.0,e-distribuzione,23.718124968551585,4.0,16.10916,1,2,2,False,True,Inversione frequente
+San Quirino,1,AC001E01591,0.978,e-distribuzione,51.003969992179535,4.0,27.23193,1,1,0,False,True,Inversione occasionale
+San Vito Al Tagliamento,2,AC001E01004,0.865,e-distribuzione,60.7033894667534,13.0,72.84892,2,3,2,True,True,Inversione frequente
+San Vito Al Torre,1,AC001E01001,0.936,e-distribuzione,11.484007161536034,18.0,447.55024,1,2,2,False,True,Inversione frequente
+San Vito Di Fagagna,1,AC001E01010,1.0,e-distribuzione,8.556824833147049,4.0,119.37,1,2,0,False,True,Inversione occasionale
+Santa Maria La Longa,2,AC001E01001,0.709,e-distribuzione,19.747393527494395,35.0,866.44055,1,2,2,True,True,Inversione frequente
+Sappada,2,AC001E01603,0.974,e-distribuzione,62.56826733730729,7.0,2.93,2,4,3,True,True,Inversione frequente
+Sauris,2,AC001E01600,0.952,e-distribuzione,41.425282853116194,0.0,0.0,1,1,1,True,True,Inversione frequente
+Savogna,1,AC001E01009,0.993,e-distribuzione,22.246815343689505,4.0,16.10916,1,2,2,False,True,Inversione frequente
+Savogna D'Isonzo,2,AC001E00999,0.695,e-distribuzione,16.202255009915596,12.0,365.50710000000004,2,3,1,True,True,Inversione frequente
+Sedegliano,1,AC001E01003,0.919,e-distribuzione,51.03868200674653,11.0,64.29962,2,4,4,False,True,Inversione frequente
+Sequals,2,AC001E01017,0.491,e-distribuzione,28.13701139091827,5.0,9.74353,2,3,2,True,True,Inversione frequente
+Sesto Al Reghena,2,AC001E00854,0.884,e-distribuzione,40.5358054753589,13.0,72.84892,2,3,2,True,True,Inversione frequente
+Sgonico,1,AC001E00994,0.997,e-distribuzione,31.318968914189416,0.0,0.0,0,0,0,False,False,Nessun segnale
+Socchieve,1,AC001E01600,1.0,e-distribuzione,66.16932870467811,0.0,0.0,1,1,1,False,True,Inversione frequente
+Spilimbergo,1,AC001E01011,0.942,e-distribuzione,72.21050434966902,3.0,5.89463,1,2,2,False,True,Inversione frequente
+Staranzano,1,AC001E00995,0.906,e-distribuzione,18.729392998673507,4.0,36.29922,1,1,0,False,True,Inversione occasionale
+Stregna,1,AC001E01009,0.994,e-distribuzione,19.15028011785252,4.0,16.10916,1,2,2,False,True,Inversione frequente
+Sutrio,1,AC129E00001,0.988,SECAB,21.055317456152792,5.0,0.68925,0,0,0,False,False,Pressione moderata
+Taipana,2,AC001E01014,0.842,e-distribuzione,64.98266988578312,12.0,10.44823,2,3,2,True,True,Inversione frequente
+Talmassons,1,AC001E01002,0.998,e-distribuzione,42.52457493429473,7.0,44.5406,0,0,0,False,False,Pressione moderata
+Tarcento,1,AC001E01014,0.989,e-distribuzione,35.21338942944011,4.0,8.7516,1,2,1,False,True,Inversione frequente
+Tarvisio,1,AC001E01020,0.993,e-distribuzione,208.89861830044129,5.0,0.232,1,2,2,False,True,Inversione frequente
+Tavagnacco,1,AC001E01013,0.991,e-distribuzione,15.543186611071045,3.0,20.54648,1,1,0,False,True,Inversione occasionale
+Terzo Di Aquileia,3,AC001E00998,0.578,e-distribuzione,28.68067962061267,26.0,420.64521,0,0,0,True,False,Forte pressione autorizzativa
+Tolmezzo,1,AC001E01019,1.0,e-distribuzione,66.07710583772047,5.0,5.84707,2,3,3,False,True,Inversione frequente
+Torreano,1,AC001E01009,0.998,e-distribuzione,35.094131152661106,4.0,16.10916,1,2,2,False,True,Inversione frequente
+Torviscosa,3,AC001E00997,0.442,e-distribuzione,48.12174932668232,36.0,825.93201,1,2,2,True,True,Inversione frequente
+Tramonti Di Sopra,3,AC001E01600,0.649,e-distribuzione,125.04752056174247,7.0,83.05818,3,4,3,True,True,Inversione frequente
+Tramonti Di Sotto,3,AC001E01600,0.53,e-distribuzione,84.96281251396807,7.0,86.4447,3,4,3,True,True,Inversione frequente
+Trasaghis,2,AC001E01019,0.894,e-distribuzione,78.2809138945972,7.0,9.69597,3,4,3,True,True,Inversione frequente
+Travesio,1,AC001E01017,1.0,e-distribuzione,28.44068288047104,2.0,3.8489,1,1,0,False,True,Inversione occasionale
+Treppo Grande,1,AC001E01015,0.993,e-distribuzione,11.293019856196445,1.0,111.9,1,2,1,False,True,Inversione frequente
+Treppo Ligosullo,1,AC129E00001,0.993,SECAB,34.958382945101725,5.0,0.68925,0,0,0,False,False,Pressione moderata
+Tricesimo,2,AC001E01014,0.783,e-distribuzione,17.190182956259825,7.0,29.29808,2,3,1,True,True,Inversione frequente
+Trieste,4,AC003E00000,0.426,AcegasApsAmga,85.34296006748333,1.0,4.8,1,1,1,True,True,Inversione frequente
+Trivignano Udinese,2,AC001E01001,0.583,e-distribuzione,18.1254495833212,29.0,521.0288899999999,2,4,4,True,True,Inversione frequente
+Turriaco,1,AC001E00999,0.898,e-distribuzione,5.21839957762051,9.0,342.5701,1,2,1,False,True,Inversione frequente
+Udine,4,AC001E01008,0.374,e-distribuzione,56.47648663129065,40.0,767.9521199999999,3,4,2,True,True,Inversione frequente
+Vajont,1,AC001E01592,0.919,e-distribuzione,1.5422438549697572,5.0,82.5958,1,2,2,False,True,Inversione frequente
+Valvasone Arzene,2,AC001E01004,0.806,e-distribuzione,30.622730726278945,7.0,21.368,2,4,3,True,True,Inversione frequente
+Varmo,2,AC001E01003,0.557,e-distribuzione,35.22079837036462,20.0,102.03008,3,6,6,True,True,Inversione frequente
+Venzone,3,AC001E01019,0.473,e-distribuzione,54.246912472898345,14.0,119.4437,4,6,5,True,True,Inversione frequente
+Verzegnis,1,AC001E01019,1.0,e-distribuzione,38.63974437336544,5.0,5.84707,2,3,3,False,True,Inversione frequente
+Villa Santina,1,AC001E01019,0.99,e-distribuzione,12.90833651012228,5.0,5.84707,2,3,3,False,True,Inversione frequente
+Villesse,2,AC001E00999,0.885,e-distribuzione,11.514229238169978,20.0,402.62743,1,2,1,True,True,Inversione frequente
+Visco,1,AC001E01001,1.0,e-distribuzione,3.854188649642106,18.0,447.55024,1,2,2,False,True,Inversione frequente
+Vito D'Asio,2,AC001E01017,0.599,e-distribuzione,53.63243793406711,7.0,9.69597,3,4,3,True,True,Inversione frequente
+Vivaro,1,AC001E01592,0.943,e-distribuzione,37.04755359973656,5.0,82.5958,1,2,2,False,True,Inversione frequente
+Zoppola,2,AC001E01590,0.822,e-distribuzione,44.76087875110984,7.0,21.368,2,4,3,True,True,Inversione frequente
+Zuglio,2,AC001E01019,0.803,e-distribuzione,18.240947580201837,12.0,8.77707,4,7,6,True,True,Inversione frequente

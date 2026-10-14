@@ -1,0 +1,23 @@
+Nr.,ID progetto,Data autorizzazione,Nome impianto/progetto,Comune/i sede impianto,Provincia,Tipologia,Potenza (MW),Numero decreto,Proponente,Fonte BUR,Stato verifica,Note,Anno,Soglia ≥1 MW
+11,FVG-2025-011,2025-10-31,Bosco Moleco,Aquileia,UD,FV,8.75,,Fineuro Srl,BUR n. 47 del 19/11/2025,Da ricontrollare,Procedura ambientale originaria del 2024; AU considerata nuova nel 2025.,2025,True
+10,FVG-2025-010,2025-08-19,Campolongo Tapogliano Solar 1,Campolongo Tapogliano,UD,Agrivoltaico,5.116,,,BUR n. 38 del 17/09/2025,Da ricontrollare,Numero decreto da completare.,2025,True
+7,FVG-2025-007,2025-06-26,Impianto agrivoltaico Carlino–San Giorgio,Carlino; San Giorgio di Nogaro,UD,Agrivoltaico,18.71,,,BUR n. 28 del 09/07/2025,Da ricontrollare,Progetto multi-comune; non ripartire la potenza sui Comuni.,2025,True
+22,FVG-2026-005,2026-06-24,Sunflo Cava Acco Superiore,Castions di Strada; Talmassons,UD,FV flottante,7.36,,,BUR n. 25 del 24/06/2026,Da ricontrollare,"Potenza indicata nella ricognizione: 7,36 MWp.",2026,True
+9,FVG-2025-009,2025-07-30,Cimpello,Fiume Veneto,PN,FV,11.2,,,BUR n. 33 del 13/08/2025,Da ricontrollare,"Ricognizione indica 2 lotti; potenza complessiva 11,2 MW.",2025,True
+15,FVG-2025-015,2025-12-17,Impianto Fossalon,Grado,GO,FV + accumulo,13.455,,,BUR n. 53 del 31/12/2025,Da ricontrollare,Include accumulo.,2025,True
+21,FVG-2026-004,2026-06-24,Boscat,Grado; Aquileia,GO,Agrivoltaico + accumulo,19.062,,,BUR n. 25 del 24/06/2026,Da ricontrollare,Progetto multi-comune; include accumulo.,2026,True
+14,FVG-2025-014,2025-12-11,Impianto fotovoltaico Martignacco,Martignacco,UD,FV,6.0,,,BUR n. 53 del 31/12/2025,Da ricontrollare,Numero decreto da completare.,2025,True
+1,FVG-2025-001,2025-01-07,Impianto fotovoltaico Via Nazionale,Moimacco,UD,FV + accumulo,6.25716,230/GRFVG,X-Elio Moimacco Srl,BUR n. 5 del 29/01/2025,Verificato,Accumulo 5 MW; AU nuova.,2025,True
+3,FVG-2025-003,2025-04-10,Impianto fotovoltaico località Risano,Pavia di Udine,UD,FV,4.356,18458/GRFVG,Sunprime Solar Belt Srl,BUR n. 17 del 23/04/2025,Verificato,Potenza nominale 4.356 kW.,2025,True
+6,FVG-2025-006,2025-06-26,Trivignano Solar 1,Pradamano; Trivignano Udinese; Palmanova,UD,Agrivoltaico,74.757,,,BUR n. 28 del 09/07/2025,Da ricontrollare,Progetto multi-comune; non ripartire la potenza sui Comuni.,2025,True
+5,FVG-2025-005,2025-05-16,Impianto agrivoltaico Precenicco,Precenicco,UD,Agrivoltaico,9.993,,,BUR n. 23 del 04/06/2025,Da ricontrollare,AU individuata nella ricognizione; numero decreto da completare.,2025,True
+12,FVG-2025-012,2025-11-04,Impianto fotovoltaico Via Piramidi,Sesto al Reghena,PN,FV,18.70224,58025,Sesto Solar Srl,BUR n. 48 del 26/11/2025,Verificato,"Potenza nominale 18.702,24 kWe.",2025,True
+13,FVG-2025-013,2025-11-05,Impianto agrivoltaico NPD,Sesto al Reghena; Chions,PN,Agrivoltaico,6.615,,,BUR n. 2 del 14/01/2026,Da ricontrollare,"AU del 2025, pubblicata nel BUR di gennaio 2026 secondo la ricognizione.",2025,True
+8,FVG-2025-008,2025-06-25,Impianto F.lli Rabbiosi,Talmassons,UD,Agrivoltaico,9.228,,,BUR n. 28 del 09/07/2025,Da ricontrollare,Numero decreto da completare.,2025,True
+2,FVG-2025-002,2025-02-06,Cividina,Tavagnacco,UD,FV,8.35,4757,Fineuro Srl,BUR n. 8 del 19/02/2025,Verificato,"8,35 MWp; 8,25 MW nominali di immissione.",2025,True
+17,FVG-2025-017,2025-12-23,Impianto fotovoltaico Torviscosa,Torviscosa,UD,FV,8.702,,,BUR n. 1 del 07/01/2026,Da ricontrollare,"AU 2025, pubblicazione nel BUR 2026 secondo la ricognizione.",2025,True
+4,FVG-2025-004,2025-04-10,PNRR Hydrogen Hub Trieste,Trieste,TS,FV + idrogeno,4.85,18459/GRFVG,AcegasApsAmga Spa,BUR n. 17 del 23/04/2025,Verificato,"FV 4,85 MWe associato a impianto H2 da 5 MW.",2025,True
+16,FVG-2025-016,2025-12-18,Impianto agrivoltaico Trivignano,Trivignano Udinese; Santa Maria La Longa; Pavia di Udine,UD,Agrivoltaico,17.111,,,BUR n. 53 del 31/12/2025,Da ricontrollare,Progetto multi-comune; non ripartire la potenza sui Comuni.,2025,True
+18,FVG-2026-001,2026-02-03,PV10 Prati del Torre Sud,Udine,UD,FV,1.814,4794/GRFVG,PVK Srl,BUR n. 7 del 18/02/2026,Verificato,"AU nuova; potenza 1,814 MW.",2026,True
+19,FVG-2026-002,2026-03-03,Prati di Prasingel,Udine,UD,FV,9.998,,,BUR n. 11 del 18/03/2026,Da ricontrollare,Numero decreto da completare.,2026,True
+20,FVG-2026-003,2026-04-01,Impianto fotovoltaico Zoppola,Zoppola,PN,FV,9.862,,,BUR n. 16 del 22/04/2026,Da ricontrollare,Numero decreto da completare.,2026,True

@@ -1,0 +1,28 @@
+fascicolo,progetto,mw,stato,numero_decreto,comune,lon,lat,conta_nel_totale,nota
+2438,BESS Redipuglia S.r.l,206.5,in corso,,Fogliano Redipuglia,13.47891,45.8518,True,
+2128,Ilary Energia S.r.l.,206.0,in esercizio,,Pavia Di Udine,13.28851,45.96269,True,
+2626,Green Bess Udine S.r.l.,200.6,in corso,,Santa Maria La Longa,13.2668,45.96505,True,
+2558,AEI PROJECT XXIV s.r.l. (Planais I),141.12,in corso,,Carlino,13.22558,45.77304,True,
+2549,Aukera Italy 19 S.r.l.,137.75,in corso,,Pavia Di Udine,13.27907,45.96827,True,"Dato regionale 1.377,5 MW corretto in 137,75 MW (stima APE FVG per Pavia di Udine)"
+2502,Buja S.r.l.,111.9,conclusa,,Buja,13.09359,46.24483,True,
+2567,Green Bess Udine Sud S.r.l.,110.33,in corso,,Santa Maria La Longa,13.2682,45.96297,True,
+2585,Green Bess Srl Redipuglia San Pier d'Isonzo,110.3,in corso,,Fogliano Redipuglia,13.47604,45.84695,True,
+2575,EVO S.r.l. Agricola,105.0,in corso,,San Pier D'Isonzo,13.47201,45.85579,True,
+2518,Santa Maria Srl.,104.0,n.d.,,Santa Maria La Longa,13.27728,45.9656,True,
+2548,RNE 18 SRL,100.0,in corso,,Martignacco,13.12413,46.06006,True,
+2540,Viola Rinnovabili S.r.l.,100.0,in corso,,Pasian Di Prato,13.13649,46.04224,True,
+2554,Eco Storage 4 S.r.l.,99.0,in corso,,Fogliano Redipuglia,13.48203,45.85494,True,
+2529,RNE 14 Srl,90.0,autorizzato,37803,Pavia Di Udine,13.28348,45.9665,True,
+2559,Basiliano Uno S.r.l.,78.0,in corso,,Pasian Di Prato,13.1345,46.04256,True,Stessa area della pratica 2560: si conta una sola volta
+2560,Basiliano Uno S.r.l.,75.0,in corso,,Pasian Di Prato,13.1345,46.04256,False,"Stessa area della pratica 2559 (Basiliano Uno): alternativa, non sommata"
+2427,Porpetto Srl,65.0,n.d.,,Porpetto,13.21006,45.84982,True,
+2512,Udine Ovest 65 srl,65.0,n.d.,,Pasian Di Prato,13.13629,46.04445,True,
+2601,Parco Energetico Friulano 3 S.r.l.,41.459,in corso,,San Giorgio Di Nogaro,13.2296,45.78432,True,
+2323,Renantis Italia Srl,25.0,n.d.,,Buja,13.10728,46.24081,True,
+2340,Renantis Italia Srl,25.0,n.d.,,Remanzacco,13.30164,46.08359,True,
+2403,Atlas Solar 1 Srl,25.0,n.d.,,Basiliano,13.13237,46.04653,True,
+2621,AEI PROJECT XXII S.R.L.L,10.0,in corso,,Cormons,13.44537,45.93696,True,
+2511,BATTITA LTD,10.0,conclusa,,San Vito Al Tagliamento,12.87121,45.94652,True,
+2542,Biko Spv 28 S.r.l.,9.99,in corso,,San Quirino,12.65788,46.03552,True,
+2514,BATTITA LTD,9.9,n.d.,,San Vito Al Tagliamento,12.87157,45.94613,True,
+2566,Nwj Ita S.r.l.,1.25,in corso,,Fagagna,13.09121,46.09159,True,
