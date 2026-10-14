@@ -1,0 +1,132 @@
+# Catalogo degli interventi finanziabili con le compensazioni (DM 10/9/2010, Allegato 2).
+# Costi INDICATIVI 2025-26, IVA esclusa, da sostituire con preventivi o computi del Comune.
+# categoria: ambiente | efficienza | rinnovabili | sensibilizzazione
+aggiornato_al: 2026-10-14
+nota_costi: "Costi indicativi di mercato, da verificare con preventivi o computi metrici. Gli incentivi citati vanno verificati sul bando in vigore."
+
+interventi:
+  - id: fv_edifici
+    nome: "Fotovoltaico su scuole, palestre e municipio"
+    categoria: rinnovabili
+    unita: kWp
+    costo_unitario: 1400
+    intervallo: [1200, 1800]
+    quantita_default: 50
+    beneficio: "Circa 1.250 kWh per kWp all'anno; con l'autoconsumo riduce la bolletta del Comune."
+    leve: ["Incentivo GSE sull'energia condivisa se l'impianto entra in una CER", "Bandi regionali FVG per l'energia negli edifici pubblici"]
+    esempio: "Atlas Solar 1: 10 kW di pannelli per Comune; Cjase Sterpet (Pavia di Udine): impianto da 400 kWp come compensazione."
+  - id: accumulo_edificio
+    nome: "Batteria per un edificio comunale"
+    categoria: rinnovabili
+    unita: kWh
+    costo_unitario: 650
+    intervallo: [450, 850]
+    quantita_default: 50
+    beneficio: "Sposta sulla sera l'energia prodotta di giorno; utile per palestre e centri civici."
+    leve: []
+    esempio: ""
+  - id: cer
+    nome: "Avvio di una Comunità energetica rinnovabile comunale"
+    categoria: rinnovabili
+    unita: forfait
+    costo_unitario: 25000
+    intervallo: [10000, 40000]
+    quantita_default: 1
+    beneficio: "Statuto, studio di fattibilità, piattaforma di gestione. È la strada legittima per portare benefici economici alle famiglie, incluse quelle in povertà energetica."
+    leve: ["Incentivo GSE sull'energia condivisa per 20 anni", "Contributi per CER nei piccoli Comuni (verificare apertura e scadenze)"]
+    esempio: "Attenzione: 97 Comuni FVG su 215 sono divisi tra più cabine primarie (vedi Quadro FVG)."
+  - id: led
+    nome: "Illuminazione pubblica a LED"
+    categoria: efficienza
+    unita: punti luce
+    costo_unitario: 600
+    intervallo: [400, 900]
+    quantita_default: 100
+    beneficio: "Riduce del 50–70% i consumi dell'illuminazione pubblica."
+    leve: ["Contratti a prestazione garantita (ESCo)"]
+    esempio: ""
+  - id: pdc
+    nome: "Pompa di calore in un edificio comunale"
+    categoria: efficienza
+    unita: kW termici
+    costo_unitario: 1100
+    intervallo: [800, 1500]
+    quantita_default: 60
+    beneficio: "Sostituisce la caldaia a gas; con il fotovoltaico sul tetto riduce costi ed emissioni."
+    leve: ["Conto Termico (GSE) per le pubbliche amministrazioni"]
+    esempio: ""
+  - id: isolamento
+    nome: "Isolamento termico di un edificio pubblico"
+    categoria: efficienza
+    unita: m²
+    costo_unitario: 160
+    intervallo: [120, 220]
+    quantita_default: 500
+    beneficio: "Riduce il fabbisogno di riscaldamento del 20–40%."
+    leve: ["Conto Termico (GSE) per le pubbliche amministrazioni"]
+    esempio: ""
+  - id: ricarica
+    nome: "Colonnine di ricarica pubbliche (22 kW)"
+    categoria: efficienza
+    unita: colonnine
+    costo_unitario: 12000
+    intervallo: [8000, 18000]
+    quantita_default: 2
+    beneficio: "Servizio ai cittadini; con il fotovoltaico comunale usa energia locale."
+    leve: []
+    esempio: "Indicato tra le opere tipiche nella stima APE FVG per Pavia di Udine."
+  - id: bosco
+    nome: "Bosco planiziale o urbano"
+    categoria: ambiente
+    unita: ettari
+    costo_unitario: 25000
+    intervallo: [15000, 40000]
+    quantita_default: 2
+    beneficio: "Assorbe CO2, ombreggia, aumenta la biodiversità. Costo comprensivo delle cure nei primi anni."
+    leve: ["Fondi regionali per la forestazione (verificare)"]
+    esempio: "La forestazione è la prima opera tipica nella stima APE FVG."
+  - id: siepi
+    nome: "Siepi, filari e corridoi ecologici"
+    categoria: ambiente
+    unita: metri
+    costo_unitario: 25
+    intervallo: [15, 40]
+    quantita_default: 2000
+    beneficio: "Ricostruisce il paesaggio agrario friulano e collega gli habitat; mitiga gli impianti."
+    leve: ["Misure agro-climatico-ambientali del CSR FVG (per gli agricoltori)"]
+    esempio: "A San Giovanni al Natisone la Regione ha chiesto siepi con specie arboree autoctone."
+  - id: rinaturalizzazione
+    nome: "Rinaturalizzazione di rogge, zone umide o cave"
+    categoria: ambiente
+    unita: ettari
+    costo_unitario: 40000
+    intervallo: [20000, 80000]
+    quantita_default: 1
+    beneficio: "Recupera aree degradate e la funzionalità ecologica dei corsi d'acqua."
+    leve: []
+    esempio: ""
+  - id: monitoraggio
+    nome: "Monitoraggio ambientale indipendente (suolo, acque, biodiversità)"
+    categoria: ambiente
+    unita: anni
+    costo_unitario: 10000
+    intervallo: [5000, 20000]
+    quantita_default: 5
+    beneficio: "Dati terzi su cosa succede al suolo sotto i pannelli e alle falde; risponde ai timori dei cittadini."
+    leve: ["Collaborazione con ARPA FVG e università"]
+    esempio: "ARPA FVG ha un protocollo per il monitoraggio del suolo negli impianti agro e fotovoltaici."
+  - id: scuole
+    nome: "Educazione e sportello energia per i cittadini"
+    categoria: sensibilizzazione
+    unita: anni
+    costo_unitario: 8000
+    intervallo: [4000, 15000]
+    quantita_default: 3
+    beneficio: "Progetti nelle scuole, sportello su bollette, CER, efficienza in casa."
+    leve: []
+    esempio: ""
+
+non_ammessi:
+  - "Versamenti in denaro nelle casse comunali senza un intervento collegato"
+  - "Energia gratuita o sconti in bolletta diretti alle famiglie (lo ha chiarito anche il caso di Udine San Gottardo)"
+  - "Spese correnti generiche del bilancio comunale"

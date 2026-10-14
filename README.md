@@ -15,16 +15,18 @@ file principale `compensazioni_FVG.py`.
 
 ## Pagine
 
-| Sezione | Pagina | Stato |
+| Sezione | Pagina | Cosa fa |
 |---|---|---|
-| Per il Comune | Quanto vale (calcolatore) | v0.1 |
-| | Che iter è | in costruzione |
-| | La convenzione | checklist; schema in arrivo |
-| | Come investirle | in costruzione |
-| Per tutti | Quadro FVG (mappa e scheda per comune) | v0.1 |
-| | Casi FVG | v0.1 |
-| | Pavia di Udine | v0.1 |
-| Per i cittadini | Perché servono | in costruzione |
+| Per il Comune | Il mio progetto | Carica i documenti (PDF, Word) o inserisci i dati; stabilisce procedura, VIA e percentuali di legge |
+| | Quanto vale | Scegli la percentuale e vedi il calcolo passo per passo; confronto con tutti i metodi |
+| | Che iter è | Mappa interattiva del procedimento: fase attuale, scadenze, cosa fa il Comune |
+| | La convenzione | Clausole da scegliere e bozza Word precompilata |
+| | Come investirle | Catalogo di interventi e piano dentro il budget |
+| Per tutti | Quadro FVG | Mappa e scheda per comune |
+| | Casi FVG · Pavia di Udine | Casi documentati |
+| Per i cittadini | Perché servono | Prezzo dell'elettricità 2025 e quota di rinnovabili |
+
+Il progetto inserito resta in memoria mentre si naviga tra le pagine (non viene salvato su server).
 
 ## Struttura
 
@@ -32,8 +34,13 @@ file principale `compensazioni_FVG.py`.
 compensazioni_FVG.py          navigazione
 pagine/                   una pagina per file
 core/compensazioni.py     calcoli (funzioni pure, testate)
+core/iter.py              procedura e VIA secondo TU FER (schema semplificato)
+core/estrazione.py        lettura dei documenti di progetto
+core/convenzione_docx.py  bozza di convenzione Word
 core/dati.py              caricamento dati e formati italiani
-data/regole/              percentuali, soglie, parametri: ognuno con fonte e data
+data/regole/              percentuali, soglie, fasi dell'iter: ognuno con fonte e data
+data/investimenti/        catalogo degli interventi (costi indicativi)
+data/prezzi/              prezzi orari 2025 e quota di rinnovabili
 data/casi/                casi FVG documentati
 data/territorio/          tabelle per comune (generate da scripts/build_territorio.py)
 data/territorio/raw/      dati grezzi e README del pacchetto rete

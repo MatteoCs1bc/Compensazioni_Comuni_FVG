@@ -24,16 +24,17 @@ a, b_ = st.columns(2)
 with a:
     st.subheader("Sono un Comune")
     st.markdown(
-        "- **Quanto vale**: il calcolatore con tutti i metodi affiancati\n"
-        "- **Che iter è**: chi decide, in che tempi, dove interviene il Comune *(in arrivo)*\n"
-        "- **La convenzione**: le clausole da pretendere *(in arrivo)*\n"
-        "- **Come investirle**: catalogo di interventi ammessi *(in arrivo)*"
+        "1. **Il mio progetto**: carica i documenti o inserisci i dati\n"
+        "2. **Quanto vale**: scegli la percentuale e vedi il calcolo passo per passo\n"
+        "3. **Che iter è**: la mappa del procedimento e cosa fare in ogni fase\n"
+        "4. **La convenzione**: le clausole e la bozza Word precompilata\n"
+        "5. **Come investirle**: il piano degli interventi dentro il budget"
     )
-    st.page_link("pagine/calcolatore.py", label="Apri il calcolatore", icon=":material/calculate:")
+    st.page_link("pagine/progetto.py", label="Inizia dal tuo progetto", icon=":material/add_circle:")
 with b_:
     st.subheader("Sono un cittadino")
     st.markdown(
-        "- **Perché servono** eolico, batterie e grandi impianti per abbassare le bollette *(in arrivo)*\n"
+        "- **Perché servono** eolico, batterie e grandi impianti per abbassare le bollette, con i dati 2025\n"
         "- **Quadro FVG**: come sta la rete nel mio comune, quali progetti ci sono\n"
         "- **Casi FVG**: cosa hanno ottenuto altri Comuni"
     )

@@ -1,0 +1,85 @@
+date,hour,nord_price,techs,units,PUN
+20250115,1,129.1,Gas (ciclo combinato),UP_VOGHERA_1,129.1
+20250115,2,125.46,Gas (ciclo combinato),UP_CHIVASSO_1,125.46
+20250115,3,,Domanda (pompaggi/export),UC_DP1903_CNOR; UC_DP2509_SICI; UC_DP2552_SUD,125.34
+20250115,4,125.4,Gas (ciclo combinato),UP_MONCALIERI_3,125.4
+20250115,5,,Gas (ciclo combinato),UP_ROSELECTRA_1,124.13
+20250115,6,,Gas (ciclo combinato),UP_NPWRBRNDSI_8,132.62
+20250115,7,,Gas (ciclo combinato),UP_TERMINI_I_6,145.73616
+20250115,8,192.04,Gas (ciclo combinato),UP_LA_CASELL_2,191.9223
+20250115,9,275.0,Idroelettrico a bacino,UP_S.FIORANO_1,260.39175
+20250115,10,250.0,Domanda (pompaggi/export),UC_DP2582_NORD,237.65606
+20250115,11,189.01,Gas (ciclo combinato),UP_LA_CASELL_3,183.77077
+20250115,12,185.0,Idroelettrico a bacino,UP_CHIESE_1,179.9627
+20250115,13,,Gas (ciclo combinato),UP_TERMINI_I_6,163.61383
+20250115,14,157.13,Gas (ciclo combinato),UP_OSTIGLIA_12,155.66477
+20250115,15,170.0,Idroelettrico a bacino,UP_SLDGLRENZA_3,166.95162
+20250115,16,,Gas (ciclo combinato),UP_PRIOLO_C_2,192.04681
+20250115,17,,Gas (ciclo combinato),UP_PRIOLO_C_2,190.27
+20250115,18,,Non identificato,UP_MTRIAGASCM_1,207.58
+20250115,19,221.91,Gas (ciclo combinato),UP_OSTIGLIA_12,221.91
+20250115,20,215.0,Gas (ciclo combinato),UP_NPWRFRRRRB_10,215.0
+20250115,23,144.58,Gas (ciclo combinato),UP_PORTO_COR_3,144.63744
+20250115,24,140.92,Gas (ciclo combinato),UP_TORVISCOSA_1,140.92
+20250205,1,,,,134.8
+20250205,2,132.78,Domanda (pompaggi/export),UC_DP2509_NORD,132.78
+20250205,3,130.0,Idroelettrico a bacino,UP_PREM-GROSIO_1,130.0
+20250205,4,128.8,Gas (ciclo combinato),UP_MONCALRPW_2,128.8
+20250205,5,128.8,Gas (ciclo combinato),UP_MONCALRPW_2,128.8
+20250205,6,,,,133.0
+20250205,8,168.83,Gas (ciclo combinato),UP_NCTLVRNFRR_1,168.83
+20250205,9,180.81,Gas (ciclo combinato),UP_PORTO_COR_3,180.62326
+20250205,11,143.61,Gas (ciclo combinato),UP_TORVISCOSA_1,143.61
+20250205,12,,Gas (ciclo combinato),UP_NPWRBRNDSI_8,137.61
+20250205,13,,Gas (ciclo combinato),UP_CNTRLDSCND_2,129.14
+20250205,14,127.33,Gas (ciclo combinato),UP_LEINI_1,127.33
+20250205,15,130.0,Non identificato,UP_GHSTLLTO34_2,130.0
+20250205,16,,Gas (ciclo combinato),UP_ALTOMONTE_1,144.12
+20250205,18,177.0,Batterie,UP_PRTTLLBSS2_5,177.0
+20250205,21,170.0,Gas (ciclo combinato),UP_VADOTERM_5,170.0
+20250205,22,155.42,Gas (ciclo combinato),UP_LA_CASELL_4,155.53637
+20250205,23,147.16,Gas (ciclo combinato),UP_TAVAZZANO_5,147.76319
+20250205,24,143.61,Gas (ciclo combinato),UP_TORVISCOSA_1,143.61
+20250504,1,60.0,Idroelettrico a bacino,UP_CHIESE_1,60.0
+20250504,5,,,,18.0
+20250504,6,,,,37.38
+20250504,7,70.0,Idroelettrico a bacino,UP_LASA_ME_1,70.0
+20250504,8,,Non identificato,UP_CONZA_1,80.52
+20250504,9,60.0,Idroelettrico a bacino,UP_CHIESE_1,60.0
+20250504,10,33.62,Aggregati di piccoli impianti,UP_DI2055_NORD_C,33.62
+20250504,11,,Aggregati di piccoli impianti,UP_DI2055_CSUD_C,13.7
+20250504,12,,Non identificato,UP_FCDICORNIA_1,5.01
+20250504,13,5.0,Domanda (pompaggi/export),UP_ETQCHIOTAS_1,5.0
+20250504,14,5.0,Domanda (pompaggi/export),UP_ETQCHIOTAS_1,5.0
+20250504,15,5.0,Domanda (pompaggi/export),UP_ETQCHIOTAS_1,5.0
+20250504,16,9.65,Aggregati di piccoli impianti; Non identificato,UP_DI2741_NORD_C; UP_ISOLA_1,9.65
+20250504,17,33.0,Aggregati di piccoli impianti,UP_DI2564_NORD_C,33.0
+20250504,18,80.97,Idroelettrico a bacino,UP_AVISE_1,80.97
+20250504,19,97.45,Gas (ciclo combinato),UP_OSTIGLIA_12,97.45
+20250504,20,118.58,Gas (ciclo combinato),UP_NCTLVRNFRR_1,118.58
+20250504,21,120.31,Gas (ciclo combinato),UP_LA_CASELL_2,120.31
+20250504,22,108.42,Idroelettrico a bacino,UP_MORASCO_1,108.42
+20250504,24,90.0,Idroelettrico a bacino,UP_ULTIMO_1,90.0
+20250717,1,120.0,Idroelettrico a bacino,UP_PREM-GROSIO_1,120.0
+20250717,2,114.03,Gas (ciclo combinato),UP_LA_CASELL_2,114.03
+20250717,3,111.64,Domanda (pompaggi/export),UC_DP2288_NORD,111.64
+20250717,5,,Gas (ciclo combinato),UP_GISSI_1,108.32
+20250717,6,111.02,Gas (ciclo combinato),UP_NPWRRVENNA_11,111.02
+20250717,7,120.0,Idroelettrico a bacino,UP_PREM-GROSIO_1,120.0
+20250717,8,125.53,Gas (ciclo combinato),UP_LA_CASELL_4,125.53
+20250717,9,117.95,Idroelettrico a bacino,UP_AVISE_1,117.95
+20250717,10,115.53,Gas (ciclo combinato),UP_LA_CASELL_4,113.06087
+20250717,11,115.0,Idroelettrico a bacino,UP_ROSONE_1,112.10254
+20250717,12,111.64,Domanda (pompaggi/export),UC_DP2288_NORD,109.00617
+20250717,13,97.93,Gas (ciclo combinato),UP_NPWRRVENNA_11,95.41451
+20250717,14,100.28,Gas (ciclo combinato),UP_VOGHERA_1,97.71206
+20250717,15,105.1,Gas (ciclo combinato),UP_NPWRRVENNA_10,102.47817
+20250717,16,110.0,Idroelettrico a bacino,UP_M.DI_TURE_1,107.17489
+20250717,17,,Eolico/solare; Gas (ciclo combinato),UP_DI8888_SARD_Y; UP_SLRFTVLTCS_1; UP_SMRICRICHI_1,108.5407
+20250717,18,115.0,Idroelettrico a bacino,UP_ROSONE_1,115.0
+20250717,19,120.0,Idroelettrico a bacino,UP_PREM-GROSIO_1,120.0
+20250717,20,135.0,Non identificato,UP_TAGLIAMENTO_1,135.0
+20250717,21,,Gas (ciclo combinato),UP_CNTRLDSCND_1,148.5
+20250717,22,,Gas (ciclo combinato),UP_TERMINI_I_6,136.77006
+20250717,23,,Gas (ciclo combinato),UP_PRIOLO_C_1,125.68159
+20250717,24,115.85,Gas (ciclo combinato),UP_PORTO_COR_3,117.06862

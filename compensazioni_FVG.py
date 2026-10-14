@@ -11,6 +11,7 @@ P = "pagine"
 pg = st.navigation({
     "": [st.Page(f"{P}/home.py", title="Inizio", icon=":material/home:", default=True)],
     "Per il Comune": [
+        st.Page(f"{P}/progetto.py", title="Il mio progetto", icon=":material/folder_open:"),
         st.Page(f"{P}/calcolatore.py", title="Quanto vale", icon=":material/calculate:"),
         st.Page(f"{P}/iter.py", title="Che iter è", icon=":material/route:"),
         st.Page(f"{P}/convenzione.py", title="La convenzione", icon=":material/contract:"),
@@ -25,4 +26,8 @@ pg = st.navigation({
         st.Page(f"{P}/perche.py", title="Perché servono", icon=":material/bolt:"),
     ],
 })
+from core.progetto import riepilogo_sidebar
+
 pg.run()
+# dopo la pagina: così il file salvato contiene anche le modifiche appena fatte
+riepilogo_sidebar()

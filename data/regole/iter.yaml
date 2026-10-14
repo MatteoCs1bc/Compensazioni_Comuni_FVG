@@ -1,0 +1,173 @@
+# Fasi dell'iter per regime. Tempi = termini massimi di legge (giorni), salvo indicazione.
+# Fonti: D.Lgs. 190/2024 (TU FER) testo coordinato v7, artt. 7, 8, 9; L.R. FVG 2/2025, art. 5;
+# decreto AU Atlas Solar 1 (artt. 9, 15, 16) come esempio di prescrizioni.
+aggiornato_al: 2026-10-14
+
+fasi:
+  au:
+    - id: pre
+      titolo: "Prima della domanda"
+      giorni: null
+      chi: "Proponente e Comune"
+      cosa: "Il proponente sonda il territorio, cerca i terreni, chiede la connessione. In FVG, sopra 1 MW, i cittadini vanno coinvolti tramite i Comuni prima che parta il procedimento (L.R. 2/2025, art. 5, lett. j)."
+      comune: ["Chiedere una presentazione pubblica del progetto prima del deposito", "Verificare se l'area è idonea, ordinaria o non idonea (Eagle.fvg)", "Guardare il Quadro FVG: rete, altri progetti, limite del 3% di suolo agricolo", "Aprire subito il tavolo sulle compensazioni, con il calcolatore"]
+      documenti: ["Planimetria e potenza", "Preventivo di connessione accettato"]
+    - id: istanza
+      titolo: "Domanda e verifica di completezza"
+      giorni: 10
+      chi: "Regione (Servizio transizione energetica) o MASE"
+      cosa: "La domanda arriva sulla piattaforma SUER con il modulo unico (decreto MASE n. 441/2025). Entro 10 giorni si verifica la completezza; le integrazioni hanno al massimo 30 giorni."
+      comune: ["Ricevere e protocollare la comunicazione", "Nominare un referente interno (tecnico o amministratore)", "Chiedere i documenti mancanti tramite l'amministrazione procedente"]
+      documenti: ["Modulo unico AU (Allegato B, DM 441/2025)", "Progetto definitivo", "Proposta di compensazioni"]
+    - id: osservazioni
+      titolo: "Pubblicazione e osservazioni del pubblico"
+      giorni: 30
+      chi: "Chiunque"
+      cosa: "Il progetto viene pubblicato e per 30 giorni il pubblico interessato può presentare osservazioni."
+      comune: ["Informare i cittadini (assemblea, sito del Comune)", "Raccogliere e inviare osservazioni motivate", "Segnalare impatti cumulativi con altri impianti vicini"]
+      documenti: []
+    - id: via
+      titolo: "Valutazione ambientale (se prevista)"
+      giorni: 90
+      chi: "Regione (verifica di assoggettabilità) o MASE (VIA statale)"
+      cosa: "Se il progetto supera le soglie si apre la valutazione ambientale, che sospende la conferenza per al massimo 90 giorni. Gli enti, Comune compreso, danno pareri; le prescrizioni diventano condizioni ambientali."
+      comune: ["Chiedere una proroga se i tempi sono troppo stretti (a Santa Maria la Longa: 13 giorni lavorativi con un solo tecnico)", "Dare un parere su mitigazioni, viabilità, rumore, ripristino delle strade", "Chiedere che le opere di mitigazione siano realizzate prima dell'esercizio"]
+      documenti: ["Studio di impatto ambientale o studio preliminare", "Piano di monitoraggio", "Relazione agronomica (agrivoltaico)"]
+      solo_se_via: true
+    - id: conferenza
+      titolo: "Conferenza di servizi"
+      giorni: 120
+      chi: "Tutte le amministrazioni coinvolte, Comune compreso"
+      cosa: "È il momento decisivo. Si conclude entro 120 giorni dalla prima riunione. Si decide anche a posizioni prevalenti: il parere negativo di un Comune può essere superato. Qui si fissano le compensazioni."
+      comune: ["Partecipare con delega e con una posizione scritta approvata dalla Giunta", "Portare una proposta di compensazione calcolata (metodo Agenzia FVG: 3% dei proventi)", "Chiedere misure per tutta la vita dell'impianto, non solo una tantum", "Chiedere garanzie fideiussorie e rivalutazione degli importi", "Verificare l'effetto di variante urbanistica"]
+      documenti: ["Verbali delle riunioni", "Pareri degli enti"]
+    - id: decreto
+      titolo: "Autorizzazione unica"
+      giorni: 120
+      chi: "Regione o MASE"
+      cosa: "La determinazione finale contiene le compensazioni a favore dei Comuni e il termine (massimo 120 giorni) per prestare le garanzie finanziarie. Il decreto vale anche come variante urbanistica."
+      comune: ["Chiedere il decreto INTEGRALE: sul Bollettino regionale le compensazioni sono omesse", "Controllare che importo e modalità corrispondano al verbale"]
+      documenti: ["Decreto di autorizzazione unica integrale"]
+    - id: convenzione
+      titolo: "Convenzione"
+      giorni: null
+      chi: "Comune e proponente"
+      cosa: "La convenzione traduce le compensazioni in impegni precisi. Va firmata prima dell'inizio dei lavori (come nel decreto Atlas Solar 1)."
+      comune: ["Usare la checklist delle clausole e la bozza scaricabile", "Approvare la convenzione in Giunta", "Allegare l'elenco degli interventi (vedi «Come investirle»)"]
+      documenti: ["Bozza di convenzione", "Delibera di Giunta"]
+    - id: lavori
+      titolo: "Costruzione"
+      giorni: null
+      chi: "Proponente"
+      cosa: "La società comunica l'inizio dei lavori al Comune insieme alle garanzie per lo smantellamento."
+      comune: ["Verificare che le garanzie siano state consegnate", "Vigilare su cantiere, strade, rumore", "Avviare la progettazione delle opere compensative"]
+      documenti: ["Comunicazione di inizio lavori", "Garanzie finanziarie"]
+    - id: esercizio
+      titolo: "Esercizio"
+      giorni: null
+      chi: "Proponente"
+      cosa: "L'impianto produce. Le compensazioni annuali vanno versate o realizzate secondo la convenzione."
+      comune: ["Chiedere il rendiconto annuale delle compensazioni", "Pubblicare cosa è stato realizzato", "Verificare il monitoraggio ambientale"]
+      documenti: ["Rendiconto annuale"]
+    - id: dismissione
+      titolo: "Dismissione"
+      giorni: 90
+      chi: "Proponente; in mancanza, il Comune"
+      cosa: "A fine vita l'impianto va rimosso e il terreno ripristinato. Se la società non comunica nulla, dopo 90 giorni il Comune dichiara d'ufficio la dismissione e può escutere le garanzie."
+      comune: ["Usare le garanzie se la società non ripristina", "Verificare il ripristino agricolo"]
+      documenti: ["Piano di dismissione e ripristino"]
+  pas:
+    - id: pre
+      titolo: "Prima della domanda"
+      giorni: null
+      chi: "Proponente e Comune"
+      cosa: "Sopra 1 MW, in FVG, coinvolgimento preliminare dei cittadini tramite il Comune (L.R. 2/2025, art. 5, lett. j)."
+      comune: ["Chiedere una presentazione pubblica", "Verificare area idonea e limite del 3% di suolo agricolo", "Preparare la proposta di compensazione"]
+      documenti: []
+    - id: presentazione
+      titolo: "Presentazione della PAS al Comune"
+      giorni: null
+      chi: "Proponente → Comune (è il Comune a decidere)"
+      cosa: "Il progetto arriva al Comune con il modulo unico (Allegato A, DM 441/2025). Sopra 1 MW deve contenere un programma di compensazioni pari all'1–3% del valore della produzione nella vita utile (art. 8, c. 4, lett. m)."
+      comune: ["Controllare che ci sia il programma di compensazioni", "Calcolare se la percentuale è congrua (calcolatore)", "Nominare un responsabile del procedimento"]
+      documenti: ["Modulo unico PAS", "Programma di compensazioni", "Quietanza dei diritti di istruttoria"]
+    - id: istruttoria
+      titolo: "Istruttoria del Comune"
+      giorni: 30
+      chi: "Comune"
+      cosa: "Il Comune ha 30 giorni per un diniego motivato. Può sospendere una sola volta per chiedere integrazioni (fino a 30 giorni, prorogabili di altri 30)."
+      comune: ["Chiedere le integrazioni entro i primi 30 giorni, in un'unica richiesta", "Negoziare le compensazioni in questa fase"]
+      documenti: []
+    - id: via
+      titolo: "Verifica di assoggettabilità a VIA (se prevista)"
+      giorni: 90
+      chi: "Regione (Servizio valutazioni ambientali)"
+      cosa: "Sopra le soglie il progetto passa prima dalla verifica regionale: pubblicazione, pareri degli enti, eventuali integrazioni (come a San Giovanni al Natisone). Il Comune è tra gli enti consultati."
+      comune: ["Inviare osservazioni entro i termini indicati dalla Regione", "Chiedere mitigazioni concrete: siepi con specie autoctone, piantumazione prima dell'esercizio, passaggi per la fauna", "Segnalare il cumulo con impianti vicini"]
+      documenti: ["Studio preliminare ambientale", "Richiesta di integrazioni della Regione"]
+      solo_se_via: true
+    - id: conferenza
+      titolo: "Conferenza di servizi (se servono altri pareri)"
+      giorni: 60
+      chi: "Comune con le altre amministrazioni"
+      cosa: "Se servono assensi di altri enti, il Comune convoca la conferenza entro 5 giorni; integrazioni entro 10 giorni; pareri entro 45; conclusione entro 60 giorni dalla presentazione."
+      comune: ["Coordinare i pareri", "Inserire le compensazioni nella determinazione"]
+      documenti: []
+      opzionale: true
+    - id: titolo
+      titolo: "Titolo abilitativo"
+      giorni: null
+      chi: "Comune"
+      cosa: "Scaduti i termini senza diniego, la PAS si forma per silenzio-assenso. Il Comune può intervenire in autotutela entro 6 mesi."
+      comune: ["Formalizzare le compensazioni prima che scattino i termini"]
+      documenti: []
+    - id: convenzione
+      titolo: "Convenzione"
+      giorni: null
+      chi: "Comune e proponente"
+      cosa: "Impegni precisi su importi, interventi, tempi e garanzie."
+      comune: ["Usare la checklist e la bozza scaricabile"]
+      documenti: ["Bozza di convenzione"]
+    - id: lavori
+      titolo: "Costruzione"
+      giorni: null
+      chi: "Proponente"
+      cosa: "Inizio e fine lavori comunicati al Comune."
+      comune: ["Vigilanza su cantiere e ripristini"]
+      documenti: []
+    - id: esercizio
+      titolo: "Esercizio"
+      giorni: null
+      chi: "Proponente"
+      cosa: "Compensazioni realizzate o versate come da convenzione."
+      comune: ["Rendiconto annuale"]
+      documenti: []
+    - id: dismissione
+      titolo: "Dismissione"
+      giorni: null
+      chi: "Proponente"
+      cosa: "Rimozione e ripristino a fine vita."
+      comune: ["Verifica del ripristino"]
+      documenti: []
+  libera:
+    - id: comunicazione
+      titolo: "Comunicazione di inizio lavori"
+      giorni: null
+      chi: "Proponente"
+      cosa: "Nessun titolo abilitativo: basta la comunicazione. L'intervento deve rispettare le norme urbanistiche, edilizie e di tutela."
+      comune: ["Verificare la conformità urbanistica e i vincoli", "Proporre un accordo volontario o l'adesione a una CER"]
+      documenti: ["Comunicazione tramite modulo unico"]
+    - id: lavori
+      titolo: "Costruzione"
+      giorni: null
+      chi: "Proponente"
+      cosa: "Realizzazione."
+      comune: ["Vigilanza"]
+      documenti: []
+    - id: esercizio
+      titolo: "Esercizio"
+      giorni: null
+      chi: "Proponente"
+      cosa: "L'impianto produce."
+      comune: ["Eventuale accordo volontario"]
+      documenti: []
