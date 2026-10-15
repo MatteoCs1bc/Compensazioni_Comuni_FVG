@@ -23,6 +23,8 @@ VOCI = [
     ("penali", "Penali", "Per ritardi o mancata realizzazione."),
     ("interventi", "Elenco degli interventi allegato", "Modificabile di comune accordo."),
     ("prima_lavori", "Firma prima dell'inizio lavori", "Senza convenzione firmata non si parte."),
+    ("comitato", "Comitato di monitoraggio", "Comune, impresa e un rappresentante dei cittadini verificano ogni anno cosa è stato fatto."),
+    ("modifica", "Procedura per modificare gli interventi", "Come cambiare l'elenco senza riaprire tutto: proposta, parere del comitato, delibera."),
 ]
 c1, c2 = st.columns([3, 2])
 with c1:
@@ -40,10 +42,12 @@ with c2:
 opz = dict(scelte, realizza=realizza)
 if p["compilato"]:
     opz["titolo"] = NOMI_REGIME[esito().regime]
-if p.get("compensazione_eur"):
-    opz["calcolo"] = (f"Potenza {p['potenza_mw']:g} MW × {p.get('ore') or '[●]'} ore/anno × {p.get('prezzo') or '[●]'} €/MWh "
-                      f"× {p.get('percentuale') or '[●]'}% × {p.get('vita') or '[●]'} anni = {euro(p['compensazione_eur'])} "
-                      "(metodo Agenzia per l'Energia FVG; parametri modificabili).")
+opz["fondo"] = any(x.get("id") == "fondo_cittadini" for x in interventi)
+if opz["fondo"]:
+    st.info("Il piano contiene il **fondo per i cittadini**: la bozza aggiunge un articolo che vincola le somme a un programma "
+            "di efficienza energetica per le famiglie, condizione perché il fondo sia ammissibile.", icon=":material/volunteer_activism:")
+if p.get("calcolo_testo"):
+    opz["calcolo"] = p["calcolo_testo"] + " Parametri e metodo come da strumento «Compensazioni FER · FVG» (metodo Agenzia per l'Energia FVG)."
 st.download_button("Scarica la bozza di convenzione (.docx)", data=bozza(p, opz, interventi if scelte["interventi"] else []),
                    file_name=f"bozza_convenzione_{(p.get('comune') or 'comune').replace(' ', '_')}.docx",
                    mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",

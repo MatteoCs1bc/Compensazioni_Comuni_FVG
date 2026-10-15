@@ -14,6 +14,11 @@ ROOT = Path(__file__).resolve().parents[1]
 REGOLE_PATH = ROOT / "data" / "regole" / "compensazioni.yaml"
 
 
+def _it(x: float) -> str:
+    """Numero con separatore delle migliaia all'italiana."""
+    return f"{x:,.0f}".replace(",", ".")
+
+
 def carica_regole(path: Path = REGOLE_PATH) -> dict:
     with open(path, encoding="utf-8") as f:
         return yaml.safe_load(f)
@@ -107,35 +112,54 @@ def metodi_produzione(imp: ImpiantoProduzione, regole: dict) -> list[Risultato]:
     return out
 
 
+def proventi_bess(potenza_mw: float, durata_ore: float, premio_eur_mwh_anno: float,
+                  altri_ricavi_eur_mw_anno: float = 0.0) -> float:
+    """Proventi annui di un accumulo: premio di capacità sui MWh + altri ricavi per MW."""
+    return potenza_mw * durata_ore * premio_eur_mwh_anno + potenza_mw * altri_ricavi_eur_mw_anno
+
+
 def metodi_bess(potenza_mw: float, regole: dict, capex_eur_mw: float | None = None,
                 vita_utile_anni: float | None = None, colocato: bool = False,
                 perc_capex: float | None = None, eur_mw_anno: float | None = None,
-                eur_mw_una_tantum: float | None = None) -> list[Risultato]:
+                eur_mw_una_tantum: float | None = None, durata_ore: float | None = None,
+                premio_eur_mwh_anno: float | None = None, altri_ricavi_eur_mw_anno: float | None = None,
+                anni_proventi: float | None = None) -> list[Risultato]:
     m = regole["metodi"]
     d = regole["default_fvg"]["bess"]
     capex_eur_mw = capex_eur_mw or d["capex_eur_mw"]
     vita = vita_utile_anni or d["vita_utile_anni"]
     out = []
 
+    pr = m["bess_proventi"]
+    h = durata_ore if durata_ore is not None else d["durata_ore"]
+    prem = premio_eur_mwh_anno if premio_eur_mwh_anno is not None else d["premio_capacita_eur_mwh_anno"]
+    altri = altri_ricavi_eur_mw_anno if altri_ricavi_eur_mw_anno is not None else d["altri_ricavi_eur_mw_anno"]
+    n = anni_proventi or d["anni_proventi"]
+    prov = proventi_bess(potenza_mw, h, prem, altri)
+    out.append(Risultato("bess_proventi", pr["nome"], pr["natura"], prov * pr["default"],
+                         prov * pr["min"] * n, prov * pr["max"] * n,
+                         f"{pr['min']:.0%}–{pr['max']:.0%} di proventi stimati in {_it(prov)} €/anno "
+                         f"({potenza_mw:g} MW × {h:g} h × {_it(prem)} €/MWh + altri ricavi) per {n:g} anni", pr["fonte"]))
+
     c = m["bess_capex"]
     capex = potenza_mw * capex_eur_mw
     p = perc_capex if perc_capex is not None else c["default"]
     out.append(Risultato("bess_capex", c["nome"], c["natura"], None, capex * c["min"], capex * c["max"],
-                         f"{c['min']:.0%}–{c['max']:.0%} di un investimento stimato in {capex:,.0f} €; scelto {p:.1%} = {capex * p:,.0f} €",
+                         f"{c['min']:.0%}–{c['max']:.0%} di un investimento stimato in {_it(capex)} €; scelto {p:.1%} = {_it(capex * p)} €",
                          c["fonte"]))
 
     a = m["bess_annuo"]
     q = eur_mw_anno or a["default_eur_mw_anno"]
     out.append(Risultato("bess_annuo", a["nome"], a["natura"], potenza_mw * q,
                          potenza_mw * a["min_eur_mw_anno"] * vita, potenza_mw * a["max_eur_mw_anno"] * vita,
-                         f"{a['min_eur_mw_anno']:,}–{a['max_eur_mw_anno']:,} €/MW/anno per {vita:g} anni; scelto {q:,.0f} €/MW/anno = {potenza_mw * q * vita:,.0f} €",
+                         f"{_it(a['min_eur_mw_anno'])}–{_it(a['max_eur_mw_anno'])} €/MW/anno per {vita:g} anni; scelto {_it(q)} €/MW/anno = {_it(potenza_mw * q * vita)} €",
                          a["fonte"]))
 
     u = m["bess_una_tantum"]
     lo, hi = (u["colocated_min"], u["colocated_max"]) if colocato else (u["standalone_min"], u["standalone_max"])
     q2 = eur_mw_una_tantum or u["default_eur_mw"]
     out.append(Risultato("bess_una_tantum", u["nome"], u["natura"], None, potenza_mw * lo, potenza_mw * hi,
-                         f"{lo:,}–{hi:,} €/MW ({'co-locato' if colocato else 'standalone'}); scelto {q2:,.0f} €/MW = {potenza_mw * q2:,.0f} €",
+                         f"{_it(lo)}–{_it(hi)} €/MW ({'co-locato' if colocato else 'standalone'}); scelto {_it(q2)} €/MW = {_it(potenza_mw * q2)} €",
                          u["fonte"]))
     return out
 
@@ -144,6 +168,11 @@ def valore_scelto_bess(potenza_mw: float, regole: dict, metodo: str, **kw) -> fl
     """Valore puntuale per il metodo BESS scelto (usato da tabelle e test)."""
     d = regole["default_fvg"]["bess"]
     m = regole["metodi"]
+    if metodo == "bess_proventi":
+        prov = proventi_bess(potenza_mw, kw.get("durata_ore", d["durata_ore"]),
+                             kw.get("premio_eur_mwh_anno", d["premio_capacita_eur_mwh_anno"]),
+                             kw.get("altri_ricavi_eur_mw_anno", d["altri_ricavi_eur_mw_anno"]))
+        return prov * kw.get("percentuale", m["bess_proventi"]["default"]) * kw.get("anni", d["anni_proventi"])
     if metodo == "bess_capex":
         return potenza_mw * kw.get("capex_eur_mw", d["capex_eur_mw"]) * kw.get("perc_capex", m["bess_capex"]["default"])
     if metodo == "bess_annuo":

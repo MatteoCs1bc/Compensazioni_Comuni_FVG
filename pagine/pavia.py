@@ -4,6 +4,7 @@ import streamlit as st
 
 from core.compensazioni import ImpiantoProduzione, metodi_produzione, valore_scelto_bess
 from core.dati import ROOT, comuni_indicatori, euro, nota_legale, num, pct, regole, tabella
+from core.pavia import analisi, carica_analisi, excel_analisi, gruppi_zona
 
 R = regole()
 D = R["default_fvg"]
@@ -31,7 +32,113 @@ k[2].metric("Suolo agricolo occupato (con mitigazioni)", f"{num(agri_ha, 1)} ha"
 k[3].metric("MW richiesti sull'area di rete", num(rete.mw_richiesti_sulle_aree, 0),
             help="Area della cabina primaria principale, che si estende oltre il comune")
 
-t1, t2, t3, t4 = st.tabs(["Impianti", "Compensazioni", "Rete e territorio", "Percorso partecipativo"])
+t0, t1, t2, t3, t4 = st.tabs(["Analisi per progetto", "Impianti e mappe", "Stima APE FVG", "Rete e territorio",
+                              "Percorso partecipativo"])
+
+with t0:
+    an = analisi(fer, R)
+    est = carica_analisi()
+    st.markdown(
+        "Ogni progetto dell'elenco comunale, **a prescindere dallo stato**: quale regola valeva quando è stato autorizzato, "
+        "quanto valeva la compensazione di riferimento, cosa risulta prescritto, cosa può ancora fare il Comune e quali "
+        "documenti mancano. Ordinati per priorità."
+    )
+    k = st.columns(4)
+    k[0].metric("Progetti con margine alto", int((an.priorita == "Alta").sum()),
+                help="In istruttoria, o autorizzati e non ancora realizzati con obbligo di compensazione")
+    alti = an[an.priorita == "Alta"]
+    k[1].metric("Riferimento al 3% sui progetti aperti", euro(alti.riferimento_3pct.sum()),
+                help="Somma dei valori di riferimento al 3% dei proventi; per le batterie su ipotesi MACSE")
+    k[2].metric("Progetti con compensazione nota", int(an.prescritta_eur.notna().sum()), help="Solo Cjase Sterpet: per gli altri servono i decreti integrali")
+    k[3].metric("Progetti esterni all'elenco che toccano il Comune", len(est.get("esterni", [])))
+
+    vista = an[["n", "impianto", "tipo", "mw", "stato", "regime", "regola_periodo", "obbligo", "riferimento_3pct",
+                "prescritta_eur", "priorita", "margine"]].rename(columns={
+        "n": "N.", "impianto": "Impianto", "tipo": "Tipo", "mw": "MW", "stato": "Stato", "regime": "Procedura",
+        "regola_periodo": "Regole applicabili", "obbligo": "Obbligo di compensare", "riferimento_3pct": "Riferimento al 3%",
+        "prescritta_eur": "Prescritta", "priorita": "Priorità", "margine": "Cosa può fare il Comune"})
+    st.dataframe(vista, hide_index=True, use_container_width=True, height=420,
+                 column_config={"Riferimento al 3%": st.column_config.NumberColumn(format="%.0f €"),
+                                "Prescritta": st.column_config.NumberColumn(format="%.0f €"),
+                                "MW": st.column_config.NumberColumn(format="%.2f")})
+    st.download_button("Scarica l'analisi (Excel)", excel_analisi(an), "pavia_analisi_progetti.xlsx",
+                       mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", icon=":material/download:")
+
+    st.subheader("Scheda del progetto")
+    etich = {r.n: f"{r.n} · {r.impianto} ({num(r.mw, 2) + ' MW' if pd.notna(r.mw) else 'potenza n.d.'}) · {r.stato}"
+             for r in an.itertuples()}
+    scelto = st.selectbox("Progetto", list(etich), format_func=etich.get, label_visibility="collapsed")
+    r = an[an.n == scelto].iloc[0]
+    colore_p = {"Alta": "red", "Media": "orange", "Bassa": "gray", "—": "gray"}[r.priorita]
+    with st.container(border=True):
+        st.markdown(f"### {r.impianto}")
+        st.markdown(f":{colore_p}-badge[Priorità {r.priorita.lower() if r.priorita != '—' else 'n.a.'}] "
+                    f":blue-badge[{r.regime}] :gray-badge[{r.stato}]")
+        b1, b2 = st.columns(2)
+        with b1:
+            st.markdown("**1 · Identità**")
+            st.markdown(
+                f"- Tipo e potenza: {r.tipo}, {num(r.mw, 3) + ' MW' if pd.notna(r.mw) else 'potenza non indicata'}\n"
+                f"- Località: {r.localita or '—'} · zona: {r.zona or '—'}\n"
+                f"- Superfici: complessiva {num(r.sup_complessiva_ha, 2)} ha, recintata {num(r.sup_recintata_ha, 2)} ha, "
+                f"agricola con mitigazioni {num(r.sup_agricola_ha, 2)} ha\n"
+                f"- Ente: {r.ente or '—'}\n- Titolo: {r.provvedimento or '—'}"
+                + (f" ({r.data_nota})" if r.data_nota else "")
+                + (f"\n- Proponente: {r.proponente}" if r.proponente else "")
+                + (f"\n- Portale regionale: {r.portale}" if r.portale else "")
+                + (f"\n- Bollettino: {r.bur}" if r.bur else ""))
+            st.markdown("**2 · Regole applicabili**")
+            st.markdown(f"*{r.regola_periodo}* · obbligo di compensare: **{r.obbligo}**  \n{r.regola_testo}")
+        with b2:
+            st.markdown("**3 · Compensazione**")
+            if pd.notna(r.base_eur) and r.base_eur:
+                righe_c = [f"- Base di calcolo: {r.base_testo}",
+                           f"- Riferimento al 3% (metodo Agenzia FVG): **{euro(r.riferimento_3pct)}**"]
+                if r.perc_max:
+                    righe_c.append(f"- Intervallo per le regole del periodo ({pct(r.perc_min, 0)}–{pct(r.perc_max, 0)}): "
+                                   f"{euro(r.minimo_legge)} – {euro(r.massimo_legge)}")
+                st.markdown("\n".join(righe_c))
+            else:
+                st.markdown("- Valore di riferimento non calcolabile (potenza non indicata o tipo di impianto senza base).")
+            if r.prescritta:
+                st.markdown(f"- Prescritta: {r.prescritta}"
+                            + (f" (valore {'stimato' if r.prescritta_stima else ''} {euro(r.prescritta_eur)})" if pd.notna(r.prescritta_eur) else ""))
+                if pd.notna(r.rapporto):
+                    st.markdown(f"- Corrisponde al **{pct(r.rapporto, 2)}** dei proventi stimati, contro il 3% di riferimento.")
+            else:
+                st.markdown("- Prescritta: **non nota** — serve il titolo integrale.")
+            st.markdown("**4 · Territorio**")
+            stessa = an[(an.zona == r.zona) & (an.n != r.n) & ~an.archiviato]
+            st.markdown(f"- Nella stessa zona: {len(stessa)} {'altro progetto attivo' if len(stessa) == 1 else 'altri progetti attivi'}, "
+                        f"{num(stessa.mw.sum(), 1)} MW"
+                        + (f" ({', '.join(stessa.impianto.head(4))})" if len(stessa) else ""))
+            st.markdown(f"- Rete: cabina primaria con inversione di flusso frequente ({int(rete.sezioni_invertite)} sezioni); "
+                        f"{num(rete.mw_richiesti_sulle_aree, 0)} MW richiesti sull'area")
+        st.markdown("**5 · Cosa può fare il Comune**")
+        st.markdown(f"{r.margine}.")
+        if r.priorita == "Alta":
+            st.page_link("pagine/iter.py", label="Apri la mappa dell'iter per vedere i passaggi", icon=":material/route:")
+        st.markdown("**6 · Documenti**")
+        st.markdown("Da recuperare: " + "; ".join(est["documenti_comuni_mancanti"]) + ".")
+        for nota in r.note:
+            st.caption("• " + nota)
+
+    if est.get("esterni"):
+        st.subheader("Progetti che toccano il Comune ma non sono nell'elenco comunale")
+        for x in est["esterni"]:
+            with st.container(border=True):
+                st.markdown(f"**{x['nome']}** · {x['proponente']} · {num(x['potenza_mw'], 2)} MW  \n"
+                            f"{x['decreto']} · Comuni: {x['comuni']}  \n**Ruolo di Pavia di Udine**: {x['ruolo']}")
+                st.caption(x["nota"])
+
+    st.subheader("Cumulo per zona")
+    gz = gruppi_zona(an)
+    st.dataframe(gz.rename(columns={"zona": "Zona", "progetti": "Progetti attivi", "mw": "MW", "ha_agricoli": "Ettari agricoli"}),
+                 hide_index=True, use_container_width=True,
+                 column_config={"MW": st.column_config.NumberColumn(format="%.1f"),
+                                "Ettari agricoli": st.column_config.NumberColumn(format="%.1f")})
+    st.caption("Lettura giuridica semplificata: date dei titoli dall'elenco comunale, FAQ regionale sui procedimenti in corso, "
+               "norme transitorie del TU FER. Da far confermare a un legale o agli uffici regionali prima dell'uso ufficiale.")
 
 with t1:
     st.markdown("Elenco del Comune al 30/09/2026 e cartografia regionale (Insiel) con la numerazione dell'elenco.")
@@ -66,51 +173,35 @@ with t2:
 
     st.markdown("**Accumuli: tre metodi, tre risultati**")
     bess_ape = [("BESS Udine Sud (Aukera)", 137.75, 700000, 4000, 40000), ("BESS Persereano (RNE 14)", 90, 800000, 3500, 30000)]
-    rb, tot = [], {"capex": 0, "annuo": 0, "una": 0}
+    rb, tot = [], {"capex": 0, "annuo": 0, "una": 0, "prov": 0}
     for nome, p, capex, ann, una in bess_ape:
+        v4 = valore_scelto_bess(p, R, "bess_proventi")
+        tot["prov"] += v4
         v1 = valore_scelto_bess(p, R, "bess_capex", capex_eur_mw=capex)
         v2 = valore_scelto_bess(p, R, "bess_annuo", eur_mw_anno=ann)
         v3 = valore_scelto_bess(p, R, "bess_una_tantum", eur_mw_una_tantum=una)
         tot["capex"] += v1; tot["annuo"] += v2; tot["una"] += v3
-        rb.append({"Impianto": nome, "MW": p, "3% investimento": euro(v1), "€/MW/anno × 17,5 anni": euro(v2), "Una tantum €/MW": euro(v3)})
+        rb.append({"Impianto": nome, "MW": p, "3% investimento": euro(v1), "€/MW/anno × 17,5 anni": euro(v2), "Una tantum €/MW": euro(v3),
+                   "3% dei proventi × 15 anni": euro(v4)})
     rb.append({"Impianto": "Totale", "MW": 227.75, "3% investimento": euro(tot["capex"]),
-               "€/MW/anno × 17,5 anni": euro(tot["annuo"]), "Una tantum €/MW": euro(tot["una"])})
+               "€/MW/anno × 17,5 anni": euro(tot["annuo"]), "Una tantum €/MW": euro(tot["una"]),
+               "3% dei proventi × 15 anni": euro(tot["prov"])})
     st.dataframe(pd.DataFrame(rb), hide_index=True, use_container_width=True)
-    fig = go.Figure(go.Bar(x=[tot["capex"], tot["una"], tot["annuo"]],
-                           y=["3% dell'investimento", "Una tantum per MW", "Quota annua per MW"], orientation="h",
-                           marker_color=["#9a9890", "#9a9890", "#2a78d6"], width=0.45,
-                           text=[euro(v) for v in (tot["capex"], tot["una"], tot["annuo"])], textposition="outside",
+    fig = go.Figure(go.Bar(x=[tot["capex"], tot["una"], tot["prov"], tot["annuo"]],
+                           y=["3% dell'investimento", "Una tantum per MW", "3% dei proventi (legge FVG)", "Quota annua per MW"],
+                           orientation="h", marker_color=["#9a9890", "#9a9890", "#2a78d6", "#9a9890"], width=0.45,
+                           text=[euro(v) for v in (tot["capex"], tot["una"], tot["prov"], tot["annuo"])], textposition="outside",
                            hovertemplate="%{y}: %{x:,.0f} €<extra></extra>"))
     fig.update_layout(height=220, margin=dict(l=10, r=80, t=10, b=10), xaxis=dict(tickformat=",.0f", title="€ per i due accumuli"))
     st.plotly_chart(fig, use_container_width=True)
-    st.caption("Stessi due impianti (227,75 MW): da 5 a 15 milioni a seconda del metodo. La scelta del metodo è il cuore della trattativa.")
+    st.caption("Stessi due impianti (227,75 MW): da 5 a 15 milioni a seconda del metodo. In blu il metodo aggiunto dal tool, "
+               "basato sulla legge regionale (3% dei proventi; ipotesi: 4 ore di durata e premio di capacità MACSE di "
+               "13.000 €/MWh/anno per 15 anni). La scelta del metodo è il cuore della trattativa.")
 
     st.markdown("**Biometano** (esempio APE): 100 Smc/h × 8.000 h × 1,21 €/Smc × 15 anni × 3% = **435.600 €**.")
 
-    st.subheader("Cosa resta da negoziare")
-    st.markdown(
-        "Per gli impianti **realizzati** le compensazioni sono già fissate nei rispettivi decreti "
-        "(per esempio, nell'autorizzazione di **Cjase Sterpet** è previsto un impianto da 400 kWp come compensazione). "
-        "Lo spazio di trattativa riguarda le pratiche **in istruttoria** e quelle autorizzate per cui la convenzione "
-        "non è ancora firmata."
-    )
-    aperte = attivi[attivi.stato.isin(["In corso", "Autorizzato"]) & attivi.potenza_mw.notna() & (attivi.potenza_mw >= 1)]
-    rr = []
-    for _, x in aperte.iterrows():
-        if x.tipo == "BESS":
-            lo = valore_scelto_bess(x.potenza_mw, R, "bess_una_tantum", eur_mw_una_tantum=20000)
-            hi = valore_scelto_bess(x.potenza_mw, R, "bess_annuo")
-            rif = valore_scelto_bess(x.potenza_mw, R, "bess_una_tantum")
-            metodo = "BESS: una tantum 40.000 €/MW (intervallo: 20.000 €/MW una tantum – 4.000 €/MW/anno)"
-        else:
-            imp = ImpiantoProduzione(x.potenza_mw, D["ore_equivalenti"]["fotovoltaico"], D["prezzo_eur_mwh"], D["vita_utile_anni"])
-            rif = metodi_produzione(imp, R)[0].totale_min
-            lo, hi = imp.valore_vita_utile * 0.01, imp.valore_vita_utile * 0.04
-            metodo = "FV: metodo Agenzia (intervallo TU FER 1–4%)"
-        rr.append({"Impianto": x.denominazione, "Tipo": x.tipo, "MW": x.potenza_mw, "Stato": x.stato,
-                   "Riferimento": euro(rif), "Minimo": euro(lo), "Massimo": euro(hi), "Metodo": metodo})
-    st.dataframe(pd.DataFrame(rr), hide_index=True, use_container_width=True)
-    st.caption("Valori indicativi calcolati con i parametri predefiniti del calcolatore; vanno verificati con i dati di progetto.")
+    st.info("L'analisi impianto per impianto, con le regole valide al momento dell'autorizzazione e il margine di "
+            "trattativa, è nella scheda «Analisi per progetto».", icon=":material/arrow_back:")
 
 with t3:
     a, b = st.columns(2)

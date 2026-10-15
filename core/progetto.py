@@ -29,8 +29,13 @@ DEFAULT = {
     "percentuale": None,
     "compensazione_eur": None,
     "compensazione_annua_eur": None,
+    "calcolo_testo": None,
+    "bess": None,
+    "fondo": None,
     "compilato": False,
 }
+# chiavi di widget da azzerare quando si carica un file (si reinizializzano dai dati caricati)
+PREFISSI_WIDGET = ("fd_", "bs_", "ms_misure", "ed_piano_")
 # chiavi dei campi della pagina «Il mio progetto» ↔ campi del progetto
 CAMPI_FORM = {"f_nome": "nome", "f_prop": "proponente", "f_comune": "comune", "f_tipo": "tipo",
               "f_mw": "potenza_mw", "f_bess": "bess_mw", "f_area": "area"}
@@ -97,6 +102,9 @@ def importa(contenuto: bytes) -> str:
     st.session_state["piano_interventi"] = dati.get("piano_interventi", [])
     st.session_state["piano_caricato"] = dati.get("piano_interventi", [])
     st.session_state["n_caricamenti"] = st.session_state.get("n_caricamenti", 0) + 1
+    st.session_state["piano_toccato"] = True
+    for k in [k for k in st.session_state.keys() if isinstance(k, str) and k.startswith(PREFISSI_WIDGET)]:
+        del st.session_state[k]
     spunte = {k: v for k, v in dati.get("spunte", {}).items() if isinstance(v, bool)}
     st.session_state["_spunte"] = spunte
     for k, v in spunte.items():

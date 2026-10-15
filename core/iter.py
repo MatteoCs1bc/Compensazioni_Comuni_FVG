@@ -6,6 +6,7 @@ Le soglie sono in data/regole/iter.yaml; qui solo la logica.
 from __future__ import annotations
 
 from dataclasses import dataclass
+from datetime import date
 from pathlib import Path
 
 import yaml
@@ -136,3 +137,63 @@ def valuta_via(tipo: str, mw: float, area: str) -> str:
 
 NOMI_REGIME = {"libera": "Attività libera", "pas": "PAS – Procedura abilitativa semplificata",
                "au_regionale": "Autorizzazione unica regionale", "au_statale": "Autorizzazione unica statale (MASE)"}
+
+
+# ------------------------------------------------------------------ regole nel tempo
+TU_FER_IN_VIGORE = date(2024, 12, 30)
+LR_FVG_IN_VIGORE = date(2025, 3, 7)
+
+
+@dataclass
+class Regola:
+    periodo: str
+    obbligo: str          # "sì" | "no" | "dubbio"
+    perc_min: float
+    perc_max: float
+    testo: str
+
+
+def regola_compensazione(data_titolo: date | None, regime: str, mw: float | None, tipo: str = "fv",
+                         in_corso: bool = False) -> Regola:
+    """Quale regola sulle compensazioni vale per un titolo rilasciato in una certa data.
+
+    regime: "pas" | "au_regionale" | "au_statale" | "libera" | "rete" (opere di rete, nessuna produzione).
+    tipo: "fv" | "bess" | "biometano" | "rete".
+    Se il procedimento è in corso valgono le regole di oggi.
+    """
+    if tipo == "rete" or regime == "rete":
+        return Regola("—", "no", 0, 0, "Opera di rete: non produce energia e non ha compensazioni proprie.")
+    oggi = date.today()
+    d = oggi if in_corso else data_titolo
+    if d is None:
+        return Regola("prima del 2020", "no", 0, 0.03,
+                      "Linee guida 2010: compensazioni facoltative, al massimo il 3% dei proventi.")
+    if regime == "libera":
+        return Regola("attività libera", "no", 0, 0, "Attività libera: nessun obbligo; possibile un accordo volontario.")
+    if d < TU_FER_IN_VIGORE:
+        return Regola("Linee guida 2010 (fino al 29/12/2024)", "no", 0, 0.03,
+                      "Regole precedenti al TU FER: compensazioni facoltative, al massimo il 3%. Conta solo ciò che è scritto nel titolo.")
+    mw = mw or 0
+    if regime == "pas":
+        if tipo == "biometano":
+            return Regola("TU FER", "dubbio", 0.01, 0.03,
+                          "PAS: l'1–3% è previsto per impianti sopra 1 MW di potenza elettrica; per il biometano va verificato.")
+        if mw > 1:
+            return Regola("TU FER", "sì", 0.01, 0.03,
+                          "PAS sopra 1 MW: programma di compensazioni obbligatorio, 1–3% del valore della produzione (art. 8, c. 4, lett. m).")
+        return Regola("TU FER", "no", 0, 0, "PAS fino a 1 MW: nessun obbligo.")
+    if regime == "au_statale":
+        return Regola("TU FER", "sì" if tipo != "bess" else "dubbio", 0.01, 0.04,
+                      "Autorizzazione statale: 1–4% fissato in conferenza (art. 9). Il minimo FVG del 3% probabilmente non si applica "
+                      "perché non decide la Regione." + (" Per le batterie la base di calcolo non è definita." if tipo == "bess" else ""))
+    # autorizzazione unica regionale
+    if d < LR_FVG_IN_VIGORE:
+        return Regola("TU FER, prima della L.R. 2/2025", "sì", 0.01, 0.04,
+                      "Autorizzazione unica regionale: 1–4% fissato in conferenza (art. 9, c. 10, lett. d).")
+    if mw > 1:
+        extra = (" Per le batterie il TU FER parla di «produzione»: la legge regionale di «proventi», che una batteria ha. "
+                 "Da sostenere in conferenza.") if tipo == "bess" else ""
+        return Regola("TU FER + L.R. FVG 2/2025", "sì" if tipo != "bess" else "dubbio", 0.03, 0.04,
+                      "Autorizzazione unica regionale sopra 1 MW: almeno il 3% dei proventi (L.R. 2/2025, art. 5, lett. i), "
+                      "fino al 4% (TU FER). Vale anche per i procedimenti aperti al 7/3/2025 (FAQ Regione)." + extra)
+    return Regola("TU FER", "sì", 0.01, 0.04, "Autorizzazione unica: 1–4% fissato in conferenza.")

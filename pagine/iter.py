@@ -1,4 +1,5 @@
 import datetime as dt
+import html
 import textwrap
 
 import streamlit as st
@@ -34,9 +35,18 @@ aggiorna(fase=fase)
 i_cur = ids.index(fase)
 
 
+MARCHI = {"assenso": ("silenzio = assenso", "#c0392b"), "firma": ("serve la firma del Comune", "#0f7a52")}
+
+
 def nodo(i, f):
-    giorni = f"\\n≤ {f['giorni']} giorni" if f.get("giorni") else ""
-    etichetta = "\\n".join(textwrap.wrap(f["titolo"], 18)) + giorni
+    righe = [html.escape(r) for r in textwrap.wrap(f["titolo"], 18)]
+    if f.get("giorni"):
+        righe.append(f'<FONT POINT-SIZE="10">≤ {f["giorni"]} giorni</FONT>')
+    marchio = MARCHI.get(f.get("silenzio"))
+    if marchio:
+        colore = "#ffffff" if i == i_cur else marchio[1]
+        righe.append(f'<FONT POINT-SIZE="9" COLOR="{colore}"><B>{marchio[0]}</B></FONT>')
+    etichetta = "<" + "<BR/>".join(righe) + ">"
     if i < i_cur:
         stile = 'style="filled,rounded", fillcolor="#e8e7e3", color="#b5b3ac", fontcolor="#6b6a65"'
     elif i == i_cur:
@@ -46,7 +56,7 @@ def nodo(i, f):
     else:
         stile = 'style="rounded", color="#9a9890", fontcolor="#3b3a37"'
     tratteggio = ', style="rounded,dashed"' if f.get("opzionale") and i > i_cur else ""
-    return f'n{i} [label="{etichetta}", shape=box, {stile}{tratteggio}, fontname="Helvetica", fontsize=11, margin="0.15,0.08"];'
+    return f'n{i} [label={etichetta}, shape=box, {stile}{tratteggio}, fontname="Helvetica", fontsize=11, margin="0.15,0.08"];'
 
 
 per_riga = 5
@@ -60,12 +70,23 @@ for i in range(len(fasi) - 1):
 dot.append("}")
 st.graphviz_chart("\n".join(dot), use_container_width=True)
 st.caption("Grigio = fasi concluse · blu pieno = fase attuale · bordo blu = prossima fase · tratteggio = fase solo se necessaria. "
-           "I giorni sono i termini massimi di legge.")
+           "I giorni sono i termini massimi di legge. :red[**silenzio = assenso**]: se il Comune tace, vale come sì. "
+           ":green[**serve la firma del Comune**]: senza, il progetto non va avanti.")
+st.info("**Il Comune non ha un potere di blocco: ha un potere di partecipazione a tempo.** In nessuna fase il silenzio del "
+        "Comune ferma il progetto; l'unico punto in cui serve davvero la sua firma è la convenzione, quando il decreto la "
+        "richiede prima dei lavori. I soldi si perdono restando zitti, non dicendo di no.", icon=":material/campaign:")
 
 f = fasi[i_cur]
 st.subheader(f"Fase attuale: {f['titolo']}")
 c1, c2 = st.columns([3, 2])
 with c1:
+    sil = f.get("silenzio")
+    if sil == "assenso":
+        st.error(f"**Se il Comune tace, vale come assenso.** {f.get('silenzio_nota', '')}", icon=":material/timer_off:")
+    elif sil == "firma":
+        st.success(f"**Qui serve la firma del Comune.** {f.get('silenzio_nota', '')}", icon=":material/draw:")
+    elif sil == "non_blocca":
+        st.warning(f"**Il silenzio del Comune non ferma nulla.** {f.get('silenzio_nota', '')}", icon=":material/fast_forward:")
     st.markdown(f"{f['cosa']}")
     st.markdown(f"**Chi decide o agisce**: {f['chi']}")
     st.markdown("**Cosa può fare il Comune adesso**")
@@ -93,7 +114,8 @@ with c2:
 with st.expander("Tutte le fasi in sequenza"):
     for i, x in enumerate(fasi):
         mark = "▶" if i == i_cur else ("✓" if i < i_cur else "·")
-        st.markdown(f"**{mark} {x['titolo']}**" + (f" — ≤ {x['giorni']} giorni" if x.get("giorni") else "") + f"  \n{x['cosa']}")
+        etich = {"assenso": " · :red[silenzio = assenso]", "firma": " · :green[serve la firma del Comune]"}.get(x.get("silenzio"), "")
+        st.markdown(f"**{mark} {x['titolo']}**" + (f" — ≤ {x['giorni']} giorni" if x.get("giorni") else "") + etich + f"  \n{x['cosa']}")
 
 st.caption("Fonti: D.Lgs. 190/2024 (TU FER, testo coordinato v7), artt. 7–9 e Allegati A–C; L.R. FVG 2/2025, art. 5; "
            "decreto MASE n. 441/2025 (moduli unici SUER); decreto AU n. 43585/GRFVG del 13/09/2024. "

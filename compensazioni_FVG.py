@@ -16,8 +16,13 @@ pg = st.navigation({
         st.Page(f"{P}/iter.py", title="Che iter è", icon=":material/route:"),
         st.Page(f"{P}/convenzione.py", title="La convenzione", icon=":material/contract:"),
         st.Page(f"{P}/investire.py", title="Come investirle", icon=":material/savings:"),
+        st.Page(f"{P}/fondo.py", title="Fondo per i cittadini", icon=":material/volunteer_activism:"),
+    ],
+    "Per le imprese": [
+        st.Page(f"{P}/impresa.py", title="Sono un'impresa", icon=":material/business:"),
     ],
     "Per tutti": [
+        st.Page(f"{P}/misure.py", title="Catalogo delle misure", icon=":material/menu_book:"),
         st.Page(f"{P}/quadro.py", title="Quadro FVG", icon=":material/map:"),
         st.Page(f"{P}/casi.py", title="Casi FVG", icon=":material/folder_open:"),
         st.Page(f"{P}/pavia.py", title="Pavia di Udine", icon=":material/location_city:"),
@@ -25,7 +30,7 @@ pg = st.navigation({
     "Per i cittadini": [
         st.Page(f"{P}/perche.py", title="Perché servono", icon=":material/bolt:"),
     ],
-})
+}, expanded=True)
 from core.progetto import riepilogo_sidebar
 
 pg.run()

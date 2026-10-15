@@ -91,6 +91,25 @@ def bozza(p: dict, opzioni: dict, interventi: list[dict]) -> bytes:
         d.add_heading("Art. 8 – Penali", level=2)
         d.add_paragraph("Per ogni mese di ritardo nei versamenti o nella realizzazione degli interventi si applica una penale pari "
                         "a [●] €, salvo il maggior danno.")
+    if opzioni.get("comitato"):
+        d.add_heading("Art. 8-bis – Comitato di monitoraggio", level=2)
+        d.add_paragraph("È istituito un comitato di monitoraggio composto da un rappresentante del Comune, uno del Proponente e "
+                        "[un rappresentante dei cittadini / dell'Agenzia per l'Energia FVG]. Il comitato si riunisce almeno una volta "
+                        "l'anno, esamina il rendiconto, verifica lo stato degli interventi e formula proposte. La partecipazione "
+                        "è a titolo gratuito.")
+    if opzioni.get("modifica"):
+        d.add_heading("Art. 8-ter – Modifica degli interventi", level=2)
+        d.add_paragraph("L'elenco degli interventi dell'Allegato 1 può essere modificato su proposta di una delle Parti, sentito il "
+                        "comitato di monitoraggio, con deliberazione della Giunta comunale e presa d'atto del Proponente, purché i "
+                        "nuovi interventi rientrino nelle categorie del DM 10 settembre 2010, Allegato 2, e il valore complessivo "
+                        "resti invariato.")
+    if opzioni.get("fondo"):
+        d.add_heading("Art. 8-quater – Fondo comunale energia per i cittadini", level=2)
+        d.add_paragraph("Una quota delle compensazioni, indicata nell'Allegato 1, è destinata al Fondo comunale energia per i "
+                        "cittadini, vincolato al finanziamento di interventi di efficienza energetica e di diffusione delle fonti "
+                        "rinnovabili nelle abitazioni dei residenti, secondo il regolamento comunale approvato con deliberazione "
+                        "n. [●] del [●]. Le somme sono iscritte in bilancio come entrata a destinazione vincolata e rendicontate "
+                        "ai sensi dell'art. 7.")
     d.add_heading("Art. 9 – Controversie", level=2)
     d.add_paragraph("Le Parti tentano una composizione bonaria; in mancanza è competente il Foro di [●].")
 

@@ -16,6 +16,10 @@ default_fvg:
   bess:
     capex_eur_mw: 700000      # APE FVG, impianto 1 Pavia
     vita_utile_anni: 17.5     # APE FVG, metodo €/MW/anno
+    durata_ore: 4             # ipotesi: accumulo da 4 ore (MWh = MW x ore); va preso dal progetto
+    premio_capacita_eur_mwh_anno: 13000   # MACSE, prima asta (30/09/2025): media ponderata circa 12.959 €/MWh/anno
+    altri_ricavi_eur_mw_anno: 0           # arbitraggio e servizi di rete: dal business plan del proponente
+    anni_proventi: 15         # durata del contratto MACSE
 fonte_default: "Agenzia per l'Energia del FVG, prot. 5960.EPEC del 24/02/2026, stima compensazioni per il Comune di Pavia di Udine"
 nota_vita_utile: >
   Nella stima APE FVG l'intestazione della colonna indica "vita utile 20 anni",
@@ -60,8 +64,17 @@ metodi:
     base: "proventi annui; esempio: 10 pale da 6 MW x 2.000 h x 80 €/MWh x 4% = 384.000 €/anno"
     fonte: "Ci sarà un bel clima"
     natura: proposta
+  bess_proventi:
+    nome: "BESS - 3% dei proventi (predefinito)"
+    tipo: bess
+    min: 0.03
+    max: 0.04
+    default: 0.03
+    base: "proventi annui: premio di capacità (MACSE) + arbitraggio e servizi di rete"
+    fonte: "L.R. FVG 2/2025, art. 5, c. 1, lett. i) (almeno 3% dei proventi); TU FER, art. 9 (fino al 4%). Premio MACSE: esito Terna 30/09/2025"
+    natura: legge
   bess_capex:
-    nome: "BESS - percentuale sull'investimento"
+    nome: "BESS - percentuale sull'investimento (nessuna base di legge)"
     tipo: bess
     min: 0.01
     max: 0.03

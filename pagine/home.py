@@ -20,7 +20,7 @@ k3.metric("FV/agrivoltaico ≥1 MW autorizzati 2025–26", f"{len(au)} progetti"
 k4.metric("Comuni con inversione di flusso in rete", f"{int(c.flusso_invertito.sum())} su {len(c)}")
 
 st.divider()
-a, b_ = st.columns(2)
+a, b_, c_ = st.columns(3)
 with a:
     st.subheader("Sono un Comune")
     st.markdown(
@@ -28,7 +28,8 @@ with a:
         "2. **Quanto vale**: scegli la percentuale e vedi il calcolo passo per passo\n"
         "3. **Che iter è**: la mappa del procedimento e cosa fare in ogni fase\n"
         "4. **La convenzione**: le clausole e la bozza Word precompilata\n"
-        "5. **Come investirle**: il piano degli interventi dentro il budget"
+        "5. **Come investirle**: il piano degli interventi dentro il budget, dal catalogo di oltre 100 misure\n"
+        "6. **Fondo per i cittadini**: bandi annuali o fondo rotativo, con regolamento e bando scaricabili"
     )
     st.page_link("pagine/progetto.py", label="Inizia dal tuo progetto", icon=":material/add_circle:")
 with b_:
@@ -39,3 +40,11 @@ with b_:
         "- **Casi FVG**: cosa hanno ottenuto altri Comuni"
     )
     st.page_link("pagine/quadro.py", label="Apri il quadro regionale", icon=":material/map:")
+with c_:
+    st.subheader("Sono un'impresa")
+    st.markdown(
+        "- Cosa succede se il Comune **non risponde**\n"
+        "- La sequenza consigliata: proposta via PEC, sollecito, **atto unilaterale d'obbligo**\n"
+        "- I modelli già compilati con il calcolo e il piano"
+    )
+    st.page_link("pagine/impresa.py", label="Apri la pagina per le imprese", icon=":material/business:")

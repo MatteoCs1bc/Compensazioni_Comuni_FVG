@@ -1,0 +1,195 @@
+# Analisi per singolo progetto – Pavia di Udine.
+# Integra l'elenco FER del Comune al 30/09/2026 (fer_pavia_al_2026-09-30.csv, colonna n) con:
+# regime autorizzativo, data del titolo, corrispondenze con il portale regionale RIS_ENERG e con i decreti
+# pubblicati sul BUR, compensazioni note, documenti da recuperare.
+# regime: au_regionale | au_statale | pas | libera | rete | compensazione
+# tipo: fv | bess | biometano | rete
+aggiornato_al: 2026-10-15
+documenti_comuni_mancanti:
+  - "Decreto o titolo INTEGRALE (sul BUR le compensazioni sono omesse)"
+  - "Verbale della conferenza di servizi o determinazione conclusiva"
+  - "Convenzione firmata o bozza, se esiste"
+
+progetti:
+  - n: 0
+    data_titolo: null
+    data_nota: "ante 2020, provvedimento non indicato"
+    regime: au_regionale
+    tipo: fv
+    in_corso: false
+    zona: "Selvuzzis"
+    note:
+      - "Dati da verificare: la superficie recintata (7,3 ha) risulta maggiore di quella complessiva (0,78 ha) e la potenza non è indicata."
+  - n: 1
+    data_titolo: 2022-01-01
+    data_nota: "decreto MiTE n. 55/13/2022: data esatta da verificare"
+    regime: au_statale
+    tipo: bess
+    in_corso: false
+    zona: "Nodo della stazione Terna «Udine Sud» (Persereano)"
+    proponente: "Ilary Energia S.r.l. (da portale regionale, da confermare)"
+    portale: "RIS_ENERG fascicolo 2128 «Ilary Energia S.r.l.», 206 MW, in esercizio"
+    note:
+      - "Il primo accumulo da 200 MW del comune: autorizzato dal Ministero con le regole precedenti al TU FER."
+  - n: 2
+    data_titolo: null
+    regime: au_regionale
+    tipo: fv
+    in_corso: true
+    zona: "Selvuzzis"
+    note:
+      - "VIA statale conclusa nel 2021 (decreto 5062/AMB del 08/10/2021); l'autorizzazione all'impianto risulta ancora in corso."
+      - "Il Comune ha presentato osservazioni (traccia di intervista POWERUP, domanda D11): recuperarle."
+      - "Se l'autorizzazione è rilasciata dalla Regione oggi, vale il minimo del 3% dei proventi."
+  - n: 3
+    data_titolo: 2022-07-29
+    regime: rete
+    tipo: rete
+    in_corso: false
+    zona: "Nodo della stazione Terna «Udine Sud» (Persereano)"
+    note:
+      - "Nell'elenco comunale è una sottostazione elettrica; la traccia di intervista POWERUP lo cita come «impianto Santo Stefano a Persereano»: verificare a quale impianto è collegata."
+  - n: 4
+    data_titolo: 2023-09-26
+    regime: au_regionale
+    tipo: fv
+    in_corso: false
+    zona: "Sud della zona industriale, Risano"
+    compensazione_prescritta: "Impianto fotovoltaico da 400 kWp a favore del Comune (riga 5 dell'elenco, foglio 15)"
+    compensazione_prescritta_eur: 560000
+    compensazione_prescritta_stima: true
+    note:
+      - "La compensazione in natura (400 kWp) risulta autorizzata ma NON realizzata al 30/09/2026, mentre l'impianto principale è in esercizio: verificare tempi e obblighi nel decreto."
+      - "Valore della compensazione stimato a 1.400 €/kWp: da sostituire con il dato del decreto o del computo."
+  - n: 5
+    data_titolo: 2023-09-26
+    regime: compensazione
+    tipo: fv
+    in_corso: false
+    zona: "Pavia di Udine (foglio 15)"
+    collegato_a: 4
+    note:
+      - "È la compensazione dell'impianto Cjase Sterpet (riga 4): non è un progetto a sé."
+  - n: 7
+    data_titolo: 2024-08-09
+    regime: pas
+    tipo: fv
+    in_corso: false
+    zona: "Via Marconi (SP78)"
+    note:
+      - "PAS rilasciata prima del TU FER: nessun obbligo di legge; l'impianto non è ancora realizzato, c'è spazio per un accordo volontario."
+  - n: 8
+    data_titolo: 2025-04-10
+    regime: au_regionale
+    tipo: fv
+    in_corso: false
+    zona: "Risano"
+    proponente: "Sunprime Solar Belt S.r.l."
+    bur: "BUR n. 17 del 23/04/2025, decreto 18458/GRFVG (estratto)"
+    note:
+      - "Autorizzato dopo l'entrata in vigore della legge regionale: dovrebbe avere compensazioni di almeno il 3% dei proventi. Verificare nel decreto integrale."
+  - n: 10
+    data_titolo: 2025-01-14
+    regime: pas
+    tipo: biometano
+    in_corso: false
+    zona: "Nord del capoluogo"
+    note:
+      - "Per il biometano la soglia di 1 MW elettrico del TU FER non si applica in modo diretto: obbligo da verificare."
+      - "Metodo APE FVG per il biometano: 3% dell'incentivo su 15 anni (esempio: 435.600 € per 100 Smc/h). Serve la capacità dell'impianto."
+  - n: 12
+    data_titolo: 2025-07-01
+    data_nota: "anno 2025, data non indicata"
+    regime: pas
+    tipo: fv
+    in_corso: false
+    zona: "Lauzacco (zona D2)"
+    note:
+      - "Sotto 1 MW: nessun obbligo."
+  - n: 13
+    data_titolo: 2026-04-02
+    regime: au_regionale
+    tipo: fv
+    in_corso: false
+    zona: "Percoto"
+    note:
+      - "Decreto 17640/GRFVG non trovato tra i BUR raccolti: recuperarlo."
+      - "Non ancora realizzato: se il decreto prevede la convenzione prima dei lavori, il Comune ha ancora margine sul «come»."
+  - n: 16
+    data_titolo: 2026-07-13
+    regime: au_regionale
+    tipo: bess
+    in_corso: false
+    zona: "Nodo della stazione Terna «Udine Sud» (Persereano)"
+    proponente: "RNE 14 S.r.l. (da portale regionale)"
+    portale: "RIS_ENERG fascicolo 2529 «RNE 14 Srl», 90 MW, autorizzato, decreto 37803"
+    note:
+      - "Ente da verificare: l'elenco comunale indica il Ministero, ma il portale regionale riporta il decreto 37803 tra le autorizzazioni regionali e oggi gli accumuli fino a 200 MW sono di competenza regionale. Se è regionale, vale il minimo del 3% dei proventi."
+  - n: 17
+    data_titolo: null
+    regime: pas
+    tipo: fv
+    in_corso: false
+    archiviato: true
+    regime_se_ripresentato: au_regionale
+    zona: "Risano"
+    note:
+      - "Se ripresentato: un fotovoltaico a terra da 5,76 MW può andare in PAS solo in area idonea (sotto 12 MW); altrimenti serve l'autorizzazione unica, con almeno il 3%."
+  - n: 18
+    data_titolo: null
+    regime: libera
+    tipo: fv
+    in_corso: false
+    archiviato: true
+    regime_se_ripresentato: au_regionale
+    zona: "Lauzacco"
+    note:
+      - "Presentato come edilizia libera: ma l'agrivoltaico è in attività libera solo sotto 5 MW (TU FER, All. A, lett. e). Se ripresentato da 7,68 MW serve PAS (area idonea) o autorizzazione unica."
+  - n: 19
+    data_titolo: null
+    regime: au_regionale
+    tipo: bess
+    in_corso: true
+    zona: "Nodo della stazione Terna «Udine Sud» (Persereano)"
+    portale: "Non trovato nel portale regionale RIS_ENERG con questo nome"
+    note:
+      - "Il progetto più grande ancora aperto (190 MW): qui il Comune può ancora incidere sull'importo."
+  - n: 20
+    data_titolo: 2026-07-27
+    regime: au_regionale
+    tipo: bess
+    in_corso: false
+    zona: "Nodo della stazione Terna «Udine Sud» (Persereano)"
+    proponente: "Aukera Italy 19 S.r.l."
+    portale: "RIS_ENERG fascicolo 2549, ancora «in corso» sul portale e con potenza errata (1.377,5 MW invece di 137,75)"
+    note:
+      - "Ente da verificare come per la riga 16: l'elenco comunale indica il Ministero, ma per un accumulo da 137,75 MW autorizzato nel 2026 la competenza è regionale."
+      - "È uno dei due accumuli della stima APE FVG (impianto 1)."
+  - n: 21
+    data_titolo: null
+    regime: au_regionale
+    tipo: bess
+    in_corso: true
+    zona: "Lauzacco"
+    portale: "Non trovato nel portale regionale RIS_ENERG con questo nome"
+    note:
+      - "Ancora aperto: preparare la proposta di compensazione prima della conferenza."
+
+# Progetti autorizzati che interessano il Comune ma non compaiono nell'elenco comunale
+esterni:
+  - nome: "Impianto agrivoltaico Trivignano"
+    proponente: "EG Nuova Vita S.r.l."
+    potenza_mw: 17.1108
+    data_titolo: 2025-12-18
+    decreto: "AU n. 71031/GRFVG del 18/12/2025 (BUR n. 53 del 31/12/2025)"
+    comuni: "Trivignano Udinese, Santa Maria La Longa, Pavia di Udine"
+    ruolo: "Impianto in parte nel territorio comunale"
+    nota: "Non compare nell'elenco del Comune. Autorizzato dopo la legge regionale: almeno il 3% dei proventi, da ripartire tra i tre Comuni. Verificare la quota spettante a Pavia di Udine."
+  - nome: "Trivignano Solar 1 (agrivoltaico)"
+    proponente: "Ellomay Solar Italy Eight S.r.l."
+    potenza_mw: 74.75712
+    data_titolo: 2025-06-26
+    decreto: "AU n. 33046 del 26/06/2025 (BUR n. 28 del 09/07/2025)"
+    comuni: "Pradamano, Trivignano Udinese, Palmanova; connessione in Santa Maria la Longa, Pavia di Udine, Udine"
+    ruolo: "Solo opere di connessione alla rete"
+    nota: "Pavia di Udine è attraversato solo dalla connessione: verificare nel decreto integrale se il Comune è tra i beneficiari delle compensazioni."

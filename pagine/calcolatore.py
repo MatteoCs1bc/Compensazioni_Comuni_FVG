@@ -2,7 +2,7 @@ import pandas as pd
 import plotly.graph_objects as go
 import streamlit as st
 
-from core.compensazioni import ImpiantoProduzione, metodi_bess, metodi_produzione
+from core.compensazioni import ImpiantoProduzione, metodi_bess, metodi_produzione, proventi_bess
 from core.dati import euro, nota_legale, num, pct, regole
 from core.iter import TIPI
 from core.progetto import aggiorna, esito, progetto
@@ -28,6 +28,7 @@ mw_bess = float(p["potenza_mw"] or 0) if solo_bess else float(p["bess_mw"] or 0)
 chiave = "eolico" if p["tipo"] == "eolico" else ("agrivoltaico" if p["tipo"] == "agrivoltaico" else "fotovoltaico")
 
 totale, annuo_tot = 0.0, 0.0
+testo_calcolo = []
 
 # ------------------------------------------------------------------ produzione
 if not solo_bess:
@@ -81,35 +82,80 @@ if not solo_bess:
     totale += tot_prod
     annuo_tot += annuo
     aggiorna(potenza_mw=mw if p["compilato"] else p["potenza_mw"], ore=ore, prezzo=prezzo, vita=vita, percentuale=perc * 100)
+    testo_calcolo.append("Impianto: " + "; ".join(f"{a}: {b} = {c}" for a, b, c in righe) + ".")
 
 # ------------------------------------------------------------------ accumulo
+bess_param = {}
 if solo_bess or mw_bess:
+    sb = p.get("bess") or {}
+
+    def kb(nome, default):
+        chiave = f"bs_{nome}"
+        if chiave not in st.session_state:
+            st.session_state[chiave] = sb.get(nome, default)
+        return chiave
+
+    DB = D["bess"]
     st.header("Accumulo (BESS)" if not solo_bess else "1 · L'accumulo")
-    st.caption("Per gli accumuli la legge non dà una base di calcolo: un BESS non vende energia prodotta. "
-               "Scegli uno dei tre metodi proposti da APE FVG e il suo parametro.")
+    st.markdown(
+        "Per gli accumuli la legge fissa la percentuale ma non una formula: un BESS non vende energia prodotta, però ha "
+        "**proventi** (premio di capacità, arbitraggio, servizi alla rete). La legge regionale chiede **almeno il 3% dei "
+        "proventi**: è il metodo predefinito. Gli altri tre sono metodi di prassi proposti dall'Agenzia FVG."
+    )
     c1, c2 = st.columns([1, 2])
     mwb = c1.number_input("Potenza accumulo (MW)", min_value=0.0, value=mw_bess or 50.0, step=1.0)
-    metodo = c2.radio("Metodo", ["Percentuale sull'investimento", "Quota annua per MW", "Una tantum per MW"], horizontal=True)
-    if metodo == "Percentuale sull'investimento":
+    METODI_B = ["3% dei proventi (predefinito)", "Percentuale sull'investimento", "Quota annua per MW", "Una tantum per MW"]
+    metodo = c2.radio("Metodo", METODI_B, horizontal=True, key=kb("metodo", METODI_B[0]))
+    if metodo == METODI_B[0]:
+        a, b, c, d_ = st.columns(4)
+        ore_b = a.number_input("Durata (ore di scarica)", min_value=0.5, max_value=12.0, step=0.5, key=kb("durata_ore", float(DB["durata_ore"])),
+                               help="MWh di capacità = MW × ore. Va presa dal progetto; 4 ore è un'ipotesi tipica.")
+        prem = b.number_input("Premio di capacità (€/MWh all'anno)", min_value=0.0, step=500.0,
+                              key=kb("premio", float(DB["premio_capacita_eur_mwh_anno"])),
+                              help="Asta MACSE di Terna (30/09/2025): media ponderata circa 12.959 €/MWh/anno, per 15 anni. "
+                                   "Metti 0 se l'impianto non ha un contratto di capacità.")
+        altri = c.number_input("Altri ricavi (€/MW all'anno)", min_value=0.0, step=1000.0, key=kb("altri", float(DB["altri_ricavi_eur_mw_anno"])),
+                               help="Arbitraggio e servizi di rete: chiedere il dato del business plan al proponente.")
+        n_b = d_.number_input("Anni", min_value=1.0, step=1.0, key=kb("anni", float(DB["anni_proventi"])))
+        pb = st.slider("Percentuale dei proventi", 1.0, 5.0, step=0.1, format="%.1f%%", key=kb("perc", 3.0)) / 100
+        cap_mwh = mwb * ore_b
+        prov = proventi_bess(mwb, ore_b, prem, altri)
+        ann_b = prov * pb
+        tot_b = ann_b * n_b
+        passi = [("Capacità", f"{num(mwb, 2)} MW × {num(ore_b, 1)} ore", f"{num(cap_mwh, 0)} MWh"),
+                 ("Premio di capacità all'anno", f"{num(cap_mwh, 0)} MWh × {euro(prem)}", euro(cap_mwh * prem))]
+        if altri:
+            passi.append(("Altri ricavi all'anno", f"{num(mwb, 2)} MW × {euro(altri)}", euro(mwb * altri)))
+        passi += [("Proventi all'anno", "somma", euro(prov)),
+                  ("Compensazione all'anno", f"{euro(prov)} × {pct(pb)}", euro(ann_b)),
+                  ("Totale", f"{euro(ann_b)} × {num(n_b, 0)} anni", euro(tot_b))]
+        if pb < 0.03:
+            st.warning("Sotto il 3%: per le autorizzazioni uniche regionali sopra 1 MW la legge FVG chiede almeno il 3% dei proventi.")
+        if not prem and not altri:
+            st.warning("Senza premio di capacità né altri ricavi i proventi risultano zero: inserisci una stima.")
+        bess_param = dict(durata_ore=ore_b, premio_eur_mwh_anno=prem, altri_ricavi_eur_mw_anno=altri, anni_proventi=n_b)
+    elif metodo == METODI_B[1]:
+        st.warning("Metodo senza base di legge: TU FER e legge regionale calcolano sui proventi, non sull'investimento. "
+                   "Dà cifre molto più basse e una tantum.")
         a, b = st.columns(2)
-        capex = a.number_input("Investimento stimato (€/MW)", min_value=0, value=int(D["bess"]["capex_eur_mw"]), step=50000)
-        pb = b.slider("Percentuale", 1.0, 3.0, 3.0, 0.1, format="%.1f%%") / 100
+        capex = a.number_input("Investimento stimato (€/MW)", min_value=0, step=50000, key=kb("capex", int(DB["capex_eur_mw"])))
+        pb = b.slider("Percentuale", 1.0, 3.0, step=0.1, format="%.1f%%", key=kb("perc_capex", 3.0)) / 100
         inv = mwb * capex
         tot_b = inv * pb
         passi = [("Investimento", f"{num(mwb, 2)} MW × {euro(capex)}/MW", euro(inv)),
                  ("Compensazione una tantum", f"{euro(inv)} × {pct(pb)}", euro(tot_b))]
         ann_b = 0.0
-    elif metodo == "Quota annua per MW":
+    elif metodo == METODI_B[2]:
         a, b = st.columns(2)
-        q = a.slider("€ per MW all'anno", 1000, 5000, 4000, 250)
-        vb = b.number_input("Anni", min_value=1.0, value=float(D["bess"]["vita_utile_anni"]), step=0.5)
+        q = a.slider("€ per MW all'anno", 1000, 5000, step=250, key=kb("eur_mw_anno", 4000))
+        vb = b.number_input("Anni", min_value=1.0, step=0.5, key=kb("anni_annuo", float(DB["vita_utile_anni"])))
         ann_b = mwb * q
         tot_b = ann_b * vb
         passi = [("Compensazione all'anno", f"{num(mwb, 2)} MW × {euro(q)}", euro(ann_b)),
                  ("Totale", f"{euro(ann_b)} × {num(vb, 1)} anni", euro(tot_b))]
     else:
         a, b = st.columns(2)
-        coloc = a.toggle("Accanto a un impianto esistente (co-locato)")
+        coloc = a.toggle("Accanto a un impianto esistente (co-locato)", key=kb("colocato", False))
         lo, hi = (10000, 40000) if coloc else (20000, 60000)
         q = b.slider("€ per MW, una tantum", lo, hi, min(40000, hi), 1000)
         tot_b = mwb * q
@@ -119,16 +165,18 @@ if solo_bess or mw_bess:
     st.metric("Compensazione accumulo", euro(tot_b))
     totale += tot_b
     annuo_tot += ann_b
+    testo_calcolo.append(f"Accumulo ({metodo}): " + "; ".join(f"{a} = {c}" for a, b, c in passi[-2:]) + ".")
+    p["bess"] = {**sb, **{k[3:]: v for k, v in st.session_state.items() if isinstance(k, str) and k.startswith("bs_")}}
     if solo_bess and p["compilato"]:
         aggiorna(potenza_mw=mwb)
 
-aggiorna(compensazione_eur=totale, compensazione_annua_eur=annuo_tot)
+aggiorna(compensazione_eur=totale, compensazione_annua_eur=annuo_tot, calcolo_testo=" ".join(testo_calcolo))
 
 if not solo_bess and mw_bess:
     st.metric("Totale progetto (impianto + accumulo)", euro(totale))
 
 # ------------------------------------------------------------------ confronto
-st.header("4 · Come si colloca: confronto e verifica")
+st.header(f"{'2' if solo_bess else '4'} · Come si colloca: confronto e verifica")
 ottenuto = st.number_input("Cifra proposta dal proponente o già ottenuta (€, facoltativo)", min_value=0.0, value=0.0, step=10000.0)
 if ottenuto and totale:
     st.info(f"La cifra proposta è il **{pct(ottenuto / totale, 0)}** di quella calcolata qui ({euro(totale)}).")
@@ -140,12 +188,12 @@ if not solo_bess:
             continue
         voci.append(r)
 if solo_bess or mw_bess:
-    voci += metodi_bess(mwb, R)
+    voci += metodi_bess(mwb, R, **bess_param)
 if voci:
     fig = go.Figure()
     nomi = [r.nome for r in voci][::-1]
     for r in voci[::-1]:
-        col = EVIDENZA if r.metodo == "agenzia" else NEUTRO
+        col = EVIDENZA if r.metodo in ("agenzia", "bess_proventi") else NEUTRO
         larg = max(r.totale_max - r.totale_min, 0)
         if larg == 0:
             fig.add_trace(go.Scatter(x=[r.totale_min], y=[r.nome], mode="markers", marker=dict(size=14, color=col, symbol="diamond"),
@@ -160,7 +208,7 @@ if voci:
                       xaxis=dict(title="€ sull'intera vita utile", tickformat=",.0f"),
                       yaxis=dict(categoryorder="array", categoryarray=nomi), bargap=0.4)
     st.plotly_chart(fig, use_container_width=True)
-    st.caption("Barre = intervallo del metodo; rombo = valore unico (in blu il metodo Agenzia FVG). Linea verde = il tuo calcolo.")
+    st.caption("Barre = intervallo del metodo; rombo = valore unico (in blu il metodo predefinito). Linea verde = il tuo calcolo.")
     st.dataframe(pd.DataFrame([{"Metodo": r.nome, "Natura": r.natura, "Min": euro(r.totale_min), "Max": euro(r.totale_max),
                                 "Come si calcola": r.nota, "Fonte": r.fonte} for r in voci]),
                  hide_index=True, use_container_width=True)
