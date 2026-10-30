@@ -135,3 +135,102 @@ def excel_analisi(df: pd.DataFrame) -> bytes:
             ws.column_dimensions[col].width = w
         ws.freeze_panes = "C2"
     return buf.getvalue()
+
+
+# ------------------------------------------------------------------ scheda compensazioni (documenti del Comune)
+def carica_scheda() -> dict:
+    """Scheda compensazioni costruita sui decreti e sulle schede FER forniti dal Comune."""
+    with open(CARTELLA / "scheda_compensazioni.yaml", encoding="utf-8") as f:
+        s = yaml.safe_load(f)
+    imp = pd.DataFrame(s["impianti"])
+    imp["eur_mw"] = imp.apply(lambda r: r.eur / r.mw if pd.notna(r.eur) and r.mw else None, axis=1)
+    s["impianti_df"] = imp
+    s["priorita_df"] = pd.DataFrame(s["priorita"])
+    s["confronto_df"] = pd.DataFrame(s["confronto"]["righe"])
+    return s
+
+
+def totali_scheda(s: dict) -> dict:
+    imp = s["impianti_df"]
+    bess = imp[(imp.tipo == "BESS") & imp.eur_mw.notna()]
+    return {"una_tantum_noto": float(imp.eur.sum(skipna=True)),
+            "bess_eur_mw_min": float(bess.eur_mw.min()), "bess_eur_mw_max": float(bess.eur_mw.max()),
+            "annuali": int((imp.modalita == "annuale").sum()),
+            "aperti": int((s["priorita_df"].priorita == "Alta").sum())}
+
+
+def _mw(x) -> str:
+    return f"{x:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".").rstrip("0").rstrip(",")
+
+
+def scheda_docx(s: dict) -> bytes:
+    """La scheda in Word, orizzontale, pronta da stampare."""
+    import io
+
+    from docx import Document
+    from docx.enum.section import WD_ORIENT
+    from docx.shared import Cm, Pt
+
+    d = Document()
+    sez = d.sections[0]
+    sez.orientation = WD_ORIENT.LANDSCAPE
+    sez.page_width, sez.page_height = sez.page_height, sez.page_width
+    for lato in ("left_margin", "right_margin", "top_margin", "bottom_margin"):
+        setattr(sez, lato, Cm(1.5))
+    d.styles["Normal"].font.name = "Calibri"
+    d.styles["Normal"].font.size = Pt(10)
+
+    def tabella(intest, righe, larghezze=None):
+        t = d.add_table(rows=1, cols=len(intest))
+        t.style = "Light Grid Accent 1"
+        for c, x in zip(t.rows[0].cells, intest):
+            c.text = x
+        for r in righe:
+            for c, x in zip(t.add_row().cells, r):
+                c.text = "" if x is None else str(x)
+        if larghezze:
+            for riga in t.rows:
+                for c, w in zip(riga.cells, larghezze):
+                    c.width = Cm(w)
+
+    d.add_heading(s["titolo"], level=1)
+    agg = s["aggiornato_al"]
+    d.add_paragraph(f"Aggiornata al {agg.strftime('%d/%m/%Y') if hasattr(agg, 'strftime') else agg}").runs[0].italic = True
+    d.add_paragraph(s["sintesi"].strip())
+
+    d.add_heading("Cosa emerge dai documenti", level=2)
+    for x in s["novita"]:
+        p = d.add_paragraph(style="List Bullet")
+        p.add_run(x["titolo"] + ". ").bold = True
+        p.add_run(x["testo"].strip())
+
+    d.add_heading("Compensazioni impianto per impianto", level=2)
+    imp = s["impianti_df"]
+    tabella(["N.", "Impianto", "MW", "Titolo", "Compensazione per Pavia", "€/MW", "Stato"],
+            [(r.n, r.impianto, _mw(r.mw), r.titolo, r.compensazione,
+              _it(r.eur_mw) if pd.notna(r.eur_mw) else ("annuale" if r.modalita == "annuale" else "–"), r.stato)
+             for r in imp.itertuples()], [1.2, 5, 1.5, 4, 8, 1.8, 3.5])
+    for n in s.get("note_impianti", []):
+        d.add_paragraph(n).runs[0].italic = True
+
+    d.add_heading("Pavia e Santa Maria la Longa a confronto", level=2)
+    d.add_paragraph(s["confronto"]["testo"].strip())
+    tabella(["Impianto", "Pavia di Udine", "Santa Maria la Longa"],
+            [(r.impianto, r.pavia, r.smll) for r in s["confronto_df"].itertuples()], [6, 8, 11])
+
+    d.add_heading("Progetti da seguire adesso", level=2)
+    tabella(["Priorità", "N.", "Impianto", "Situazione", "Cosa fare"],
+            [(r.priorita, r.n, r.impianto, r.situazione, r.azione) for r in s["priorita_df"].itertuples()],
+            [1.8, 1.2, 5.5, 8, 8])
+
+    d.add_heading("Cosa pretendere nelle prossime convenzioni", level=2)
+    for x in s["clausole"]:
+        d.add_paragraph("☐ " + x)
+    d.add_heading("Documenti ancora da recuperare", level=2)
+    for x in s["documenti"]:
+        d.add_paragraph("☐ " + x)
+    p = d.add_paragraph("Fonti: " + s["fonti"].strip())
+    p.runs[0].italic = True
+    buf = io.BytesIO()
+    d.save(buf)
+    return buf.getvalue()

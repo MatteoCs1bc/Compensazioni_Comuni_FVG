@@ -95,3 +95,14 @@ def test_documenti_word():
               documento("", "perduto", {}, []), proposta(p, "PAS", inter), sollecito(p, "01/09/2026"),
               atto_unilaterale(p, "autorizzazione unica", inter)):
         assert b[:2] == b"PK" and len(b) > 5000
+
+
+# ---------------------------------------------------------------- scheda compensazioni Pavia
+def test_pavia_scheda():
+    from core.pavia import carica_scheda, scheda_docx, totali_scheda
+    s = carica_scheda()
+    t = totali_scheda(s)
+    assert t["una_tantum_noto"] == pytest.approx(1_400_000 + 1_000_000 + 850_000 + 144_967.68)
+    assert t["bess_eur_mw_min"] == pytest.approx(7000) and t["bess_eur_mw_max"] == pytest.approx(1_000_000 / 90)
+    assert set(s["priorita_df"].priorita) <= {"Alta", "Media", "Bassa"}
+    assert scheda_docx(s)[:2] == b"PK"

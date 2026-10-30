@@ -1,0 +1,133 @@
+# Scheda compensazioni del Comune di Pavia di Udine.
+# Fonte: schede FER e decreti forniti dal Comune (elenco FER al 20/10/2026), letti il 30/10/2026.
+# Importi come risultano dalle schede comunali e dai decreti; "eur_mw" = importo una tantum diviso per la potenza.
+aggiornato_al: 2026-10-30
+titolo: "Pavia di Udine – compensazioni: stato e progetti da seguire"
+sintesi: >
+  Pavia di Udine ha ottenuto quasi solo compensazioni una tantum (circa 3,4 milioni di euro noti, in opere o denaro),
+  mentre Santa Maria la Longa, sugli stessi impianti, ha ottenuto quote annuali sui ricavi per tutta la vita degli impianti.
+
+novita:
+  - titolo: "Il caso Crimea è il modello da seguire"
+    testo: >
+      Senza accordo firmato, la Regione ha fissato in conferenza il 3% annuo dei proventi, incentivi compresi, per tutta
+      la vita dell'impianto: l'impresa accantona la quota, il Comune realizza le opere e viene rimborsato a rendiconto
+      (decreto 17640/GRFVG del 02/04/2026, art. 9).
+  - titolo: "Sugli accumuli Pavia ha accettato importi fissi"
+    testo: >
+      1,4 milioni monetizzati per Enel (200 MW), 1 milione in opere per RNE14 (90 MW), opere senza importo per Aukera
+      (137,75 MW): tra 7.000 e 11.000 euro per MW, una volta sola.
+  - titolo: "Santa Maria la Longa ha ottenuto quote annue sugli stessi impianti"
+    testo: "1,5% dei proventi da Santo Stefano; 2,1% da Aukera dal sesto anno, più anticipo e quota fissa per cinque anni."
+  - titolo: "Le competenze sono chiarite"
+    testo: >
+      I BESS n. 16 e n. 20 sono autorizzati dalla Regione (decreti 37803 e 40713/GRFVG), il n. 1 dal Ministero
+      (decreto 55/17/2022, ora Enel Libra Flexsys). Contessa è l'agrivoltaico EG Equinozio da 29,976 MWp.
+  - titolo: "Due PAS respinte torneranno in autorizzazione unica"
+    testo: >
+      KI Italia a Risano e a Lauzacco, respinte a settembre 2026 per la fascia di rispetto cimiteriale: in
+      autorizzazione unica varrà almeno il 3%.
+  - titolo: "Ci sono clausole sfavorevoli al Comune"
+    testo: >
+      Nel caso RNE14 le autorizzazioni delle opere compensative sono a carico del Comune, i lavori non possono partire
+      prima del cantiere del BESS e mancano fideiussione e rivalutazione.
+
+impianti:
+  - {n: "1", impianto: "BESS Udine Sud (Enel Libra Flexsys)", tipo: BESS, mw: 200, titolo: "Ministero, 55/17/2022",
+     compensazione: "1.400.000 € monetizzati, fuori dal decreto", eur: 1400000, modalita: una tantum, stato: Realizzato}
+  - {n: "16", impianto: "BESS Persereano (RNE14) + nuova stazione Terna", tipo: BESS, mw: 90,
+     titolo: "Regione, 37803/GRFVG del 13/07/2026",
+     compensazione: "1.000.000 € in opere al municipio e al magazzino (fotovoltaico, tetto, pensiline, colonnine, pompe di calore)",
+     eur: 1000000, modalita: una tantum, stato: "Convenzione da firmare"}
+  - {n: "20", impianto: "BESS Udine Sud (Aukera Italy 19)", tipo: BESS, mw: 137.75, titolo: "Regione, 40713/GRFVG del 27/07/2026",
+     compensazione: "Fotovoltaico 150 + 20 kWp, 6 colonnine, 1 auto elettrica, con fideiussione", eur: null,
+     modalita: una tantum, stato: "Convenzione non firmata"}
+  - {n: "4", impianto: "Cjase Sterpet (Parco Solare Friulano 2)", tipo: FV, mw: 105, titolo: "Regione, 43543/GRFVG del 26/09/2023",
+     compensazione: "850.000 €: demolizione ex caserma Paravano, ciclabile a Percoto, fotovoltaico 400 kWp", eur: 850000,
+     modalita: una tantum, stato: "Fotovoltaico 400 kWp non ancora realizzato"}
+  - {n: "3", impianto: "Santo Stefano (VGE05), su Pavia solo la sottostazione", tipo: FV, mw: 50,
+     titolo: "Regione, 3866/AMB del 29/07/2022", compensazione: "Auto elettrica e arredo parco", eur: null,
+     modalita: una tantum, stato: Consegnate}
+  - {n: "8", impianto: "Risano (Sunprime Solar Belt)", tipo: FV, mw: 4.356, titolo: "Regione, 18458/GRFVG del 10/04/2025",
+     compensazione: "144.967,68 €: fotovoltaico spogliatoio di Risano, asfaltatura, sponsorizzazione", eur: 144967.68,
+     modalita: una tantum, stato: "Convenzione firmata, opere in corso"}
+  - {n: "13", impianto: "Crimea (Eco-Pavia)", tipo: FV, mw: 6.25, titolo: "Regione, 17640/GRFVG del 02/04/2026",
+     compensazione: "3% annuo dei proventi per tutta la vita; convenzione per la ciclabile di via Crimea", eur: null,
+     modalita: annuale, stato: "In definizione"}
+  - {n: "7", impianto: "Marconi (IEIS Impianti)", tipo: FV, mw: 3.10255, titolo: "PAS comunale del 09/08/2024",
+     compensazione: "Volontaria: auto e furgone elettrici", eur: null, modalita: una tantum, stato: "In definizione"}
+  - {n: "12", impianto: "Tombis (Voltron, comunità energetica)", tipo: FV, mw: 0.6213, titolo: "PAS del 23/09/2025",
+     compensazione: "Non richieste (zona D2)", eur: null, modalita: nessuna, stato: Autorizzato}
+  - {n: "0, 01", impianto: "San Mauro e Selvuzzis", tipo: FV, mw: 3.4776, titolo: "Regione, 2012",
+     compensazione: Nessuna, eur: null, modalita: nessuna, stato: Realizzati}
+
+note_impianti:
+  - "Santo Stefano: la scheda comunale indica «60.000.000 €», quasi certamente un refuso da verificare."
+  - "Sunprime: la sponsorizzazione di una squadra non rientra nelle misure ammesse dal DM 10/9/2010."
+
+confronto:
+  testo: >
+    Sugli stessi impianti il Comune vicino ha ottenuto entrate annuali che durano decenni; Pavia ha chiuso con opere una
+    tantum. In parte la differenza si spiega con l'occupazione di suolo (per Aukera il 70% è a Santa Maria la Longa), ma
+    il metodo conta più della quota: una percentuale annua cresce con i ricavi e dura quanto l'impianto.
+  righe:
+    - {impianto: "Santo Stefano, fotovoltaico 50 MW", pavia: "Auto elettrica e arredo parco",
+       smll: "1,5% dei proventi annui, incentivi compresi, per tutta la vita dell'impianto"}
+    - {impianto: "BESS Aukera, 137,75 MW", pavia: "Opere stimabili in qualche centinaio di migliaia di euro",
+       smll: "300.000 € di anticipo, 40.000 €/anno per 5 anni, poi 2,1% dei proventi fino alla dismissione"}
+    - {impianto: "Cjase Sterpet, fotovoltaico 105 MW", pavia: "850.000 € in opere",
+       smll: "Opere da convenzione (DCC 24/2023), importo da verificare"}
+
+priorita:
+  - {priorita: Alta, n: "19", impianto: "EAGLE 1 (Sabotino 1), BESS 190 MW, stazione Terna",
+     situazione: "Istanza regionale del 05/08/2026, compensazioni non definite",
+     azione: "Proposta scritta prima della conferenza: 3% annuo dei ricavi con anticipo e minimo garantito"}
+  - {priorita: Alta, n: "21", impianto: "Lauzacco Solar BESS, 30,09 MW (circa 120 MWh), zona H2",
+     situazione: "Istanza del 29/07/2026, compensazioni non definite", azione: "Come EAGLE 1"}
+  - {priorita: Alta, n: "2", impianto: "Contessa (EG Equinozio), agrivoltaico 29,976 MWp, Selvuzzis",
+     situazione: "VIA statale con parere regionale favorevole del 04/02/2026; opere concordate ma non firmate (cappotto e serramenti scuola media, ciclabile San Mauro, asfalto via Selvuzzis)",
+     azione: "Stimare il valore delle opere e confrontarlo con il 3% annuo (circa 126.000 €/anno)"}
+  - {priorita: Alta, n: "17, 18", impianto: "KI Italia: fotovoltaico Risano 6,37 MWp e agrivoltaico Lauzacco 4,98 MW",
+     situazione: "PAS respinte il 03/09 e l'11/09/2026 per fascia cimiteriale; previste in autorizzazione unica",
+     azione: "Preparare da ora la richiesta del 3% annuo"}
+  - {priorita: Alta, n: "20", impianto: "BESS Aukera, 137,75 MW",
+     situazione: "Opere scritte nel decreto (art. 19), da fare entro l'entrata in esercizio; convenzione non firmata",
+     azione: "Firmare con valore delle opere, tempi, fideiussione e penali"}
+  - {priorita: Alta, n: "16", impianto: "BESS RNE14, 90 MW", situazione: "1 milione da termsheet; convenzione da firmare",
+     azione: "Spostare autorizzazioni e progettazione sull'impresa, aggiungere fideiussione e rivalutazione"}
+  - {priorita: Media, n: "13", impianto: "Crimea, fotovoltaico 6,25 MW",
+     situazione: "Decreto con 3% annuo; convenzione in preparazione per la ciclabile",
+     azione: "La convenzione non deve trasformare il 3% annuo in un'opera una tantum"}
+  - {priorita: Media, n: "4", impianto: "Cjase Sterpet",
+     situazione: "Fotovoltaico 400 kWp ancora da realizzare; subentrata MSE Solar Energy Italia (comunicazione del 14/05/2026)",
+     azione: "Verificare scadenze e garanzie nella convenzione 2023 e sollecitare"}
+  - {priorita: Media, n: "8", impianto: "Risano (Sunprime)", situazione: "Convenzione firmata, opere in corso",
+     azione: "Seguire i lavori; rivedere la sponsorizzazione"}
+  - {priorita: Bassa, n: "7", impianto: Marconi, situazione: "Nessun obbligo di legge, auto e furgone in definizione",
+     azione: "Chiudere l'accordo volontario"}
+
+clausole:
+  - "Quota annua in percentuale dei proventi per tutta la vita dell'impianto, con anticipo alla firma o all'avvio dei lavori"
+  - "Minimo garantito annuo e rivalutazione ISTAT"
+  - "Rendiconto annuale dei ricavi da parte dell'impresa"
+  - "Fideiussione a prima richiesta prima dell'inizio dei lavori"
+  - "Progettazione e autorizzazioni delle opere a carico dell'impresa, non del Comune"
+  - "Scadenze certe e penali, non legate all'avvio del cantiere dell'impresa"
+  - "Obblighi trasferiti a chi subentra nel titolo o nell'impianto"
+  - "Solo misure ammesse dal DM 10/9/2010, All. 2: niente sponsorizzazioni o somme senza vincolo di destinazione"
+  - "Ripartizione concordata con i Comuni vicini quando l'impianto o le opere li toccano"
+
+documenti:
+  - "Convenzione Cjase Sterpet approvata dalla giunta nel febbraio 2023, con scadenze e garanzie"
+  - "Accordo e quietanze dei 1,4 milioni monetizzati da Enel (BESS n. 1) e capitolo di bilancio"
+  - "«D30 Termsheet compensazioni» firmato con RNE14 e verbale dell'incontro con Aukera del 14/04/2026"
+  - "DGC 145/2023 (parere su Contessa), DGC 79/2022 (parere su Enel), DGC 97/2021 e 157/2021"
+  - "Verbale della conferenza Santo Stefano del 27/04/2022: cosa chiese Pavia"
+  - "Convenzione Sunprime con il computo delle opere"
+  - "Biogas (n. 10): titolo e capacità in Smc/h, che mancano dal materiale"
+  - "Superficie agricola comunale di riferimento, per la verifica del tetto del 3% di suolo"
+
+fonti: >
+  Schede FER e decreti forniti dal Comune di Pavia di Udine (ottobre 2026): AU 17640, 37803, 40713, 43543, 18458,
+  3866 e 3953/GRFVG; decreto MASE 55/17/2022; decreto regionale 4977/2026 (VIA Contessa); provvedimento PAS IEIS del
+  09/08/2024.

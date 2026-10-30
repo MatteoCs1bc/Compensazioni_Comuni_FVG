@@ -1,10 +1,12 @@
+import zlib
+
 import pandas as pd
 import plotly.graph_objects as go
 import streamlit as st
 
 from core.compensazioni import ImpiantoProduzione, metodi_produzione, valore_scelto_bess
 from core.dati import ROOT, comuni_indicatori, euro, nota_legale, num, pct, regole, tabella
-from core.pavia import analisi, carica_analisi, excel_analisi, gruppi_zona
+from core.pavia import analisi, carica_analisi, carica_scheda, excel_analisi, gruppi_zona, scheda_docx, totali_scheda
 
 R = regole()
 D = R["default_fvg"]
@@ -32,8 +34,62 @@ k[2].metric("Suolo agricolo occupato (con mitigazioni)", f"{num(agri_ha, 1)} ha"
 k[3].metric("MW richiesti sull'area di rete", num(rete.mw_richiesti_sulle_aree, 0),
             help="Area della cabina primaria principale, che si estende oltre il comune")
 
-t0, t1, t2, t3, t4 = st.tabs(["Analisi per progetto", "Impianti e mappe", "Stima APE FVG", "Rete e territorio",
-                              "Percorso partecipativo"])
+ts, t0, t1, t2, t3, t4 = st.tabs(["Scheda compensazioni", "Analisi per progetto", "Impianti e mappe", "Stima APE FVG",
+                                  "Rete e territorio", "Percorso partecipativo"])
+
+with ts:
+    s = carica_scheda()
+    tot = totali_scheda(s)
+    st.markdown(f"**{s['sintesi'].strip()}**")
+    st.caption(f"Dai decreti e dalle schede FER forniti dal Comune · aggiornata al {s['aggiornato_al'].strftime('%d/%m/%Y')}")
+    k = st.columns(4)
+    k[0].metric("Compensazioni una tantum note", euro(tot["una_tantum_noto"]),
+                help="Somma degli importi indicati nelle schede comunali e nei decreti; esclude le opere senza importo")
+    k[1].metric("Sugli accumuli, per MW", f"{num(tot['bess_eur_mw_min'] / 1000, 0)}–{num(tot['bess_eur_mw_max'] / 1000, 0)} mila €",
+                help="Enel 1,4 milioni su 200 MW; RNE14 1 milione su 90 MW. Una volta sola")
+    k[2].metric("Impianti con quota annuale", tot["annuali"], help="Solo Crimea, per decisione della Regione in conferenza")
+    k[3].metric("Progetti con priorità alta", tot["aperti"])
+    st.download_button("Scarica la scheda da stampare (Word)", scheda_docx(s), "pavia_scheda_compensazioni.docx",
+                       mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document", icon=":material/print:")
+
+    st.subheader("Cosa emerge dai documenti")
+    for x in s["novita"]:
+        st.markdown(f"- **{x['titolo']}.** {x['testo'].strip()}")
+
+    st.subheader("Compensazioni impianto per impianto")
+    imp = s["impianti_df"].assign(valore=lambda d: d.eur_mw.map(lambda v: euro(v) if pd.notna(v) else None))
+    imp.loc[imp.modalita == "annuale", "valore"] = "annuale"
+    st.dataframe(imp[["n", "impianto", "mw", "titolo", "compensazione", "eur", "valore", "stato"]].rename(columns={
+        "n": "N.", "impianto": "Impianto", "mw": "MW", "titolo": "Titolo", "compensazione": "Compensazione per Pavia",
+        "eur": "Importo", "valore": "€ per MW", "stato": "Stato"}), hide_index=True, use_container_width=True,
+        column_config={"MW": st.column_config.NumberColumn(format="%.2f"),
+                       "Importo": st.column_config.NumberColumn(format="%.0f €")})
+    for n in s.get("note_impianti", []):
+        st.caption(n)
+
+    st.subheader("Pavia e Santa Maria la Longa a confronto")
+    st.markdown(s["confronto"]["testo"].strip())
+    st.table(s["confronto_df"].rename(columns={"impianto": "Impianto", "pavia": "Pavia di Udine",
+                                                "smll": "Santa Maria la Longa"}).set_index("Impianto"))
+
+    st.subheader("Progetti da seguire adesso")
+    st.markdown("Sui primi quattro l'importo è ancora aperto: è qui che conviene chiedere il modello Crimea, "
+                "cioè il 3% annuo dei proventi.")
+    st.dataframe(s["priorita_df"].rename(columns={"priorita": "Priorità", "n": "N.", "impianto": "Impianto",
+                                                  "situazione": "Situazione", "azione": "Cosa fare"}),
+                 hide_index=True, use_container_width=True)
+
+    c1, c2 = st.columns(2)
+    with c1:
+        st.subheader("Cosa pretendere nelle convenzioni")
+        for x in s["clausole"]:
+            st.checkbox(x, key=f"pv_cl_{zlib.crc32(x.encode())}")
+        st.page_link("pagine/convenzione.py", label="Apri la bozza di convenzione", icon=":material/contract:")
+    with c2:
+        st.subheader("Documenti da recuperare")
+        for x in s["documenti"]:
+            st.checkbox(x, key=f"pv_doc_{zlib.crc32(x.encode())}")
+    st.caption("Fonti: " + s["fonti"].strip())
 
 with t0:
     an = analisi(fer, R)
