@@ -313,9 +313,6 @@ def impianti_mappa() -> pd.DataFrame:
     return pd.DataFrame(righe)
 
 
-COLORI_TENSIONE = {380: "#6a1b9a", 220: "#1565c0", 132: "#00838f"}
-
-
 def osm_pavia() -> dict:
     """Linee elettriche e altri impianti fotovoltaici da OpenStreetMap, ritagliati sull'area di Pavia."""
     import json
@@ -323,24 +320,26 @@ def osm_pavia() -> dict:
         return json.load(f)
 
 
-def _tracce_osm(fig, osm: dict):
+RIQUADRO_PAVIA = (13.20, 13.38, 45.935, 46.025)
+
+
+def _tracce_osm(fig, osm: dict, centri: list | None = None):
+    """Linee AT, cabine (stazioni, primarie, secondarie) e centrali OSM nel riquadro di Pavia.
+    Le centrali a meno di 150 m da un impianto dell'elenco comunale sono doppioni e vengono saltate."""
+    import math
     import plotly.graph_objects as go
-    linee = [f for f in osm["features"] if f["properties"]["tipo"] == "linea"]
-    for kv in sorted({f["properties"]["tensione_kv"] or 0 for f in linee}, reverse=True):
-        lon, lat, txt = [], [], []
-        for f in linee:
-            p = f["properties"]
-            if (p["tensione_kv"] or 0) != kv:
-                continue
-            t = (f"<b>Linea {kv} kV</b>" + (f"<br>{p['nome']}" if p.get("nome") else "")
-                 + (f"<br>Codice {p['ref']}" if p.get("ref") else "") + (f"<br>{p['gestore']}" if p.get("gestore") else "")
-                 + "<br><i>OpenStreetMap</i>")
-            for x, y in f["geometry"]["coordinates"]:
-                lon.append(x); lat.append(y); txt.append(t)
-            lon.append(None); lat.append(None); txt.append(None)
-        fig.add_trace(go.Scattermap(lon=lon, lat=lat, mode="lines", name=f"Linea {kv} kV" if kv else "Linea AT",
-                                    line=dict(color=COLORI_TENSIONE.get(kv, "#546e7a"), width=3 if kv >= 220 else 2),
-                                    hovertext=txt, hoverinfo="text", legendgroup="linee"))
+    from core.mappe import cabine_fvg, tracce_cabine, tracce_centrali, tracce_linee
+    tracce_linee(fig, osm["features"])
+    x0, x1, y0, y1 = RIQUADRO_PAVIA
+
+    def vicino(xy):
+        return any(math.hypot((xy[0] - c[0]) * 77400, (xy[1] - c[1]) * 110540) < 150 for c in centri or [])
+
+    cab = [f for f in cabine_fvg()["features"]
+           if x0 < f["geometry"]["coordinates"][0] < x1 and y0 < f["geometry"]["coordinates"][1] < y1
+           and not (f["properties"]["classe"] == "centrale" and vicino(f["geometry"]["coordinates"]))]
+    tracce_cabine(fig, cab)
+    tracce_centrali(fig, cab)
     fv = [f for f in osm["features"] if f["properties"]["tipo"] == "fv"]
     if fv:
         lon, lat = [], []
@@ -348,13 +347,13 @@ def _tracce_osm(fig, osm: dict):
             for x, y in f["geometry"]["coordinates"][0]:
                 lon.append(x); lat.append(y)
             lon.append(None); lat.append(None)
-        nome = "Altri fotovoltaici (OSM, fuori elenco comunale)"
+        nome = "Altri fotovoltaici (fuori elenco comunale)"
         fig.add_trace(go.Scattermap(lon=lon, lat=lat, mode="lines", fill="toself", fillcolor="rgba(84,110,122,0.35)",
                                     line=dict(color="#546e7a", width=1.5), name=nome, legendgroup="fv_osm",
-                                    hoverinfo="skip"))
+                                    hoverinfo="skip", legend="legend2"))
         fig.add_trace(go.Scattermap(
             lon=[f["properties"]["centro"][0] for f in fv], lat=[f["properties"]["centro"][1] for f in fv],
-            mode="markers", marker=dict(size=8, color="#546e7a"), legendgroup="fv_osm", showlegend=False,
+            mode="markers", marker=dict(size=8, color="#546e7a"), legendgroup="fv_osm", showlegend=False, legend="legend2",
             hovertext=[f"<b>{f['properties'].get('nome') or 'Fotovoltaico a terra'}</b><br>"
                        f"Circa {_mw(f['properties']['ha'])} ha (superficie del poligono OSM)"
                        + (f"<br>{f['properties']['gestore']}" if f["properties"].get("gestore") else "")
@@ -367,11 +366,12 @@ def figura_mappa(df: pd.DataFrame, stati: list[str] | None = None, stile: str = 
     """Mappa plotly con i poligoni colorati per stato; un'etichetta col numero dell'elenco comunale.
     Con `osm`, aggiunge sotto gli impianti le linee ad alta tensione e gli altri fotovoltaici di OpenStreetMap."""
     import plotly.graph_objects as go
+    centri = list(zip(df.lon_c, df.lat_c))
     if stati is not None:
         df = df[df.stato.isin(stati)]
     fig = go.Figure()
     if osm:
-        _tracce_osm(fig, osm)
+        _tracce_osm(fig, osm, centri)
     if confine:
         g = confine["geometry"]
         polys = g["coordinates"] if g["type"] == "MultiPolygon" else [g["coordinates"]]
@@ -411,7 +411,6 @@ def figura_mappa(df: pd.DataFrame, stati: list[str] | None = None, stile: str = 
             marker=dict(size=[20 if g == "Point" else 18 for g in d.geometria], color="white", opacity=0.85),
             hovertext=hover, hoverinfo="text", name=stato, legendgroup=stato, showlegend=False))
     fig.update_layout(map=dict(style=stile, center=dict(lat=45.978, lon=13.29), zoom=12.3),
-                      margin=dict(l=0, r=0, t=0, b=0), height=620,
-                      legend=dict(orientation="h", yanchor="bottom", y=0.01, xanchor="left", x=0.01,
-                                  bgcolor="rgba(255,255,255,0.85)"))
-    return fig
+                      margin=dict(l=0, r=0, t=0, b=0), height=620)
+    from core.mappe import legende
+    return legende(fig, "Impianti dell'elenco comunale", "Rete e altri impianti (OpenStreetMap)" if osm else None)

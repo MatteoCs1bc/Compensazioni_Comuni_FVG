@@ -146,4 +146,37 @@ def test_osm_pavia():
     assert "way/768604088" not in {f["properties"]["osm_id"] for f in osm["features"]}
     fig = figura_mappa(impianti_mappa(), None, "white-bg", osm=osm)
     nomi = {t.name for t in fig.data}
-    assert "Linea 380 kV" in nomi and any("OSM" in (n or "") for n in nomi)
+    assert "Linea 380 kV" in nomi and any("fuori elenco" in (n or "") for n in nomi)
+    # legenda leggibile col tema scuro: testo scuro esplicito, rete OSM nella seconda legenda
+    assert fig.layout.legend.font.color == "#1f2933" and fig.layout.legend2.title.text
+    assert all(t.legend == "legend2" for t in fig.data if (t.name or "").startswith("Linea"))
+
+
+def test_mappa_fvg():
+    from core.mappe import STATI_FVG, figura_fvg, osm_fvg, progetti_fvg
+    df = progetti_fvg()
+    assert len(df) > 200 and df.stato.isin(STATI_FVG).all()
+    assert df.lon.between(12.3, 13.95).all() and df.lat.between(45.55, 46.7).all()
+    # accumuli dal registro corretto: Aukera 137,75 MW, non 1.377,5
+    assert df[(df.categoria == "Accumuli")].potenza_mw.max() < 1000
+    osm = osm_fvg()
+    kv = {f["properties"].get("tensione_kv") for f in osm["features"] if f["properties"]["tipo"] == "linea"}
+    assert kv == {132, 220, 380}
+    fig = figura_fvg(df, osm, ["Solare", "Accumuli"], STATI_FVG)
+    nomi = {t.name for t in fig.data}
+    assert {"Solare", "Accumuli", "Linea 380 kV", "Fotovoltaico a terra esistente",
+            "Stazioni AT (Terna)", "Cabine primarie AT/MT"} <= nomi
+    tutti = figura_fvg(df, osm, ["Solare"], STATI_FVG, {"aree", "secondarie"})
+    assert {"Aree di cabina primaria", "Cabine secondarie MT/BT"} <= {t.name for t in tutti.data}
+
+
+def test_cabine_osm():
+    from core.mappe import cabine_fvg, dati_aree
+    c = [f["properties"] for f in cabine_fvg()["features"]]
+    n = {k: sum(p["classe"] == k for p in c) for k in ("stazione", "primaria", "secondaria", "centrale")}
+    assert n["stazione"] >= 4 and n["primaria"] >= 50 and n["secondaria"] > 5000 and n["centrale"] > 100
+    assert any(p.get("nome") == "SE Udine Sud" and p["classe"] == "stazione" for p in c)
+    # ogni cabina primaria cade in un'area di cabina primaria nota
+    a = dati_aree()
+    assert all(p.get("area") in set(a.codice) for p in c if p["classe"] == "primaria")
+    assert a.sezioni_invertite.sum() > 0
