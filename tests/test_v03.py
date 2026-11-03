@@ -106,3 +106,44 @@ def test_pavia_scheda():
     assert t["bess_eur_mw_min"] == pytest.approx(7000) and t["bess_eur_mw_max"] == pytest.approx(1_000_000 / 90)
     assert set(s["priorita_df"].priorita) <= {"Alta", "Media", "Bassa"}
     assert scheda_docx(s)[:2] == b"PK"
+
+
+# ---------------------------------------------------------------- registro VIA FVG
+def test_registro_via():
+    v = pd.read_csv(ROOT / "data" / "territorio" / "registro_via_fvg.csv").fillna("")
+    assert v.id.is_unique and len(v) >= 20
+    assert set(v.categoria) <= {"Rinnovabili", "Fossili", "Reti", "Trasporti"}
+    assert v.comuni.str.contains("Pavia di Udine").sum() >= 3
+
+
+def test_mappa_pavia():
+    from core.pavia import figura_mappa, impianti_mappa
+    df = impianti_mappa()
+    assert df.id.is_unique and len(df) >= 25
+    # tutti gli impianti dell'elenco comunale (tranne la 5, che è dentro la 4 come compensazione, è comunque mappata)
+    import pandas as pd
+    fer = pd.read_csv("data/pavia/fer_pavia_al_2026-09-30.csv")
+    assert set(fer.n.astype(str)) <= set(df.n)
+    # dentro il comune: bounding box del confine
+    for r in df.itertuples():
+        assert 13.23 < r.lon_c < 13.35 and 45.948 < r.lat_c < 46.013, r.id
+    # georeferenziazione: BESS Enel (n. 1) entro ~100 m dalle coordinate del portale regionale
+    b = df[df.id == "1"].iloc[0]
+    assert abs(b.lon_c - 13.28851) < 0.0013 and abs(b.lat_c - 45.96269) < 0.0009
+    # superfici coerenti con l'elenco comunale (Contessa e Cjase Sterpet entro il 10%)
+    for n, ha in (("2", 45.75), ("4", 38.68)):
+        assert abs(df[df.n == n].ha_mappa.sum() - ha) / ha < 0.1
+    fig = figura_mappa(df, ["Realizzato", "In corso"], "white-bg")
+    assert len(fig.data) >= 4
+
+
+def test_osm_pavia():
+    from core.pavia import figura_mappa, impianti_mappa, osm_pavia
+    osm = osm_pavia()
+    linee = [f for f in osm["features"] if f["properties"]["tipo"] == "linea"]
+    assert {380, 220, 132} <= {f["properties"]["tensione_kv"] for f in linee}
+    # il fotovoltaico OSM di San Mauro coincide con l'impianto 0a del Comune ed è stato scartato
+    assert "way/768604088" not in {f["properties"]["osm_id"] for f in osm["features"]}
+    fig = figura_mappa(impianti_mappa(), None, "white-bg", osm=osm)
+    nomi = {t.name for t in fig.data}
+    assert "Linea 380 kV" in nomi and any("OSM" in (n or "") for n in nomi)

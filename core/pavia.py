@@ -234,3 +234,184 @@ def scheda_docx(s: dict) -> bytes:
     buf = io.BytesIO()
     d.save(buf)
     return buf.getvalue()
+
+
+# ---------------------------------------------------------------------------
+# Mappa interattiva degli impianti
+# ---------------------------------------------------------------------------
+COLORI_STATO = {"Realizzato": "#2e7d32", "Autorizzato": "#f2c200", "In corso": "#f57c00",
+                "Archiviata": "#9e9e9e", "Rete Terna": "#c62828"}
+SIMBOLO_TIPO = {"FV": "Fotovoltaico", "BESS": "Accumulo (BESS)", "BIOMETANO": "Biogas / biometano", "RETE": "Rete elettrica"}
+
+
+def _rgba(hex_: str, a: float) -> str:
+    h = hex_.lstrip("#")
+    return f"rgba({int(h[0:2], 16)},{int(h[2:4], 16)},{int(h[4:6], 16)},{a})"
+
+
+def _a_capo(testo, larghezza: int = 60) -> str:
+    import textwrap
+    if not isinstance(testo, str) or not testo:
+        return ""
+    return "<br>".join(textwrap.wrap(testo, larghezza))
+
+
+def impianti_mappa() -> pd.DataFrame:
+    """Un poligono (o punto) per riga, con i dati dell'elenco comunale e della scheda compensazioni."""
+    import json
+    with open(CARTELLA / "impianti_pavia.geojson", encoding="utf-8") as f:
+        gj = json.load(f)
+    fer = pd.read_csv(CARTELLA / "fer_pavia_al_2026-09-30.csv")
+    fer["rif"] = fer.n.astype(str)
+    s = carica_scheda()
+    imp = {}
+    for r in s["impianti"]:
+        for k in str(r["n"]).replace(" ", "").split(","):
+            imp[k.lstrip("0") or "0"] = r
+    pri = {}
+    for r in s["priorita"]:
+        for k in str(r["n"]).replace(" ", "").split(","):
+            pri[k] = r
+    righe = []
+    for ft in gj["features"]:
+        p = ft["properties"]
+        rif = p["rif"]
+        base = "0" if rif in ("0a", "0b") else rif
+        f = fer[fer.rif == base]
+        f = f.iloc[0] if len(f) else None
+        if rif.startswith("terna"):
+            stato, tipo = "Rete Terna", "RETE"
+        else:
+            stato, tipo = f.stato, f.tipo
+        sc, pr = imp.get(base), pri.get(base)
+        nome = p["nome"] or (sc["impianto"] if sc else None) or (f.denominazione if f is not None else rif)
+        if f is not None and str(f.denominazione).startswith("Compensazione") and "4" in imp:
+            comp = f"È la compensazione per il Comune dell'impianto Cjase Sterpet (n. 4): {imp['4']['stato']}"
+        elif sc:
+            comp = f"{sc['compensazione']} ({sc['stato']})"
+        elif pr:
+            comp = f"{pr['situazione']} → {pr['azione']}"
+        elif rif.startswith("terna"):
+            comp = "Opera di rete Terna: compensazioni ai Comuni ai sensi della L. 239/2004, art. 1, c. 5"
+        else:
+            comp = "Nessuna informazione nella scheda"
+        g = ft["geometry"]
+        if g["type"] == "Polygon":
+            ring = g["coordinates"][0]
+            lon, lat = [c[0] for c in ring], [c[1] for c in ring]
+        else:
+            lon, lat = [g["coordinates"][0]], [g["coordinates"][1]]
+        righe.append({
+            "id": p["id"], "n": base if not rif.startswith("terna") else "", "nome": nome, "tipo": tipo,
+            "tipo_esteso": SIMBOLO_TIPO.get(tipo, tipo), "stato": stato,
+            "mw": f.potenza_mw if f is not None and pd.notna(f.potenza_mw) else None,
+            "ha_comune": f.sup_complessiva_ha if f is not None and pd.notna(f.sup_complessiva_ha) else None,
+            "ha_mappa": p["ha_mappa"], "titolo": (f.provvedimento if f is not None and pd.notna(f.provvedimento) else ""),
+            "compensazione": comp, "geometria": g["type"],
+            "lon": lon, "lat": lat, "lon_c": p["centro"][0], "lat_c": p["centro"][1],
+        })
+    return pd.DataFrame(righe)
+
+
+COLORI_TENSIONE = {380: "#6a1b9a", 220: "#1565c0", 132: "#00838f"}
+
+
+def osm_pavia() -> dict:
+    """Linee elettriche e altri impianti fotovoltaici da OpenStreetMap, ritagliati sull'area di Pavia."""
+    import json
+    with open(CARTELLA / "osm_pavia.geojson", encoding="utf-8") as f:
+        return json.load(f)
+
+
+def _tracce_osm(fig, osm: dict):
+    import plotly.graph_objects as go
+    linee = [f for f in osm["features"] if f["properties"]["tipo"] == "linea"]
+    for kv in sorted({f["properties"]["tensione_kv"] or 0 for f in linee}, reverse=True):
+        lon, lat, txt = [], [], []
+        for f in linee:
+            p = f["properties"]
+            if (p["tensione_kv"] or 0) != kv:
+                continue
+            t = (f"<b>Linea {kv} kV</b>" + (f"<br>{p['nome']}" if p.get("nome") else "")
+                 + (f"<br>Codice {p['ref']}" if p.get("ref") else "") + (f"<br>{p['gestore']}" if p.get("gestore") else "")
+                 + "<br><i>OpenStreetMap</i>")
+            for x, y in f["geometry"]["coordinates"]:
+                lon.append(x); lat.append(y); txt.append(t)
+            lon.append(None); lat.append(None); txt.append(None)
+        fig.add_trace(go.Scattermap(lon=lon, lat=lat, mode="lines", name=f"Linea {kv} kV" if kv else "Linea AT",
+                                    line=dict(color=COLORI_TENSIONE.get(kv, "#546e7a"), width=3 if kv >= 220 else 2),
+                                    hovertext=txt, hoverinfo="text", legendgroup="linee"))
+    fv = [f for f in osm["features"] if f["properties"]["tipo"] == "fv"]
+    if fv:
+        lon, lat = [], []
+        for f in fv:
+            for x, y in f["geometry"]["coordinates"][0]:
+                lon.append(x); lat.append(y)
+            lon.append(None); lat.append(None)
+        nome = "Altri fotovoltaici (OSM, fuori elenco comunale)"
+        fig.add_trace(go.Scattermap(lon=lon, lat=lat, mode="lines", fill="toself", fillcolor="rgba(84,110,122,0.35)",
+                                    line=dict(color="#546e7a", width=1.5), name=nome, legendgroup="fv_osm",
+                                    hoverinfo="skip"))
+        fig.add_trace(go.Scattermap(
+            lon=[f["properties"]["centro"][0] for f in fv], lat=[f["properties"]["centro"][1] for f in fv],
+            mode="markers", marker=dict(size=8, color="#546e7a"), legendgroup="fv_osm", showlegend=False,
+            hovertext=[f"<b>{f['properties'].get('nome') or 'Fotovoltaico a terra'}</b><br>"
+                       f"Circa {_mw(f['properties']['ha'])} ha (superficie del poligono OSM)"
+                       + (f"<br>{f['properties']['gestore']}" if f["properties"].get("gestore") else "")
+                       + "<br>Non è nell'elenco FER del Comune: probabilmente fuori dai confini comunali"
+                       + "<br><i>OpenStreetMap</i>" for f in fv], hoverinfo="text"))
+
+
+def figura_mappa(df: pd.DataFrame, stati: list[str] | None = None, stile: str = "open-street-map",
+                 confine: dict | None = None, osm: dict | None = None):
+    """Mappa plotly con i poligoni colorati per stato; un'etichetta col numero dell'elenco comunale.
+    Con `osm`, aggiunge sotto gli impianti le linee ad alta tensione e gli altri fotovoltaici di OpenStreetMap."""
+    import plotly.graph_objects as go
+    if stati is not None:
+        df = df[df.stato.isin(stati)]
+    fig = go.Figure()
+    if osm:
+        _tracce_osm(fig, osm)
+    if confine:
+        g = confine["geometry"]
+        polys = g["coordinates"] if g["type"] == "MultiPolygon" else [g["coordinates"]]
+        lon, lat = [], []
+        for poly in polys:
+            for c in poly[0]:
+                lon.append(c[0]); lat.append(c[1])
+            lon.append(None); lat.append(None)
+        fig.add_trace(go.Scattermap(lon=lon, lat=lat, mode="lines", line=dict(color="#37474f", width=2),
+                                    name="Confine comunale", hoverinfo="skip"))
+    for stato, colore in COLORI_STATO.items():
+        d = df[(df.stato == stato) & (df.geometria == "Polygon")]
+        if d.empty:
+            continue
+        lon, lat, testi = [], [], []
+        for r in d.itertuples():
+            lon += r.lon + [None]; lat += r.lat + [None]
+        fig.add_trace(go.Scattermap(lon=lon, lat=lat, mode="lines", fill="toself", fillcolor=_rgba(colore, 0.55),
+                                    line=dict(color=colore, width=2), name=stato, hoverinfo="skip",
+                                    legendgroup=stato))
+    # punti centrali: etichette e testo al passaggio del mouse
+    for stato, colore in COLORI_STATO.items():
+        d = df[(df.stato == stato) & ((df.geometria == "Point") | (df.ha_mappa.fillna(0) >= 0.5))]
+        if d.empty:
+            continue
+        hover = [
+            f"<b>{('N. ' + r.n + ' · ') if r.n else ''}{_a_capo(r.nome, 50)}</b><br>"
+            f"{r.tipo_esteso} · {r.stato}"
+            + (f" · {_mw(r.mw)} MW" if r.mw is not None and pd.notna(r.mw) else "")
+            + (f"<br>Superficie: {_mw(r.ha_comune)} ha (elenco comunale)" if r.ha_comune is not None and pd.notna(r.ha_comune) else "")
+            + (f"<br>{_a_capo(r.titolo)}" if r.titolo else "")
+            + f"<br><i>Compensazione:</i> {_a_capo(r.compensazione)}"
+            for r in d.itertuples()]
+        fig.add_trace(go.Scattermap(
+            lon=d.lon_c, lat=d.lat_c, mode="markers+text", text=d.n, textposition="middle center",
+            textfont=dict(size=12, color="black"),
+            marker=dict(size=[20 if g == "Point" else 18 for g in d.geometria], color="white", opacity=0.85),
+            hovertext=hover, hoverinfo="text", name=stato, legendgroup=stato, showlegend=False))
+    fig.update_layout(map=dict(style=stile, center=dict(lat=45.978, lon=13.29), zoom=12.3),
+                      margin=dict(l=0, r=0, t=0, b=0), height=620,
+                      legend=dict(orientation="h", yanchor="bottom", y=0.01, xanchor="left", x=0.01,
+                                  bgcolor="rgba(255,255,255,0.85)"))
+    return fig
