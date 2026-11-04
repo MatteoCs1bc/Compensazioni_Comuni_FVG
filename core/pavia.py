@@ -240,7 +240,7 @@ def scheda_docx(s: dict) -> bytes:
 # Mappa interattiva degli impianti
 # ---------------------------------------------------------------------------
 COLORI_STATO = {"Realizzato": "#2e7d32", "Autorizzato": "#f2c200", "In corso": "#f57c00",
-                "Archiviata": "#9e9e9e", "Rete Terna": "#c62828"}
+                "Respinta": "#9e9e9e", "Rete Terna": "#c62828"}
 SIMBOLO_TIPO = {"FV": "Fotovoltaico", "BESS": "Accumulo (BESS)", "BIOMETANO": "Biogas / biometano", "RETE": "Rete elettrica"}
 
 
@@ -256,42 +256,63 @@ def _a_capo(testo, larghezza: int = 60) -> str:
     return "<br>".join(textwrap.wrap(testo, larghezza))
 
 
+ELENCO_MAPPA = "fer_pavia_al_2026-10-20.csv"   # tabella del Comune aggiornata al 20/10/2026
+NUMERO_DA_POLIGONO = {"0a": "00", "0b": "01"}   # la mappa Insiel indica «0» per entrambi gli impianti del 2012
+STATO_MAPPA = {"Iter in corso": "In corso", "Archiviata": "Respinta"}
+
+
+def _chiavi_scheda(n) -> list[str]:
+    """«0, 01» -> ["00", "01"]; «17, 18» -> ["17", "18"]."""
+    out = []
+    for k in str(n).replace(" ", "").split(","):
+        out.append({"0": "00", "00": "00", "01": "01"}.get(k, k))
+    return out
+
+
 def impianti_mappa() -> pd.DataFrame:
-    """Un poligono (o punto) per riga, con i dati dell'elenco comunale e della scheda compensazioni."""
+    """Un poligono (o punto) per riga, con i dati dell'elenco comunale e della scheda compensazioni.
+
+    Fonte dei dati: tabella del Comune al 20/10/2026. Il biogas (n. 10) c'è solo nell'elenco al 30/09/2026."""
     import json
     with open(CARTELLA / "impianti_pavia.geojson", encoding="utf-8") as f:
         gj = json.load(f)
-    fer = pd.read_csv(CARTELLA / "fer_pavia_al_2026-09-30.csv")
-    fer["rif"] = fer.n.astype(str)
+    fer = pd.read_csv(CARTELLA / ELENCO_MAPPA, dtype={"n": str})
+    vecchio = pd.read_csv(CARTELLA / "fer_pavia_al_2026-09-30.csv", dtype={"n": str})
+    solo_vecchio = vecchio[~vecchio.n.isin(fer.n) & (vecchio.n != "0")].assign(
+        note="Presente nell'elenco comunale al 30/09/2026 ma non nella tabella del 20/10/2026: da chiarire con l'ufficio tecnico")
+    fer = pd.concat([fer, solo_vecchio], ignore_index=True).set_index("n")
+    dubbio = ("Posizione da confermare: la mappa del Comune indica «0» per entrambi gli impianti del 2012; "
+              "qui sono attribuiti per vicinanza a via San Mauro e alla frazione di Selvuzzis. ")
+    fer.loc["00", "note"] = dubbio + "198 kW sono pochi per un poligono di circa 3 ettari: potrebbero essere invertiti. " + fer.loc["00", "note"]
+    fer.loc["01", "note"] = dubbio
     s = carica_scheda()
-    imp = {}
+    imp, pri = {}, {}
     for r in s["impianti"]:
-        for k in str(r["n"]).replace(" ", "").split(","):
-            imp[k.lstrip("0") or "0"] = r
-    pri = {}
+        for k in _chiavi_scheda(r["n"]):
+            imp[k] = r
     for r in s["priorita"]:
-        for k in str(r["n"]).replace(" ", "").split(","):
+        for k in _chiavi_scheda(r["n"]):
             pri[k] = r
     righe = []
     for ft in gj["features"]:
         p = ft["properties"]
         rif = p["rif"]
-        base = "0" if rif in ("0a", "0b") else rif
-        f = fer[fer.rif == base]
-        f = f.iloc[0] if len(f) else None
-        if rif.startswith("terna"):
+        terna = rif.startswith("terna")
+        n = NUMERO_DA_POLIGONO.get(rif, rif)
+        f = None if terna or n not in fer.index else fer.loc[n]
+        if terna:
             stato, tipo = "Rete Terna", "RETE"
         else:
-            stato, tipo = f.stato, f.tipo
-        sc, pr = imp.get(base), pri.get(base)
-        nome = p["nome"] or (sc["impianto"] if sc else None) or (f.denominazione if f is not None else rif)
+            stato, tipo = STATO_MAPPA.get(f.stato, f.stato), ("FV" if f.tipo == "AgriFV" else f.tipo)
+        sc, pr = imp.get(n), pri.get(n)
+        nome = p["nome"] if terna else (sc["impianto"] if sc and n not in ("00", "01") else f.denominazione)
         if f is not None and str(f.denominazione).startswith("Compensazione") and "4" in imp:
             comp = f"È la compensazione per il Comune dell'impianto Cjase Sterpet (n. 4): {imp['4']['stato']}"
         elif sc:
             comp = f"{sc['compensazione']} ({sc['stato']})"
         elif pr:
             comp = f"{pr['situazione']} → {pr['azione']}"
-        elif rif.startswith("terna"):
+        elif terna:
             comp = "Opera di rete Terna: compensazioni ai Comuni ai sensi della L. 239/2004, art. 1, c. 5"
         else:
             comp = "Nessuna informazione nella scheda"
@@ -301,13 +322,14 @@ def impianti_mappa() -> pd.DataFrame:
             lon, lat = [c[0] for c in ring], [c[1] for c in ring]
         else:
             lon, lat = [g["coordinates"][0]], [g["coordinates"][1]]
+        val = lambda col: (f[col] if f is not None and col in f and pd.notna(f[col]) else None)
         righe.append({
-            "id": p["id"], "n": base if not rif.startswith("terna") else "", "nome": nome, "tipo": tipo,
-            "tipo_esteso": SIMBOLO_TIPO.get(tipo, tipo), "stato": stato,
-            "mw": f.potenza_mw if f is not None and pd.notna(f.potenza_mw) else None,
-            "ha_comune": f.sup_complessiva_ha if f is not None and pd.notna(f.sup_complessiva_ha) else None,
-            "ha_mappa": p["ha_mappa"], "titolo": (f.provvedimento if f is not None and pd.notna(f.provvedimento) else ""),
-            "compensazione": comp, "geometria": g["type"],
+            "id": p["id"], "n": "" if terna else n, "nome": nome, "tipo": tipo,
+            "tipo_esteso": ("Agrivoltaico" if f is not None and f.tipo == "AgriFV" else SIMBOLO_TIPO.get(tipo, tipo)),
+            "stato": stato, "societa": val("societa") or "", "localizzazione": val("localizzazione") or "",
+            "mw": val("potenza_mw"), "ha_comune": val("sup_complessiva_ha"),
+            "ha_mappa": p["ha_mappa"], "titolo": val("provvedimento") or "", "ente": val("ente") or "",
+            "nota": val("note") or "", "compensazione": comp, "geometria": g["type"],
             "lon": lon, "lat": lat, "lon_c": p["centro"][0], "lat_c": p["centro"][1],
         })
     return pd.DataFrame(righe)
@@ -401,8 +423,12 @@ def figura_mappa(df: pd.DataFrame, stati: list[str] | None = None, stile: str = 
             f"<b>{('N. ' + r.n + ' · ') if r.n else ''}{_a_capo(r.nome, 50)}</b><br>"
             f"{r.tipo_esteso} · {r.stato}"
             + (f" · {_mw(r.mw)} MW" if r.mw is not None and pd.notna(r.mw) else "")
+            + (f"<br>{_a_capo(r.societa)}" if r.societa else "")
+            + (f" · {_a_capo(r.localizzazione)}" if r.localizzazione else "")
             + (f"<br>Superficie: {_mw(r.ha_comune)} ha (elenco comunale)" if r.ha_comune is not None and pd.notna(r.ha_comune) else "")
             + (f"<br>{_a_capo(r.titolo)}" if r.titolo else "")
+            + (f"<br>Ente: {_a_capo(r.ente)}" if r.ente else "")
+            + (f"<br><i>Nota:</i> {_a_capo(r.nota)}" if r.nota else "")
             + f"<br><i>Compensazione:</i> {_a_capo(r.compensazione)}"
             for r in d.itertuples()]
         fig.add_trace(go.Scattermap(

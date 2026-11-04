@@ -27,8 +27,9 @@ def mappa_impianti(chiave: str):
     osm = st.toggle("Rete elettrica (linee, stazioni, cabine primarie e secondarie) e altri impianti (OpenStreetMap)", value=True, key=f"{chiave}_osm")
     st.plotly_chart(figura_mappa(df, stati or [], MAPPA_STILE, osm=osm_pavia() if osm else None), use_container_width=True, key=f"{chiave}_mappa",
                     config={"scrollZoom": True, "displaylogo": False})
-    st.caption("Poligoni ricavati dalla cartografia Insiel del Comune «FER al 30-09-2026» (scala 1:20.000), numerati come "
-               "l'elenco FER comunale. Passa sopra il numero per i dati e la compensazione. Precisione di qualche metro: "
+    st.caption("Poligoni ricavati dalla cartografia Insiel del Comune «FER al 30-09-2026» (scala 1:20.000), numerati e "
+               "descritti come nella tabella FER del Comune al 20/10/2026. La numerazione del Comune non usa 6, 9, 11, 14 e 15; "
+               "il biogas (n. 10) compare solo nell'elenco al 30/09. Passa sopra il numero per i dati e la compensazione. Precisione di qualche metro: "
                "i tre accumuli coincidono con le coordinate del portale regionale. Linee, cabine, centrali e altri fotovoltaici: "
                "© OpenStreetMap contributors (ODbL), estrazione del 03/11/2026; su OSM mancano molti impianti recenti. "
                "Mappa di base © OpenStreetMap.")

@@ -122,8 +122,14 @@ def test_mappa_pavia():
     assert df.id.is_unique and len(df) >= 25
     # tutti gli impianti dell'elenco comunale (tranne la 5, che è dentro la 4 come compensazione, è comunque mappata)
     import pandas as pd
-    fer = pd.read_csv("data/pavia/fer_pavia_al_2026-09-30.csv")
-    assert set(fer.n.astype(str)) <= set(df.n)
+    fer = pd.read_csv("data/pavia/fer_pavia_al_2026-10-20.csv", dtype={"n": str})
+    # tutti gli impianti della tabella del Comune al 20/10 sono sulla mappa, più il biogas (n. 10) dell'elenco al 30/09
+    assert set(fer.n) | {"10"} == set(df.n) - {""}
+    # stati come nella tabella del Comune: Santo Stefano realizzato, KI Italia respinte
+    st = df.drop_duplicates("n").set_index("n").stato
+    assert st["3"] == "Realizzato" and st["17"] == st["18"] == "Respinta" and st["19"] == "In corso"
+    # la scheda «0, 01» non deve sovrascrivere l'impianto n. 1 (BESS Enel)
+    assert "1.400.000" in df[df.n == "1"].compensazione.iloc[0]
     # dentro il comune: bounding box del confine
     for r in df.itertuples():
         assert 13.23 < r.lon_c < 13.35 and 45.948 < r.lat_c < 46.013, r.id
@@ -133,7 +139,7 @@ def test_mappa_pavia():
     # superfici coerenti con l'elenco comunale (Contessa e Cjase Sterpet entro il 10%)
     for n, ha in (("2", 45.75), ("4", 38.68)):
         assert abs(df[df.n == n].ha_mappa.sum() - ha) / ha < 0.1
-    fig = figura_mappa(df, ["Realizzato", "In corso"], "white-bg")
+    fig = figura_mappa(df, ["Realizzato", "In corso", "Respinta"], "white-bg")
     assert len(fig.data) >= 4
 
 
