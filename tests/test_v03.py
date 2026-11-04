@@ -186,3 +186,19 @@ def test_cabine_osm():
     a = dati_aree()
     assert all(p.get("area") in set(a.codice) for p in c if p["classe"] == "primaria")
     assert a.sezioni_invertite.sum() > 0
+
+
+def test_au_fv_verificate_sul_bur():
+    import pandas as pd
+    au = pd.read_csv("data/territorio/au_fv_2025_2026.csv")
+    assert len(au) == 23 and au["ID progetto"].is_unique
+    assert (au["Stato verifica"] == "Verificato sul BUR").all()
+    assert au["Numero decreto"].notna().all() and au["Proponente"].notna().all()
+    crimea = au[au["ID progetto"] == "FVG-2026-006"].iloc[0]
+    assert crimea["Numero decreto"] == "17640/GRFVG" and "Manzano" in crimea["Comune/i sede impianto"]
+    rel = pd.read_csv("data/territorio/au_fv_2025_2026_comuni.csv")
+    pav = rel[rel.Comune == "Pavia di Udine"]
+    assert set(pav[pav["Ruolo territoriale"] == "Comune sede impianto"]["ID progetto"]) == {"FVG-2025-003", "FVG-2025-016", "FVG-2026-006"}
+    assert "FVG-2025-006" in set(pav["ID progetto"])          # Trivignano Solar 1: solo connessione
+    c = pd.read_csv("data/territorio/comuni_indicatori.csv").set_index("comune")
+    assert c.loc["Pavia Di Udine", "au_fv_n"] == 3 and c.loc["Talmassons", "au_fv_n"] == 1

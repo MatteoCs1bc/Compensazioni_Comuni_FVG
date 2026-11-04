@@ -1,0 +1,41 @@
+Comune,ID progetto,Impianto/progetto,Potenza progetto (MW),Tipologia,Data AU,Ruolo territoriale
+Moimacco,FVG-2025-001,Impianto fotovoltaico Via Nazionale,6.25716,FV + accumulo,2025-01-07,Comune sede impianto
+Tavagnacco,FVG-2025-002,Cividina,8.35,FV,2025-02-06,Comune sede impianto
+Pavia di Udine,FVG-2025-003,Impianto fotovoltaico località Risano,4.356,FV,2025-04-10,Comune sede impianto
+Trieste,FVG-2025-004,PNRR Hydrogen Hub Trieste,4.85,FV + idrogeno,2025-04-10,Comune sede impianto
+Precenicco,FVG-2025-005,Impianto agrivoltaico Precenicco,9.99297,Agrivoltaico,2025-05-16,Comune sede impianto
+Pradamano,FVG-2025-006,Trivignano Solar 1,74.75712,Agrivoltaico,2025-06-26,Comune sede impianto
+Trivignano Udinese,FVG-2025-006,Trivignano Solar 1,74.75712,Agrivoltaico,2025-06-26,Comune sede impianto
+Palmanova,FVG-2025-006,Trivignano Solar 1,74.75712,Agrivoltaico,2025-06-26,Comune sede impianto
+Carlino,FVG-2025-007,Impianto agrivoltaico Carlino–San Giorgio,18.71,Agrivoltaico,2025-06-26,Comune sede impianto
+San Giorgio di Nogaro,FVG-2025-007,Impianto agrivoltaico Carlino–San Giorgio,18.71,Agrivoltaico,2025-06-26,Comune sede impianto
+Talmassons,FVG-2025-008,Impianto F.lli Rabbiosi,9.22793,Agrivoltaico,2025-06-25,Comune sede impianto
+Fiume Veneto,FVG-2025-009,Cimpello,11.1995,FV,2025-07-30,Comune sede impianto
+Campolongo Tapogliano,FVG-2025-010,Campolongo Tapogliano Solar 1,5.11632,Agrivoltaico,2025-08-19,Comune sede impianto
+Aquileia,FVG-2025-011,Bosco Moleco,8.75,FV,2025-10-31,Comune sede impianto
+Sesto al Reghena,FVG-2025-012,Impianto fotovoltaico Via Piramidi,18.70224,FV,2025-11-04,Comune sede impianto
+Sesto al Reghena,FVG-2025-013,Impianto agrivoltaico NPD,6.615,Agrivoltaico,2025-11-05,Comune sede impianto
+Chions,FVG-2025-013,Impianto agrivoltaico NPD,6.615,Agrivoltaico,2025-11-05,Comune sede impianto
+Martignacco,FVG-2025-014,Impianto fotovoltaico Martignacco,6.0,FV,2025-12-11,Comune sede impianto
+Grado,FVG-2025-015,Impianto Fossalon,13.455,FV + accumulo,2025-12-17,Comune sede impianto
+Trivignano Udinese,FVG-2025-016,Impianto agrivoltaico Trivignano,17.1108,Agrivoltaico,2025-12-18,Comune sede impianto
+Santa Maria La Longa,FVG-2025-016,Impianto agrivoltaico Trivignano,17.1108,Agrivoltaico,2025-12-18,Comune sede impianto
+Pavia di Udine,FVG-2025-016,Impianto agrivoltaico Trivignano,17.1108,Agrivoltaico,2025-12-18,Comune sede impianto
+Torviscosa,FVG-2025-017,Impianto fotovoltaico Torviscosa,8.702,FV,2025-12-23,Comune sede impianto
+Udine,FVG-2026-001,PV10 Prati del Torre Sud,1.814,FV,2026-02-03,Comune sede impianto
+Udine,FVG-2026-002,Prati di Prasingel,9.998,FV,2026-03-03,Comune sede impianto
+Zoppola,FVG-2026-003,Impianto fotovoltaico Zoppola,9.86154,FV,2026-04-01,Comune sede impianto
+Grado,FVG-2026-004,Boscat,19.06176,Agrivoltaico + accumulo,2026-05-27,Comune sede impianto
+Aquileia,FVG-2026-004,Boscat,19.06176,Agrivoltaico + accumulo,2026-05-27,Solo opere di connessione
+Castions di Strada,FVG-2026-005,Sunflo Cava Acco Superiore,7.36,FV flottante,2026-06-01,Comune sede impianto
+Talmassons,FVG-2026-005,Sunflo Cava Acco Superiore,7.36,FV flottante,2026-06-01,Solo opere di connessione
+Latisana,FVG-2025-005,Impianto agrivoltaico Precenicco,9.99297,Agrivoltaico,2025-05-16,Solo opere di connessione
+Santa Maria La Longa,FVG-2025-006,Trivignano Solar 1,74.75712,Agrivoltaico,2025-06-26,Solo opere di connessione
+Pavia di Udine,FVG-2025-006,Trivignano Solar 1,74.75712,Agrivoltaico,2025-06-26,Solo opere di connessione
+Udine,FVG-2025-006,Trivignano Solar 1,74.75712,Agrivoltaico,2025-06-26,Solo opere di connessione
+Fagagna,FVG-2025-014,Impianto fotovoltaico Martignacco,6.0,FV,2025-12-11,Solo opere di connessione
+Aquileia,FVG-2025-015,Impianto Fossalon,13.455,FV + accumulo,2025-12-17,Solo opere di connessione
+Bagnaria Arsa,FVG-2025-017,Impianto fotovoltaico Torviscosa,8.702,FV,2025-12-23,Solo opere di connessione
+Cervignano del Friuli,FVG-2025-017,Impianto fotovoltaico Torviscosa,8.702,FV,2025-12-23,Solo opere di connessione
+Pavia di Udine,FVG-2026-006,Crimea,7.04,FV,2026-04-02,Comune sede impianto
+Manzano,FVG-2026-006,Crimea,7.04,FV,2026-04-02,Comune sede impianto

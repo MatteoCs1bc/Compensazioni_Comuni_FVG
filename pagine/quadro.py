@@ -80,7 +80,10 @@ k[1].metric("Cabine primarie che lo servono", int(r.aree_cabina),
             help="Se più di una, una CER comunale non copre tutto il territorio")
 k[2].metric("MW richiesti sull'area di rete", num(r.mw_richiesti_sulle_aree, 0))
 k[3].metric("Accumuli (portale regionale)", f"{num(r.bess_mw, 0)} MW", help="Pratiche BESS sul portale regionale RIS_ENERG; i registri comunali possono includerne altre")
-k[4].metric("FV ≥1 MW autorizzati 2025–26", int(r.au_fv_n))
+k[4].metric("FV ≥1 MW autorizzati 2025–26", int(r.au_fv_n),
+            help="Autorizzazioni uniche 2025–26 (BUR) con impianto nel comune"
+                 + (f"; in altri {int(r.au_fv_connessione_n)} il comune ospita solo le opere di connessione"
+                    if r.get("au_fv_connessione_n", 0) else ""))
 st.markdown(
     f"- Stato della rete (lettura indicativa): **{r.stato_indicativo}** · sezioni invertite: {int(r.sezioni_invertite)} "
     f"(di cui oltre il 5% del tempo: {int(r.sezioni_oltre_5pct)})\n"
@@ -89,6 +92,18 @@ st.markdown(
 )
 if nome == "Pavia Di Udine":
     st.page_link("pagine/pavia.py", label="Apri la scheda completa di Pavia di Udine", icon=":material/location_city:")
+
+au_c = tabella("au_fv_2025_2026_comuni.csv")
+au_c = au_c[au_c.Comune.str.lower() == nome.lower()].merge(
+    tabella("au_fv_2025_2026.csv")[["ID progetto", "Numero decreto", "Proponente", "Fonte BUR"]], on="ID progetto", how="left")
+if len(au_c):
+    with st.expander(f"Autorizzazioni uniche FV e agrivoltaico 2025–26 ({len(au_c)})"):
+        st.dataframe(au_c[["Impianto/progetto", "Tipologia", "Potenza progetto (MW)", "Ruolo territoriale", "Data AU",
+                           "Numero decreto", "Proponente", "Fonte BUR"]].rename(columns={
+                     "Impianto/progetto": "Impianto", "Potenza progetto (MW)": "MW", "Ruolo territoriale": "Ruolo del comune",
+                     "Data AU": "Data", "Numero decreto": "Decreto", "Fonte BUR": "BUR"}),
+                     hide_index=True, use_container_width=True)
+        st.caption("Dai decreti pubblicati sul BUR FVG. La potenza è quella dell'intero progetto, anche se tocca più comuni.")
 
 with st.expander("Progetti nel comune"):
     pp = tabella("progetti_regionali_con_comune.csv")

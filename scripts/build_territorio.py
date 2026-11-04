@@ -73,7 +73,8 @@ db = db[[c for c in db.columns if not str(c).startswith("Unnamed")]]
 db = db.drop(columns=[c for c in db.columns if "priorit" in str(c).lower() or "commerc" in str(c).lower()], errors="ignore")
 db.to_csv(T / "au_fv_2025_2026.csv", index=False)
 rel = pd.read_excel(RAW / "au_fv_2025_2026_ricognizione.xlsx", sheet_name="Relazione Comune-Progetto")
-rel = rel[["Comune", "ID progetto", "Impianto/progetto", "Potenza progetto (MW)", "Tipologia", "Data AU"]]
+rel = rel[["Comune", "ID progetto", "Impianto/progetto", "Potenza progetto (MW)", "Tipologia", "Data AU", "Ruolo territoriale"]]
+rel.to_csv(T / "au_fv_2025_2026_comuni.csv", index=False)
 
 # --- indicatori per comune ---
 sint = pd.read_csv(RAW / "rete_comuni_sintesi.csv")
@@ -81,7 +82,11 @@ sint["key"] = sint["comune"].map(norm)
 b = bess[bess.conta_nel_totale & bess.comune.notna()].groupby("comune").agg(bess_n=("fascicolo", "count"), bess_mw=("mw", "sum"))
 b.index = b.index.map(norm)
 rel["key"] = rel["Comune"].map(norm)
-au = rel.groupby("key").agg(au_fv_n=("ID progetto", "nunique"), au_fv_mw_progetti=("Potenza progetto (MW)", "sum"))
+# conta solo i Comuni sede d'impianto; le sole opere di connessione sono contate a parte
+sede = rel[rel["Ruolo territoriale"] == "Comune sede impianto"]
+au = sede.groupby("key").agg(au_fv_n=("ID progetto", "nunique"), au_fv_mw_progetti=("Potenza progetto (MW)", "sum"))
+au = au.join(rel[rel["Ruolo territoriale"] != "Comune sede impianto"].groupby("key").agg(
+    au_fv_connessione_n=("ID progetto", "nunique")), how="outer")
 pp = pd.read_csv(RAW / "progetti_per_area.csv")
 pp["comune"] = [comune_di(x, y) for x, y in zip(pp.lon, pp.lat)]
 pp.to_csv(T / "progetti_regionali_con_comune.csv", index=False)
@@ -92,7 +97,7 @@ pcn = pp.dropna(subset=["comune"]).assign(key=lambda d: d.comune.map(norm)).grou
 opp = pd.read_csv(T / "opposizioni_locali.csv")
 out = sint.set_index("key").join(b).join(au).join(pc).join(pcn)
 out["opposizione_censita"] = [any(norm(c) in norm(l) for l in opp.luogo) for c in out.comune]
-for c in ["bess_n", "bess_mw", "au_fv_n", "au_fv_mw_progetti", "progetti_nel_comune"] + list(pc.columns):
+for c in ["bess_n", "bess_mw", "au_fv_n", "au_fv_mw_progetti", "au_fv_connessione_n", "progetti_nel_comune"] + list(pc.columns):
     out[c] = out[c].fillna(0)
 out.reset_index(drop=True).to_csv(T / "comuni_indicatori.csv", index=False)
 print("BESS:", len(bess), "pratiche,", round(bess[bess.conta_nel_totale].mw.sum(), 1), "MW;",

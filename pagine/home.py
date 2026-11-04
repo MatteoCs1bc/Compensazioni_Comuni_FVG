@@ -16,7 +16,8 @@ k1.metric("Comuni FVG", len(c))
 k2.metric("Accumuli (BESS) in autorizzazione unica", f"{num(b[b.conta_nel_totale].mw.sum(), 0)} MW",
           help="Pratiche dal server regionale RIS_ENERG, duplicati rimossi")
 k3.metric("FV/agrivoltaico ≥1 MW autorizzati 2025–26", f"{len(au)} progetti",
-          help="Ricognizione dai decreti pubblicati sul BUR")
+          help=f"Autorizzazioni uniche pubblicate sul BUR da gennaio 2025 a settembre 2026, "
+               f"tutte verificate sui decreti: {num(au['Potenza (MW)'].sum(), 0)} MW in totale")
 k4.metric("Comuni con inversione di flusso in rete", f"{int(c.flusso_invertito.sum())} su {len(c)}")
 
 st.divider()
