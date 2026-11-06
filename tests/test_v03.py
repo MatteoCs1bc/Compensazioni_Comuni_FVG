@@ -202,3 +202,38 @@ def test_au_fv_verificate_sul_bur():
     assert "FVG-2025-006" in set(pav["ID progetto"])          # Trivignano Solar 1: solo connessione
     c = pd.read_csv("data/territorio/comuni_indicatori.csv").set_index("comune")
     assert c.loc["Pavia Di Udine", "au_fv_n"] == 3 and c.loc["Talmassons", "au_fv_n"] == 1
+
+
+def test_suolo_pavia():
+    from core.suolo import (carica_suolo, conti, consumo_fvg, figura_affiancati, figura_annidati, figura_pannelli,
+                            gruppi_tetto, serie_consumo, voci_panoramica)
+    df = consumo_fvg()
+    assert len(df) == 216  # 215 comuni FVG + la riga regionale
+    r = df[df.comune == "Pavia di Udine"].iloc[0]
+    assert r.consumato_2025_ha == 557.02 and abs(r.consumato_2025_pct - 16.298) < 1e-6
+    assert abs(r.tetti_fv_min_ha - 29.247) < 0.01 and abs(r.tetti_fv_max_ha - 38.2) < 0.01
+    c = conti(carica_suolo(), r)
+    assert abs(c["tetto"] - 57.945) < 0.01           # 3% di 1.931,5 ha
+    assert abs(c["fv_aut"] - 56.09) < 0.01           # FV autorizzato in zona agricola
+    assert abs(c["bess_aut"] + c["bess_in_corso"] - 24.02) < 0.01  # Lauzacco (H2) escluso
+    assert abs(c["netto_2021_2025"] - 25.29) < 0.01
+    assert abs(serie_consumo(r).ha.sum() - 64.04) < 0.01
+    for f in (figura_affiancati(voci_panoramica(c)), figura_annidati(voci_panoramica(c, True)),
+              figura_pannelli(gruppi_tetto(c))):
+        assert f.layout.meta["larghezza_px"] <= 840   # entra nella colonna centrale senza rimpicciolirsi
+
+
+def test_suolo_confronti():
+    from core.suolo import (carica_suolo, conti, consumo_fvg, figura_rispetto_sau, figura_territorio,
+                            ripartizione_territorio, rispetto_sau)
+    s = carica_suolo()
+    c = conti(s, consumo_fvg().query("comune == 'Pavia di Udine'").iloc[0])
+    assert abs(c["realizzati"] - 59.72) < 0.01
+    rip = ripartizione_territorio(c, s)
+    figli = rip[rip.padre == "Territorio comunale"].ha.sum()
+    assert abs(figli - c["superficie"]) < 0.01          # SAU + consumato + resto = territorio
+    assert abs(rip[rip.padre == "Superficie agricola (SAU)"].ha.sum() - c["sau"]) < 0.01
+    r = rispetto_sau(c, s).set_index("voce")
+    assert abs(r.loc["Fotovoltaico a terra autorizzato", "pct_sau"] - 2.904) < 0.01
+    assert abs(r.loc["Suolo consumato in totale", "pct_sau"] - 28.84) < 0.01
+    figura_territorio(rip); figura_rispetto_sau(rispetto_sau(c, s))

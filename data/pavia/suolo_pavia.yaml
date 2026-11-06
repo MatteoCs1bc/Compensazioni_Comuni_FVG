@@ -1,0 +1,79 @@
+# Suolo a Pavia di Udine: superficie agricola, consumo di suolo e superfici degli impianti.
+# Gli impianti vengono dall'elenco FER del Comune al 20/10/2026 (fer_pavia_al_2026-10-20.csv);
+# il biometano (n. 10) dall'elenco al 30/09/2026. Per ogni impianto: superficie complessiva, se manca quella recintata.
+aggiornato_al: 2026-11-06
+comune_ispra: Pavia di Udine
+
+agricoltura:
+  sau_ha: 1931.5          # superficie agricola utilizzata
+  sat_ha: 2098.5          # superficie agricola totale
+  aziende: 138
+  cereali_pct: 33.1
+  industriali_pct: 28.0   # soprattutto soia
+  vite_pct: 13.0
+  fonte: >-
+    7° Censimento generale dell'agricoltura (annata 2019-2020), elaborazione comunale della Regione FVG
+    (agosto 2024). Il censimento attribuisce i terreni al comune del centro aziendale, non a quello dove si trovano:
+    è un'approssimazione della «superficie agricola del territorio comunale» della L.R. 2/2025.
+
+tetto:
+  quota: 0.03
+  norma: >-
+    L.R. FVG 2/2025, art. 8 c. 3 (testo vigente dopo la L.R. 13/2025): fino alle linee guida regionali, le superfici
+    di fotovoltaico a terra, accumuli elettrochimici e biometano, sommate a quelle degli impianti della stessa tipologia
+    già autorizzati in aree agricole, non possono superare il 3% della superficie agricola comunale.
+
+# zona: "agricola" entra nel conto del tetto; "non agricola" no; "incerta" da verificare sul PRGC.
+# gruppo: "autorizzato" (realizzati e autorizzati) oppure "in_corso" (istruttoria aperta).
+# realizzato: true per gli impianti già costruiti secondo gli elenchi comunali (servono per il confronto con il suolo consumato).
+impianti:
+  - {n: "00-01", nome: "San Mauro e Selvuzzis", tipologia: fv, ha: 0.78, zona: agricola, gruppo: autorizzato, realizzato: true}
+  - {n: "4", nome: "Cjase Sterpet", tipologia: fv, ha: 38.68, zona: agricola, gruppo: autorizzato, realizzato: true}
+  - {n: "5", nome: "Compensazione Cjase Sterpet (400 kWp)", tipologia: fv, ha: 1.10, zona: agricola, gruppo: autorizzato}
+  - {n: "7", nome: "Marconi", tipologia: fv, ha: 2.53, zona: incerta, gruppo: autorizzato, nota: "Zona S/E; solo la superficie recintata"}
+  - {n: "8", nome: "Risano (Sunprime)", tipologia: fv, ha: 6.15, zona: agricola, gruppo: autorizzato, realizzato: true}
+  - {n: "12", nome: "Tombis (Voltron)", tipologia: fv, ha: 1.05, zona: non agricola, gruppo: autorizzato, nota: "Zona D2"}
+  - {n: "13", nome: "Crimea", tipologia: fv, ha: 9.38, zona: agricola, gruppo: autorizzato}
+  - {n: "2", nome: "Contessa (agrivoltaico)", tipologia: fv, ha: 45.75, zona: agricola, gruppo: in_corso,
+     nota: "Agrivoltaico: se conti come «moduli collocati a terra» è da chiarire"}
+  - {n: "1", nome: "BESS Enel", tipologia: bess, ha: 9.06, zona: agricola, gruppo: autorizzato, realizzato: true}
+  - {n: "16", nome: "BESS RNE14", tipologia: bess, ha: 3.50, zona: agricola, gruppo: autorizzato, nota: "Solo il BESS, senza l'ampliamento della stazione"}
+  - {n: "20", nome: "BESS Aukera", tipologia: bess, ha: 0.80, zona: agricola, gruppo: autorizzato}
+  - {n: "19", nome: "EAGLE 1", tipologia: bess, ha: 10.66, zona: agricola, gruppo: in_corso}
+  - {n: "21", nome: "Lauzacco BESS", tipologia: bess, ha: 1.50, zona: non agricola, gruppo: in_corso, nota: "Zona H2"}
+  - {n: "3", nome: "Sottostazione Santo Stefano", tipologia: rete, ha: 0.35, zona: agricola, gruppo: autorizzato, realizzato: true,
+     nota: "Solo la sottostazione dell'impianto di Santo Stefano; non entra nel tetto"}
+  - {n: "10", nome: "Biometano (probabilmente Giove Energy)", tipologia: biometano, ha: 4.70, zona: agricola, gruppo: autorizzato, realizzato: true,
+     nota: "Elenco comunale al 30/09; zona da verificare"}
+
+# Colture del censimento 2020, in percentuale della SAU (il resto: altre colture, orti, prati, ecc.)
+colture:
+  - {nome: "Cereali", pct: 33.1}
+  - {nome: "Piante industriali (soprattutto soia)", pct: 28.0}
+  - {nome: "Vite", pct: 13.0}
+  - {nome: "Prati permanenti e pascoli", pct: 1.7}
+
+# Consumo di suolo dell'ultimo anno (2024-2025) per area: totale, quota dei nuovi fotovoltaici a terra, permanente.
+# ISPRA-SNPA 2026, Tabelle 3, 20, 21 e 26 del Rapporto.
+contesto_2025:
+  - {area: "Friuli Venezia Giulia", consumo_ha: 221.07, fv_ha: 89.6, fv_pct: 40.5, permanente_ha: 18.87}
+  - {area: "Provincia di Udine", consumo_ha: 142.16, fv_ha: 80.8, fv_pct: 56.9, permanente_ha: 8.57}
+  - {area: "Italia", consumo_ha: 10243, fv_ha: 2797, fv_pct: 27.3, permanente_ha: 1462}
+
+# Stima dei campi per l'alimentazione del biometano: non è superficie dell'impianto e non entra nel tetto.
+mais_biometano:
+  tonnellate_anno: 50000      # alimentazione dichiarata (colture, effluenti, sottoprodotti)
+  quota_insilato: 0.5         # IPOTESI: metà della dieta è insilato di mais o sorgo
+  resa_t_ha: 55               # IPOTESI: 50-60 t/ha di insilato
+  fonte: >-
+    Hydronews, 06/07/2026: impianto Giove Energy (CH4T), 500 Smc/h, oltre 50.000 t/anno da colture energetiche,
+    effluenti e sottoprodotti, circa 40 aziende fornitrici. La dieta esatta è nel piano di approvvigionamento della PAS.
+
+# Conversione superficie dei tetti → potenza: ipotesi prudente
+tetti_mw_per_ha: 1.5
+
+fonti:
+  - "ISPRA-SNPA, Consumo di suolo, ecosistemi urbani e stato del territorio. Edizione 2026 (dati per comune, CC BY 4.0)"
+  - "ISPRA-SNPA 2026, potenziale di recupero: superficie dei tetti disponibile per il fotovoltaico"
+  - "Regione FVG, I dati comunali del Censimento dell'agricoltura, agosto 2024"
+  - "Comune di Pavia di Udine, elenchi FER al 30/09 e al 20/10/2026"
