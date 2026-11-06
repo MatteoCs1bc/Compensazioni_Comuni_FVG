@@ -62,12 +62,21 @@ contesto_2025:
 
 # Stima dei campi per l'alimentazione del biometano: non è superficie dell'impianto e non entra nel tetto.
 mais_biometano:
-  tonnellate_anno: 50000      # alimentazione dichiarata (colture, effluenti, sottoprodotti)
-  quota_insilato: 0.5         # IPOTESI: metà della dieta è insilato di mais o sorgo
-  resa_t_ha: 55               # IPOTESI: 50-60 t/ha di insilato
+  # Stima dall'energia prodotta, non dal peso della dieta (le tonnellate di effluenti pesano molto e rendono poco).
+  smc_h: 500                  # capacità dell'impianto (Hydronews, 06/07/2026)
+  ore_anno: 8000              # IPOTESI: pieno carico, come nell'esempio APE del tool
+  resa_ch4_nm3_t: 111.8       # mais insilato ceroso: Nm3 di metano per t tal quale (Tabella producibilità biogas rev. 9.00, Drive › Biogas)
+  nm3_smc: 1.055              # da Nm3 (0 °C) a Smc (15 °C)
+  resa_t_ha: 55               # insilato di mais, t/ha tal quale (stesso valore del foglio Analisi_Energetica_Biogas, Drive › Biogas)
+  quota_min: 0.3              # IPOTESI: quota del metano che viene da colture dedicate
+  quota_centrale: 0.6
+  quota_max: 0.9
   fonte: >-
     Hydronews, 06/07/2026: impianto Giove Energy (CH4T), 500 Smc/h, oltre 50.000 t/anno da colture energetiche,
-    effluenti e sottoprodotti, circa 40 aziende fornitrici. La dieta esatta è nel piano di approvvigionamento della PAS.
+    effluenti e sottoprodotti, circa 40 aziende fornitrici. Il DM biometano 2022 (PNRR) lascia libera la dieta per gli
+    usi diversi dai trasporti ma chiede almeno l'80% di riduzione dei gas serra: con molto mais è difficile, e per questo
+    una parte importante della dieta è di solito effluenti e sottoprodotti. A Pavia il censimento conta circa 211.000 capi
+    avicoli: la pollina e la lettiera rendono quanto il mais per tonnellata. La dieta vera è nel piano di approvvigionamento.
 
 # Conversione superficie dei tetti → potenza: ipotesi prudente
 tetti_mw_per_ha: 1.5

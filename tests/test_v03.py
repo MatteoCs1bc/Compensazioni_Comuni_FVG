@@ -237,3 +237,10 @@ def test_suolo_confronti():
     assert abs(r.loc["Fotovoltaico a terra autorizzato", "pct_sau"] - 2.904) < 0.01
     assert abs(r.loc["Suolo consumato in totale", "pct_sau"] - 28.84) < 0.01
     figura_territorio(rip); figura_rispetto_sau(rispetto_sau(c, s))
+
+
+def test_mais_biometano():
+    from core.suolo import carica_suolo, ettari_mais
+    m = carica_suolo()["mais_biometano"]
+    assert abs(ettari_mais(m, 1.0) - 616.6) < 1      # 4 milioni di Smc / (111,8 × 1,055 × 55) Smc/ha
+    assert abs(ettari_mais(m, m["quota_centrale"]) - 370) < 1

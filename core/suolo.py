@@ -51,6 +51,14 @@ def serie_consumo(riga: pd.Series) -> pd.DataFrame:
                           "ha_anno": riga[f"netto_{p}"] / a} for p, a in PERIODI])
 
 
+def ettari_mais(m: dict, quota: float) -> float:
+    """Ettari di mais da insilato per la quota «quota» del metano prodotto dall'impianto.
+    metano annuo (Smc) / (resa in metano per tonnellata × tonnellate per ettaro)."""
+    smc_anno = m["smc_h"] * m["ore_anno"]
+    smc_per_ha = m["resa_ch4_nm3_t"] * m["nm3_smc"] * m["resa_t_ha"]
+    return quota * smc_anno / smc_per_ha
+
+
 def impianti_df(s: dict) -> pd.DataFrame:
     return pd.DataFrame(s["impianti"])
 
@@ -75,7 +83,8 @@ def conti(s: dict, consumo: pd.Series) -> dict:
         "bess_aut": somma(agr, "bess"), "bess_in_corso": somma(agr, "bess", ("in_corso",)),
         "bess_tutti": float(imp[imp.tipologia == "bess"].ha.sum()),
         "biometano": somma(agr, "biometano"),
-        "mais": m["tonnellate_anno"] * m["quota_insilato"] / m["resa_t_ha"],
+        "mais": ettari_mais(m, m["quota_centrale"]), "mais_min": ettari_mais(m, m["quota_min"]),
+        "mais_max": ettari_mais(m, m["quota_max"]),
         "tetti_min": float(consumo.tetti_fv_min_ha), "tetti_max": float(consumo.tetti_fv_max_ha),
         "tetti_mw_min": float(consumo.tetti_fv_min_ha) * s["tetti_mw_per_ha"],
         "tetti_mw_max": float(consumo.tetti_fv_max_ha) * s["tetti_mw_per_ha"],
@@ -110,7 +119,7 @@ def rispetto_sau(c: dict, s: dict) -> pd.DataFrame:
     r += [("Suolo consumato in totale", "Consumo di suolo (ISPRA)", c["consumato"]),
           ("Nuovo consumo 2006–2025", "Consumo di suolo (ISPRA)", c["netto_2006_2025"]),
           ("Nuovo consumo 2021–2025", "Consumo di suolo (ISPRA)", c["netto_2021_2025"]),
-          ("Mais per il biometano (stima)", "Impianti", c["mais"]),
+          ("Mais per il biometano (stima centrale)", "Impianti", c["mais"]),
           ("Fotovoltaico a terra con Contessa", "Impianti", c["fv_aut"] + c["fv_contessa"]),
           ("Fotovoltaico a terra autorizzato", "Impianti", c["fv_aut"]),
           ("Accumuli con EAGLE 1", "Impianti", c["bess_aut"] + c["bess_in_corso"]),
@@ -341,8 +350,8 @@ def voci_panoramica(c: dict, territorio: bool = False) -> list[dict]:
         _voce("Suolo già consumato", c["consumato"], COLORI["consumato"],
               nota=f"ISPRA 2025: {_n(c['consumato_pct'], 1)}% del territorio; include il fotovoltaico a terra"),
         _voce("Mais per il biometano (stima)", c["mais"], COLORI["mais"],
-              nota="Ipotesi: metà delle 50.000 t/anno è insilato, 55 t/ha; non tutto a Pavia",
-              testo=f"circa {_n(round(c['mais'], -1), 0)} ha"),
+              nota="Dal metano prodotto: tra il 30% e il 90% da insilato di mais (55 t/ha); campi anche fuori comune",
+              testo=f"{_n(round(c['mais_min'], -1), 0)}–{_n(round(c['mais_max'], -1), 0)} ha"),
         _voce("Fotovoltaico a terra, tutti i progetti", c["fv_tutti"], COLORI["fv"],
               nota="Realizzati, autorizzati e Contessa; esclusi i progetti respinti"),
         _voce("Tetto del 3% (per tipologia)", c["tetto"], COLORI["tetto"], contorno=True,

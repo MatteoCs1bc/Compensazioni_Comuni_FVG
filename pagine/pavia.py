@@ -73,8 +73,24 @@ def sezione_suolo():
         st.plotly_chart(figura_annidati(voci_panoramica(cs, territorio=True)),
                         use_container_width=True, key="suolo_ann", config={"displayModeBar": False})
     st.caption("L'area di ogni quadrato è proporzionale agli ettari. Il tetto del 3% è tratteggiato perché è un limite, "
-               "non una superficie occupata. Il mais per il biometano è una stima con ipotesi dichiarate (metà della "
-               "dieta a insilato, 55 t/ha) e comprende campi fuori comune: la dieta vera è nel piano di approvvigionamento.")
+               "non una superficie occupata. Il mais per il biometano è una stima (dettagli nel riquadro qui sotto) e comprende "
+               "campi fuori comune: la dieta vera è nel piano di approvvigionamento.")
+    with st.expander("Come è stimato il mais per il biometano"):
+        m = SUOLO["mais_biometano"]
+        smc = m["smc_h"] * m["ore_anno"]
+        per_ha = m["resa_ch4_nm3_t"] * m["nm3_smc"] * m["resa_t_ha"]
+        st.markdown(
+            f"- **Metano prodotto**: {num(m['smc_h'], 0)} Smc/h × {num(m['ore_anno'], 0)} ore = **{num(smc / 1e6, 1)} milioni di Smc** "
+            "all'anno (ipotesi di pieno carico).\n"
+            f"- **Un ettaro di mais da insilato** dà {num(m['resa_t_ha'], 0)} t × {num(m['resa_ch4_nm3_t'], 1)} Nm³ di metano per tonnellata "
+            f"≈ **{num(per_ha, 0)} Smc** di metano (tabella di producibilità delle matrici, rev. 9.00).\n"
+            f"- Se tutto il metano venisse dal mais servirebbero circa **{num(smc / per_ha, 0)} ha**. Ma la dieta è mista: "
+            f"con il {num(m['quota_min'] * 100, 0)}–{num(m['quota_max'] * 100, 0)}% del metano dal mais sono "
+            f"**{num(cs['mais_min'], 0)}–{num(cs['mais_max'], 0)} ha** (valore centrale {num(cs['mais'], 0)} ha, usato nei grafici).\n"
+            "- Perché non tutto mais: l'incentivo PNRR chiede almeno l'80% di riduzione dei gas serra, che con molto mais è "
+            "difficile; e a Pavia ci sono circa 211.000 capi avicoli, la cui pollina rende per tonnellata quanto il mais. "
+            "I secondi raccolti (sorgo, triticale dopo un'altra coltura) non tolgono il campo alla coltura principale.\n"
+            "- Il dato vero è nel **piano di approvvigionamento** allegato alla PAS del 14/01/2025.")
 
     st.markdown("**Il tetto del 3%, tipologia per tipologia**")
     st.plotly_chart(figura_pannelli(gruppi_tetto(cs)), use_container_width=True,
