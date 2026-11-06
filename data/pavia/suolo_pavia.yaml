@@ -25,26 +25,30 @@ tetto:
 
 # zona: "agricola" entra nel conto del tetto; "non agricola" no; "incerta" da verificare sul PRGC.
 # gruppo: "autorizzato" (realizzati e autorizzati) oppure "in_corso" (istruttoria aperta).
+# consumo: come ISPRA classificherebbe la superficie. "reversibile" = fotovoltaico a terra ad alta densità (suolo
+#   coperto ma non sigillato); "permanente" = in prevalenza impermeabilizzato (fondazioni, platee, vasche, piazzali
+#   pavimentati: accumuli, stazioni, biometano); "non conteggiato" = agrivoltaico a bassa densità, che ISPRA mette tra le
+#   «altre coperture». Classificazione nostra, da verificare sulla cartografia ISPRA.
 # realizzato: true per gli impianti già costruiti secondo gli elenchi comunali (servono per il confronto con il suolo consumato).
 impianti:
-  - {n: "00-01", nome: "San Mauro e Selvuzzis", tipologia: fv, ha: 0.78, zona: agricola, gruppo: autorizzato, realizzato: true}
-  - {n: "4", nome: "Cjase Sterpet", tipologia: fv, ha: 38.68, zona: agricola, gruppo: autorizzato, realizzato: true}
-  - {n: "5", nome: "Compensazione Cjase Sterpet (400 kWp)", tipologia: fv, ha: 1.10, zona: agricola, gruppo: autorizzato}
-  - {n: "7", nome: "Marconi", tipologia: fv, ha: 2.53, zona: incerta, gruppo: autorizzato, nota: "Zona S/E; solo la superficie recintata"}
-  - {n: "8", nome: "Risano (Sunprime)", tipologia: fv, ha: 6.15, zona: agricola, gruppo: autorizzato, realizzato: true}
-  - {n: "12", nome: "Tombis (Voltron)", tipologia: fv, ha: 1.05, zona: non agricola, gruppo: autorizzato, nota: "Zona D2"}
-  - {n: "13", nome: "Crimea", tipologia: fv, ha: 9.38, zona: agricola, gruppo: autorizzato}
-  - {n: "2", nome: "Contessa (agrivoltaico)", tipologia: fv, ha: 45.75, zona: agricola, gruppo: in_corso,
+  - {n: "00-01", nome: "San Mauro e Selvuzzis", tipologia: fv, consumo: reversibile, ha: 0.78, zona: agricola, gruppo: autorizzato, realizzato: true}
+  - {n: "4", nome: "Cjase Sterpet", tipologia: fv, consumo: reversibile, ha: 38.68, zona: agricola, gruppo: autorizzato, realizzato: true}
+  - {n: "5", nome: "Compensazione Cjase Sterpet (400 kWp)", tipologia: fv, consumo: reversibile, ha: 1.10, zona: agricola, gruppo: autorizzato}
+  - {n: "7", nome: "Marconi", tipologia: fv, consumo: reversibile, ha: 2.53, zona: incerta, gruppo: autorizzato, nota: "Zona S/E; solo la superficie recintata"}
+  - {n: "8", nome: "Risano (Sunprime)", tipologia: fv, consumo: reversibile, ha: 6.15, zona: agricola, gruppo: autorizzato, realizzato: true}
+  - {n: "12", nome: "Tombis (Voltron)", tipologia: fv, consumo: reversibile, ha: 1.05, zona: non agricola, gruppo: autorizzato, nota: "Zona D2"}
+  - {n: "13", nome: "Crimea", tipologia: fv, consumo: reversibile, ha: 9.38, zona: agricola, gruppo: autorizzato}
+  - {n: "2", nome: "Contessa (agrivoltaico)", tipologia: fv, consumo: non conteggiato, ha: 45.75, zona: agricola, gruppo: in_corso,
      nota: "Agrivoltaico: se conti come «moduli collocati a terra» è da chiarire"}
-  - {n: "1", nome: "BESS Enel", tipologia: bess, ha: 9.06, zona: agricola, gruppo: autorizzato, realizzato: true}
-  - {n: "16", nome: "BESS RNE14", tipologia: bess, ha: 3.50, zona: agricola, gruppo: autorizzato, nota: "Solo il BESS, senza l'ampliamento della stazione"}
-  - {n: "20", nome: "BESS Aukera", tipologia: bess, ha: 0.80, zona: agricola, gruppo: autorizzato}
-  - {n: "19", nome: "EAGLE 1", tipologia: bess, ha: 10.66, zona: agricola, gruppo: in_corso}
-  - {n: "21", nome: "Lauzacco BESS", tipologia: bess, ha: 1.50, zona: non agricola, gruppo: in_corso, nota: "Zona H2"}
-  - {n: "3", nome: "Sottostazione Santo Stefano", tipologia: rete, ha: 0.35, zona: agricola, gruppo: autorizzato, realizzato: true,
+  - {n: "1", nome: "BESS Enel", tipologia: bess, consumo: permanente, ha: 9.06, zona: agricola, gruppo: autorizzato, realizzato: true}
+  - {n: "16", nome: "BESS RNE14", tipologia: bess, consumo: permanente, ha: 3.50, zona: agricola, gruppo: autorizzato, nota: "Solo il BESS, senza l'ampliamento della stazione"}
+  - {n: "20", nome: "BESS Aukera", tipologia: bess, consumo: permanente, ha: 0.80, zona: agricola, gruppo: autorizzato}
+  - {n: "19", nome: "EAGLE 1", tipologia: bess, consumo: permanente, ha: 10.66, zona: agricola, gruppo: in_corso}
+  - {n: "21", nome: "Lauzacco BESS", tipologia: bess, consumo: permanente, ha: 1.50, zona: non agricola, gruppo: in_corso, nota: "Zona H2"}
+  - {n: "3", nome: "Sottostazione Santo Stefano", tipologia: rete, consumo: permanente, ha: 0.35, zona: agricola, gruppo: autorizzato, realizzato: true,
      nota: "Solo la sottostazione dell'impianto di Santo Stefano; non entra nel tetto"}
-  - {n: "10", nome: "Biometano (probabilmente Giove Energy)", tipologia: biometano, ha: 4.70, zona: agricola, gruppo: autorizzato, realizzato: true,
-     nota: "Elenco comunale al 30/09; zona da verificare"}
+  - {n: "10", nome: "Biometano GIOVE Energy Soc. Agr.", tipologia: biometano, consumo: permanente, ha: 4.70, zona: agricola, gruppo: autorizzato, realizzato: true,
+     nota: "Elenco comunale al 30/09 (4,7 ha con le mitigazioni); il portale regionale indica 0,82 ha di impianto"}
 
 # Colture del censimento 2020, in percentuale della SAU (il resto: altre colture, orti, prati, ecc.)
 colture:

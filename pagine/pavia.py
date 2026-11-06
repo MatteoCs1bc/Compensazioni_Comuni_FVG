@@ -108,18 +108,26 @@ def sezione_suolo():
                      hide_index=True, use_container_width=True)
 
     st.markdown("**Il territorio comunale: quanto è agricolo, quanto è consumato**")
-    rip = ripartizione_territorio(cs, SUOLO)
+    mostra_mais = st.toggle("Mostra dove andrebbe il mais per il biometano (ipotesi)", value=True, key="suolo_mais",
+                            help="Il censimento 2020 è precedente all'impianto. Il mais da insilato è una foraggera: la stima "
+                                 "centrale viene tolta da «foraggere, orti, frutteti e altre colture», come se fosse tutto a Pavia.")
+    rip = ripartizione_territorio(cs, SUOLO, mais=mostra_mais)
     st.markdown(
         f"Su {num(cs['superficie'], 0)} ha di territorio, la SAU è il **{num(cs['sau'] / cs['superficie'] * 100, 1)}%** "
-        f"e il suolo consumato il **{num(cs['consumato_pct'], 1)}%**. Dentro il suolo consumato, gli impianti energetici "
-        f"già realizzati (il riquadro giallo) sono circa **{num(cs['realizzati'], 0)} ha** su {num(cs['consumato'], 0)}, uno su dieci: il resto "
-        "sono edifici, strade, aree produttive, cave. Clicca su un riquadro per ingrandirlo.")
+        f"e il suolo consumato il **{num(cs['consumato_pct'], 1)}%**. Dentro il suolo consumato gli impianti energetici già "
+        f"realizzati sono circa {num(cs['realizzati'], 0)} ha: **{num(cs['realizzati_rev'], 0)} ha di fotovoltaico, consumo "
+        f"reversibile** (in giallo), e **{num(cs['realizzati_perm'], 0)} ha di accumuli, stazione e biometano, consumo "
+        "permanente** (in arancio). Il resto sono edifici, strade, piazzali e aree produttive, in prevalenza sigillati. "
+        "Passa sopra un riquadro per la spiegazione, cliccalo per ingrandirlo.")
     st.plotly_chart(figura_territorio(rip), use_container_width=True, key="suolo_territorio",
                     config={"displayModeBar": False})
     st.caption("SAU dal censimento 2020, suolo consumato da ISPRA 2025: fonti diverse, la ripartizione è un ordine di "
-               "grandezza. «Resto del territorio»: corsi d'acqua, boschi, incolti e terreni coltivati da aziende con sede "
-               "fuori comune, che il censimento non attribuisce a Pavia. Gli impianti sono contati con la superficie "
-               "complessiva dei progetti, più ampia di quella che ISPRA mappa (pannelli, piazzali, cabine).")
+               "grandezza. «Foraggere, orti, frutteti e altre colture»: tutto ciò che nel censimento non è cereali da granella, "
+               "piante industriali, vite o prati; il mais da insilato sta qui. «Né agricolo né consumato»: corsi d'acqua e "
+               "greti, boschi, incolti e terreni coltivati da aziende con sede in altri comuni, che il censimento non "
+               "attribuisce a Pavia. Reversibile = suolo coperto ma non sigillato (fotovoltaico a terra, cantieri, sterrati); "
+               "permanente = sigillato (edifici, strade asfaltate, platee, piazzali pavimentati). Per Pavia ISPRA non "
+               "pubblica la ripartizione: quella degli impianti è nostra, sulla base del tipo di opera.")
 
     st.markdown("**Tutto in percentuale della SAU**")
     st.plotly_chart(figura_rispetto_sau(rispetto_sau(cs, SUOLO)), use_container_width=True, key="suolo_sau",
@@ -129,22 +137,28 @@ def sezione_suolo():
                "coltivato fuori comune: non è suolo consumato, ma terreno agricolo che cambia destinazione.")
 
     st.markdown("**Impianti e altri consumi di suolo**")
-    st.plotly_chart(figura_affiancati(sorted(voci_consumi(cs), key=lambda v: -v["ha"]), file_etichette=2), use_container_width=True, key="suolo_consumi",
+    st.plotly_chart(figura_affiancati(sorted(voci_consumi(cs), key=lambda v: -v["ha"]), lato_px=150, file_etichette=2),
+                    use_container_width=True, key="suolo_consumi",
                     config={"displayModeBar": False})
     ctx = pd.DataFrame(SUOLO["contesto_2025"])
     fvg, ud = ctx.iloc[0], ctx.iloc[1]
     st.markdown(
-        f"Dal 2006 il comune ha consumato **{num(cs['netto_2006_2025'], 0)} ha** in più; gli impianti realizzati ne "
-        f"occupano circa {num(cs['realizzati'], 0)} con la superficie complessiva dei progetti. Contessa ed EAGLE 1 "
-        f"aggiungerebbero altri {num(cs['fv_contessa'] + cs['bess_in_corso'], 0)} ha. Nel 2025 i nuovi fotovoltaici a "
-        f"terra sono stati il **{num(fvg.fv_pct, 1)}%** del consumo di suolo in FVG e il **{num(ud.fv_pct, 1)}%** in "
-        f"provincia di Udine, contro il {num(ctx.iloc[2].fv_pct, 1)}% in Italia.")
-    st.dataframe(ctx.rename(columns={"area": "Area", "consumo_ha": "Consumo 2024–25 (ha)", "fv_ha": "di cui fotovoltaico a terra (ha)",
-                                     "fv_pct": "Quota fotovoltaico (%)", "permanente_ha": "di cui permanente (ha)"}),
-                 hide_index=True, use_container_width=True,
-                 column_config={c: st.column_config.NumberColumn(format="%.1f") for c in
-                                ["Consumo 2024–25 (ha)", "di cui fotovoltaico a terra (ha)", "Quota fotovoltaico (%)",
-                                 "di cui permanente (ha)"]})
+        f"Dal 2006 il comune ha consumato **{num(cs['netto_2006_2025'], 0)} ha** in più. Gli impianti realizzati, con la "
+        f"superficie complessiva dei progetti, sono {num(cs['realizzati_rev'], 0)} ha di fotovoltaico (**reversibile**: "
+        f"tolto il fotovoltaico il suolo si può ripristinare) e {num(cs['realizzati_perm'], 0)} ha di accumuli, stazione e "
+        f"biometano (**permanente**). EAGLE 1 aggiungerebbe {num(cs['bess_in_corso'], 0)} ha di consumo permanente; "
+        f"Contessa {num(cs['fv_contessa'], 0)} ha di agrivoltaico, che ISPRA non conta come consumo. "
+        f"Nel 2025 in FVG il consumo è stato per il **{num(100 * fvg.permanente_ha / fvg.consumo_ha, 0)}% permanente** e per "
+        f"il {num(100 - 100 * fvg.permanente_ha / fvg.consumo_ha, 0)}% reversibile; i nuovi fotovoltaici a terra, tutti "
+        f"reversibili, ne sono stati il **{num(fvg.fv_pct, 1)}%** (in provincia di Udine il {num(ud.fv_pct, 1)}%).")
+    ctx = ctx.assign(reversibile_ha=ctx.consumo_ha - ctx.permanente_ha,
+                     altro_rev_ha=ctx.consumo_ha - ctx.permanente_ha - ctx.fv_ha)[
+        ["area", "consumo_ha", "permanente_ha", "reversibile_ha", "fv_ha", "altro_rev_ha", "fv_pct"]]
+    nomi = {"area": "Area", "consumo_ha": "Consumo 2024–25 (ha)", "permanente_ha": "Permanente (ha)",
+            "reversibile_ha": "Reversibile (ha)", "fv_ha": "di cui fotovoltaico a terra (ha)",
+            "altro_rev_ha": "di cui cantieri, sterrati e altro (ha)", "fv_pct": "Fotovoltaico sul totale (%)"}
+    st.dataframe(ctx.rename(columns=nomi), hide_index=True, use_container_width=True,
+                 column_config={v: st.column_config.NumberColumn(format="%.1f") for k, v in nomi.items() if k != "area"})
     st.caption("ISPRA conta il fotovoltaico a terra ad alta densità come consumo di suolo reversibile; l'agrivoltaico "
                "e gli impianti a bassa densità sono «altre coperture», fuori dal conto. Per comune ISPRA non pubblica la "
                "ripartizione tra edifici, strade e impianti: solo per provincia e regione.")
@@ -152,7 +166,10 @@ def sezione_suolo():
     st.markdown("**Consumo di suolo nel tempo** (ISPRA, ettari netti all'anno)")
     st.plotly_chart(figura_serie(serie_consumo(CONSUMO[CONSUMO.comune == SUOLO["comune_ispra"]].iloc[0])),
                     use_container_width=True, key="suolo_serie", config={"displayModeBar": False})
-    st.caption("I primi due periodi sono pluriennali (media annua). In rosso gli anni dei grandi impianti fotovoltaici.")
+    st.caption("I primi due periodi sono pluriennali (media annua). In rosso gli anni dei grandi impianti fotovoltaici. "
+               "Per comune ISPRA dà solo il consumo totale, senza separare permanente e reversibile: negli anni in rosso il "
+               "fotovoltaico (reversibile) pesa molto, come in tutta la provincia, dove nel 2025 il consumo è stato reversibile "
+               "per il 94%.")
 
     st.markdown("**I comuni vicini**")
     v = confronto_vicini(CONSUMO, ["Pavia di Udine", "Santa Maria la Longa", "Pozzuolo del Friuli", "Pradamano",

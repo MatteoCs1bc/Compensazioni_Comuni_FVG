@@ -234,8 +234,12 @@ def test_suolo_confronti():
     assert abs(figli - c["superficie"]) < 0.01          # SAU + consumato + resto = territorio
     assert abs(rip[rip.padre == "Superficie agricola (SAU)"].ha.sum() - c["sau"]) < 0.01
     r = rispetto_sau(c, s).set_index("voce")
-    assert abs(r.loc["Fotovoltaico a terra autorizzato", "pct_sau"] - 2.904) < 0.01
-    assert abs(r.loc["Suolo consumato in totale", "pct_sau"] - 28.84) < 0.01
+    assert abs(r.loc["Fotovoltaico a terra autorizzato · reversibile", "pct_sau"] - 2.904) < 0.01
+    assert abs(r.loc["Suolo consumato in totale (reversibile + permanente)", "pct_sau"] - 28.84) < 0.01
+    # impianti realizzati separati tra consumo reversibile (fotovoltaico) e permanente (accumuli, stazione, biometano)
+    assert abs(c["realizzati_rev"] - 45.61) < 0.01 and abs(c["realizzati_perm"] - 14.11) < 0.01
+    senza = ripartizione_territorio(c, s, mais=False)
+    assert abs(senza[senza.padre == "Superficie agricola (SAU)"].ha.sum() - c["sau"]) < 0.01
     figura_territorio(rip); figura_rispetto_sau(rispetto_sau(c, s))
 
 

@@ -74,6 +74,7 @@ def conti(s: dict, consumo: pd.Series) -> dict:
         return float(df[(df.tipologia == tip) & df.gruppo.isin(gruppi)].ha.sum())
 
     m = s["mais_biometano"]
+    real = imp[imp.get("realizzato", pd.Series(False, index=imp.index)).fillna(False).astype(bool)]
     return {
         "superficie": float(consumo.superficie_ha), "consumato": float(consumo.consumato_2025_ha),
         "consumato_pct": float(consumo.consumato_2025_pct), "sau": sau, "sat": s["agricoltura"]["sat_ha"],
@@ -88,15 +89,24 @@ def conti(s: dict, consumo: pd.Series) -> dict:
         "tetti_min": float(consumo.tetti_fv_min_ha), "tetti_max": float(consumo.tetti_fv_max_ha),
         "tetti_mw_min": float(consumo.tetti_fv_min_ha) * s["tetti_mw_per_ha"],
         "tetti_mw_max": float(consumo.tetti_fv_max_ha) * s["tetti_mw_per_ha"],
-        "realizzati": float(imp[imp.get("realizzato", pd.Series(False, index=imp.index)).fillna(False).astype(bool)].ha.sum()),
+        "realizzati": float(real.ha.sum()),
+        "realizzati_rev": float(real[real.consumo == "reversibile"].ha.sum()),
+        "realizzati_perm": float(real[real.consumo == "permanente"].ha.sum()),
         "netto_2006_2025": float(sum(consumo[f"netto_{p}"] for p, _ in PERIODI)),
         "netto_2021_2025": float(sum(consumo[f"netto_{p}"] for p in ("2021_2022", "2022_2023", "2023_2024", "2024_2025"))),
     }
 
 
-def ripartizione_territorio(c: dict, s: dict) -> pd.DataFrame:
-    """Territorio comunale diviso in SAU (per coltura), suolo consumato (impianti FER realizzati e resto) e altro.
-    SAU dal censimento 2020 e suolo consumato ISPRA 2025: fonti diverse, la somma è un ordine di grandezza."""
+ALTRE_COLTURE = "Foraggere, orti, frutteti e altre colture"
+RESTO = "Né agricolo né consumato"
+MAIS_TILE = "Mais da insilato per il biometano (stima)"
+
+
+def ripartizione_territorio(c: dict, s: dict, mais: bool = True) -> pd.DataFrame:
+    """Territorio comunale diviso in SAU (per coltura), suolo consumato (reversibile/permanente dove si sa) e resto.
+    SAU dal censimento 2020 e suolo consumato ISPRA 2025: fonti diverse, la somma è un ordine di grandezza.
+    mais=True ricava dalla voce «foraggere e altre colture» (dove il censimento mette il mais da insilato) la stima
+    centrale del mais per il biometano, come se fosse tutto coltivato a Pavia."""
     righe = [("Territorio comunale", "", c["superficie"])]
     righe.append(("Superficie agricola (SAU)", "Territorio comunale", c["sau"]))
     resto_sau = c["sau"]
@@ -104,11 +114,17 @@ def ripartizione_territorio(c: dict, s: dict) -> pd.DataFrame:
         v = c["sau"] * col["pct"] / 100
         resto_sau -= v
         righe.append((col["nome"], "Superficie agricola (SAU)", v))
-    righe.append(("Altre colture", "Superficie agricola (SAU)", resto_sau))
+    if mais:
+        m = min(c["mais"], resto_sau)
+        righe.append((MAIS_TILE, "Superficie agricola (SAU)", m))
+        resto_sau -= m
+    righe.append((ALTRE_COLTURE, "Superficie agricola (SAU)", resto_sau))
     righe.append(("Suolo consumato", "Territorio comunale", c["consumato"]))
-    righe.append(("Impianti energetici realizzati", "Suolo consumato", c["realizzati"]))
-    righe.append(("Edifici, strade, aree produttive e altro", "Suolo consumato", c["consumato"] - c["realizzati"]))
-    righe.append(("Resto del territorio", "Territorio comunale", c["superficie"] - c["sau"] - c["consumato"]))
+    righe.append(("Fotovoltaico a terra · reversibile", "Suolo consumato", c["realizzati_rev"]))
+    righe.append(("Accumuli, stazione, biometano · permanente", "Suolo consumato", c["realizzati_perm"]))
+    righe.append(("Edifici, strade, piazzali, aree produttive (in prevalenza permanente)", "Suolo consumato",
+                  c["consumato"] - c["realizzati"]))
+    righe.append((RESTO, "Territorio comunale", c["superficie"] - c["sau"] - c["consumato"]))
     return pd.DataFrame(righe, columns=["voce", "padre", "ha"])
 
 
@@ -116,15 +132,15 @@ def rispetto_sau(c: dict, s: dict) -> pd.DataFrame:
     """Ogni superficie in percentuale della SAU comunale, raggruppata per tipo."""
     sau = c["sau"]
     r = [(col["nome"], "Colture (censimento 2020)", sau * col["pct"] / 100) for col in s["colture"][:3]]
-    r += [("Suolo consumato in totale", "Consumo di suolo (ISPRA)", c["consumato"]),
+    r += [("Suolo consumato in totale (reversibile + permanente)", "Consumo di suolo (ISPRA)", c["consumato"]),
           ("Nuovo consumo 2006–2025", "Consumo di suolo (ISPRA)", c["netto_2006_2025"]),
           ("Nuovo consumo 2021–2025", "Consumo di suolo (ISPRA)", c["netto_2021_2025"]),
-          ("Mais per il biometano (stima centrale)", "Impianti", c["mais"]),
-          ("Fotovoltaico a terra con Contessa", "Impianti", c["fv_aut"] + c["fv_contessa"]),
-          ("Fotovoltaico a terra autorizzato", "Impianti", c["fv_aut"]),
-          ("Accumuli con EAGLE 1", "Impianti", c["bess_aut"] + c["bess_in_corso"]),
-          ("Impianto di biometano", "Impianti", c["biometano"]),
-          ("Tetti adatti al fotovoltaico (max)", "Alternative", c["tetti_max"])]
+          ("Mais per il biometano (stima centrale)", "Colture energetiche", c["mais"]),
+          ("Fotovoltaico a terra autorizzato · reversibile", "Impianti · consumo reversibile", c["fv_aut"]),
+          ("Contessa, agrivoltaico · non conteggiato da ISPRA", "Impianti · non conteggiato", c["fv_contessa"]),
+          ("Accumuli con EAGLE 1 · permanente", "Impianti · consumo permanente", c["bess_aut"] + c["bess_in_corso"]),
+          ("Impianto di biometano · permanente", "Impianti · consumo permanente", c["biometano"]),
+          ("Tetti adatti al fotovoltaico (max) · nessun consumo", "Alternative", c["tetti_max"])]
     df = pd.DataFrame(r, columns=["voce", "gruppo", "ha"])
     df["pct_sau"] = df.ha / sau * 100
     return df
@@ -140,10 +156,13 @@ def confronto_vicini(df: pd.DataFrame, comuni: list[str]) -> pd.DataFrame:
 
 # --- grafici ----------------------------------------------------------------------------------------------------
 
-def _voce(nome, valore, colore, contorno=False, nota="", testo=None):
-    """Una superficie da disegnare. contorno=True: solo bordo tratteggiato (un limite, non un'occupazione)."""
-    return {"nome": nome, "ha": float(valore), "colore": colore, "contorno": contorno, "nota": nota,
-            "testo": testo or ha(valore)}
+def _voce(nome, valore, colore, contorno=False, nota="", testo=None, consumo=None):
+    """Una superficie da disegnare. contorno=True: solo bordo tratteggiato (un limite, non un'occupazione).
+    consumo: «reversibile», «permanente» o altro testo breve, scritto accanto agli ettari."""
+    t = testo or ha(valore)
+    if consumo:
+        t += f" · {consumo}"
+    return {"nome": nome, "ha": float(valore), "colore": colore, "contorno": contorno, "nota": nota, "testo": t}
 
 
 def _etichetta(v):
@@ -154,12 +173,15 @@ def _hover(v):
     return f"<b>{v['nome']}</b><br>{v['testo']}" + (f"<br><i>{v['nota']}</i>" if v["nota"] else "")
 
 
-def _quadrato(fig, x0, y0, lato, v):
+def _quadrato(fig, x0, y0, lato, v, sfondo_contorno: bool = False):
+    """sfondo_contorno=True: il quadrato tratteggiato ha il fondo bianco, così si vede anche con il tema scuro
+    (solo dove non copre altri quadrati: grafici affiancati)."""
     import plotly.graph_objects as go
     x1, y1 = x0 + lato, y0 + lato
     if v["contorno"]:
         fig.add_shape(type="rect", x0=x0, y0=y0, x1=x1, y1=y1, line=dict(color=v["colore"], width=2, dash="dash"),
-                      fillcolor="rgba(0,0,0,0)", layer="above")
+                      fillcolor="white" if sfondo_contorno else "rgba(0,0,0,0)",
+                      layer="below" if sfondo_contorno else "above")
     else:
         fig.add_shape(type="rect", x0=x0, y0=y0, x1=x1, y1=y1, line=dict(color="#4a5560", width=1),
                       fillcolor=v["colore"], layer="below")
@@ -202,7 +224,7 @@ def figura_affiancati(voci: list[dict], lato_px: int = 160, file_etichette: int 
         x = max(lt, ETICHETTA_W / lato_px) / 2 if i == 0 else max(x + (lati[i - 1] + lt) / 2 + gap, x + minimo)
         centri.append(x)
     for v, lt, cx in zip(voci, lati, centri):
-        _quadrato(fig, cx - lt / 2, 0, lt, v)
+        _quadrato(fig, cx - lt / 2, 0, lt, v, sfondo_contorno=True)
     riga = ETICHETTA_H / lato_px
     for i, (v, cx) in enumerate(zip(voci, centri)):
         fig.add_annotation(x=cx, y=-12 / lato_px - riga * (i % file_etichette), text=_etichetta(v), showarrow=False,
@@ -235,9 +257,15 @@ def figura_annidati(voci: list[dict], lato_px: int = 470):
         ys[-1] = fondo
         for i in range(len(ys) - 2, -1, -1):
             ys[i] = max(ys[i], ys[i + 1] + passo)
-    xl = 1.0 + 30 / lato_px
+    xl = 1.0 + 40 / lato_px
+    gomito = 1.0 + 12 / lato_px
     for v, lt, y in zip(voci, lati, ys):
-        fig.add_shape(type="line", x0=lt, y0=lt, x1=xl, y1=y, line=dict(color="#7b8794", width=1))
+        # linea a gomito: orizzontale sul lato alto del quadrato fino al margine, poi all'etichetta. Le linee
+        # orizzontali stanno a quote diverse e i tratti obliqui sono nello stesso ordine: non si incrociano.
+        fig.add_shape(type="path", path=f"M {lt},{lt} L {gomito},{lt} L {xl},{y}",
+                      line=dict(color="#39424e", width=1.2))
+        fig.add_trace(go.Scatter(x=[lt], y=[lt], mode="markers", hoverinfo="skip", showlegend=False,
+                                 marker=dict(size=6, color="white", line=dict(color="#39424e", width=1.5))))
         fig.add_annotation(x=xl, y=y, text=_etichetta(v), showarrow=False, xanchor="left", yanchor="middle",
                            align="left", **_box(v["colore"]))
     return _layout(fig, -0.01, xl + ETICHETTA_W / lato_px, -0.01, max(1.0, ys[0] + passo / 2) + 0.01, lato_px)
@@ -248,11 +276,14 @@ def figura_pannelli(gruppi: list[tuple[str, list[dict]]], lato_px: int = 150):
     import plotly.graph_objects as go
     fig = go.Figure()
     u = max(math.sqrt(v["ha"]) for _, vv in gruppi for v in vv)
-    larg = max(1.0, ETICHETTA_W / lato_px) + 40 / lato_px
-    riga, titolo_h = ETICHETTA_H / lato_px, 34 / lato_px
+    larg = max(1.0, (ETICHETTA_W + 30) / lato_px) + 40 / lato_px
+    riga, titolo_h = ETICHETTA_H / lato_px, 52 / lato_px
     n_max = max(len(vv) for _, vv in gruppi)
     for j, (titolo, voci) in enumerate(gruppi):
         x0 = j * larg
+        # cartoncino bianco dietro ogni pannello: tratteggi e titoli leggibili anche con il tema scuro
+        fig.add_shape(type="rect", x0=x0 - 8 / lato_px, y0=-12 / lato_px - n_max * riga, x1=x0 + larg - 22 / lato_px,
+                      y1=1.0 + titolo_h - 2 / lato_px, fillcolor="white", line=dict(color="#d5dae0", width=1), layer="below")
         voci = sorted(voci, key=lambda v: -v["ha"])
         for v in voci:
             if not v["contorno"]:
@@ -260,8 +291,8 @@ def figura_pannelli(gruppi: list[tuple[str, list[dict]]], lato_px: int = 150):
         for v in voci:
             if v["contorno"]:
                 _quadrato(fig, x0, 0, math.sqrt(v["ha"]) / u, v)
-        fig.add_annotation(x=x0, y=1.0 + 8 / lato_px, text=f"<b>{titolo}</b>", showarrow=False, xanchor="left",
-                           yanchor="bottom", font=dict(color=TESTO, size=14))
+        fig.add_annotation(x=x0, y=1.0 + 6 / lato_px, text=f"<b>{titolo}</b>", showarrow=False, xanchor="left",
+                           yanchor="bottom", align="left", font=dict(color=TESTO, size=13), bgcolor="white")
         for i, v in enumerate(voci):
             fig.add_annotation(x=x0, y=-12 / lato_px - i * riga, text=_etichetta(v), showarrow=False, xanchor="left",
                                yanchor="top", align="left", **_box(v["colore"]))
@@ -285,7 +316,9 @@ def figura_serie(serie: pd.DataFrame, evidenzia_da: str = "2021–2022"):
 
 
 COLORI_GRUPPO = {"Colture (censimento 2020)": COLORI["agricola"], "Consumo di suolo (ISPRA)": COLORI["consumato"],
-                 "Impianti": "#e0a800", "Alternative": COLORI["tetti"]}
+                 "Colture energetiche": COLORI["mais"], "Impianti · consumo reversibile": COLORI["fv"],
+                 "Impianti · non conteggiato": COLORI["fv_chiaro"], "Impianti · consumo permanente": COLORI["bess"],
+                 "Alternative": COLORI["tetti"]}
 
 
 def figura_territorio(df: pd.DataFrame):
@@ -293,18 +326,43 @@ def figura_territorio(df: pd.DataFrame):
     import plotly.graph_objects as go
     col = {"Territorio comunale": "#f4f6f1", "Superficie agricola (SAU)": COLORI["agricola"], "Cereali": "#9cc45a",
            "Piante industriali (soprattutto soia)": "#b5d47e", "Vite": "#6f9a2e", "Prati permanenti e pascoli": "#c9e0a0",
-           "Altre colture": "#d8e8bd", "Suolo consumato": COLORI["consumato"],
-           "Impianti energetici realizzati": COLORI["fv"], "Edifici, strade, aree produttive e altro": "#a7adb6",
-           "Resto del territorio": COLORI["territorio"]}
+           ALTRE_COLTURE: "#d8e8bd", MAIS_TILE: "#f2b8b8", "Suolo consumato": COLORI["consumato"],
+           "Fotovoltaico a terra · reversibile": COLORI["fv"], "Accumuli, stazione, biometano · permanente": COLORI["bess"],
+           "Edifici, strade, piazzali, aree produttive (in prevalenza permanente)": "#a7adb6", RESTO: COLORI["territorio"]}
+    spiega = {
+        ALTRE_COLTURE: "Censimento 2020: foraggere avvicendate (anche il mais da insilato), ortive, frutteti, legumi, terreni a riposo",
+        MAIS_TILE: "Ipotesi 2026: il mais da insilato è una foraggera; stima centrale come se fosse tutto a Pavia (in realtà anche fuori comune)",
+        RESTO: "Corsi d'acqua e greti, boschi, incolti, terreni coltivati da aziende con sede in altri comuni",
+        "Fotovoltaico a terra · reversibile": "Pannelli su suolo non sigillato: ISPRA lo conta come consumo reversibile",
+        "Accumuli, stazione, biometano · permanente": "Platee, fondazioni, vasche, piazzali: suolo in prevalenza sigillato",
+        "Edifici, strade, piazzali, aree produttive (in prevalenza permanente)":
+            "Per singolo comune ISPRA non separa permanente e reversibile: qui ci sono anche cantieri, sterrati e cave",
+    }
+    breve = {ALTRE_COLTURE: "Foraggere, orti,<br>frutteti e altro", MAIS_TILE: "Mais per il<br>biometano (stima)",
+             "Piante industriali (soprattutto soia)": "Piante industriali<br>(soprattutto soia)",
+             "Prati permanenti e pascoli": "Prati", RESTO: "Né agricolo<br>né consumato",
+             "Fotovoltaico a terra · reversibile": "Fotovoltaico<br>reversibile",
+             "Accumuli, stazione, biometano · permanente": "Accumuli, stazione,<br>biometano · permanente",
+             "Edifici, strade, piazzali, aree produttive (in prevalenza permanente)":
+                 "Edifici, strade, piazzali,<br>aree produttive (in prevalenza permanente)"}
     tot = df.loc[df.voce == "Territorio comunale", "ha"].iloc[0]
     testo = [f"{ha(v)} · {_n(v / tot * 100, 1)}% del territorio" for v in df.ha]
+    nota = [spiega.get(v, "") for v in df.voce]
+    vis = [f"<b>{breve.get(v, v)}</b><br>{t}" for v, t in zip(df.voce, testo)]
+    pattern = [dict(shape="/", fgcolor="#e98b8b", size=10, solidity=0.15) if v == MAIS_TILE else dict(shape="")
+               for v in df.voce]
     fig = go.Figure(go.Treemap(labels=df.voce, parents=df.padre, values=df.ha, branchvalues="total",
-                               marker=dict(colors=[col.get(v, "#ccc") for v in df.voce], line=dict(color="white", width=2)),
-                               text=testo, texttemplate="<b>%{label}</b><br>%{text}", textfont=dict(color=TESTO, size=13),
-                               hovertemplate="<b>%{label}</b><br>%{text}<br>%{percentParent:.1%} di «%{parent}»<extra></extra>",
+                               marker=dict(colors=[col.get(v, "#ccc") for v in df.voce], line=dict(color="white", width=2),
+                                           pattern=dict(shape=[p["shape"] for p in pattern],
+                                                        fgcolor=[p.get("fgcolor", "#000") for p in pattern],
+                                                        size=10, solidity=0.15)),
+                               text=vis, customdata=list(zip(testo, nota)), texttemplate="%{text}",
+                               textfont=dict(color=TESTO, size=13),
+                               hovertemplate="<b>%{label}</b><br>%{customdata[0]}<br>%{percentParent:.1%} di «%{parent}»"
+                                             "<br><i>%{customdata[1]}</i><extra></extra>",
                                tiling=dict(pad=3), pathbar=dict(visible=False), maxdepth=3, sort=True))
-    fig.update_layout(height=480, margin=dict(l=0, r=0, t=0, b=0), paper_bgcolor="rgba(0,0,0,0)",
-                      uniformtext=dict(minsize=11, mode="hide"),
+    fig.update_layout(height=500, margin=dict(l=0, r=0, t=0, b=0), paper_bgcolor="rgba(0,0,0,0)",
+                      uniformtext=dict(minsize=9, mode="hide"),
                       hoverlabel=dict(bgcolor="white", font=dict(color=TESTO, size=12), align="left"))
     return fig
 
@@ -313,29 +371,37 @@ def figura_rispetto_sau(df: pd.DataFrame, tetto_pct: float = 3.0):
     """Barre orizzontali: ogni superficie in percentuale della SAU; linea tratteggiata sul tetto del 3%."""
     import plotly.graph_objects as go
     d = df.iloc[::-1]
+    xmax = max(d.pct_sau) * 1.45
     fig = go.Figure(go.Bar(x=d.pct_sau, y=d.voce, orientation="h", marker_color=[COLORI_GRUPPO[g] for g in d.gruppo],
-                           text=[f"{_n(p, 1)}%  ·  {ha(h)}" for p, h in zip(d.pct_sau, d.ha)], textposition="outside",
-                           textfont=dict(color=TESTO), customdata=d.gruppo,
+                           textposition="none", customdata=d.gruppo,
                            hovertemplate="<b>%{y}</b><br>%{x:.1f}% della SAU<br>%{customdata}<extra></extra>"))
+    # valori in una colonna a destra, lontani dalla linea del tetto
+    fig.add_trace(go.Scatter(x=[max(d.pct_sau) * 1.08] * len(d), y=d.voce, mode="text", textposition="middle right",
+                             text=[f"<b>{_n(p, 1)}%</b> · {ha(h)}" for p, h in zip(d.pct_sau, d.ha)],
+                             textfont=dict(color="#6b7480", size=12), hoverinfo="skip", showlegend=False))
     fig.add_vline(x=tetto_pct, line=dict(color=COLORI["tetto"], width=1.5, dash="dash"), layer="below",
                   annotation_text="tetto 3%", annotation_position="top", annotation_font_color=TESTO)
     fig.update_layout(height=40 * len(d) + 60, margin=dict(l=10, r=10, t=30, b=10), showlegend=False,
                       plot_bgcolor="rgba(0,0,0,0)", paper_bgcolor="rgba(0,0,0,0)", xaxis_title="% della SAU comunale",
                       hoverlabel=dict(bgcolor="white", font=dict(color=TESTO, size=12)))
-    fig.update_xaxes(range=[0, max(d.pct_sau) * 1.35], ticksuffix="%")
+    fig.update_xaxes(range=[0, xmax], ticksuffix="%", tickvals=[0, 3, 10, 20, 30])
     return fig
 
 
 def voci_consumi(c: dict) -> list[dict]:
     """Il suolo consumato del comune e, dentro, il nuovo consumo e gli impianti (realizzati e in progetto)."""
     return [
-        _voce("Suolo consumato al 2025", c["consumato"], COLORI["consumato"], nota="ISPRA 2026: edifici, strade, aree produttive, impianti"),
+        _voce("Suolo consumato al 2025", c["consumato"], COLORI["consumato"], consumo="perm. + rev.", nota="ISPRA 2026: edifici, strade, aree produttive, impianti"),
         _voce("Nuovo consumo 2006–2025", c["netto_2006_2025"], "#5d6570", nota="Netto: al netto dei ripristini"),
-        _voce("Impianti energetici realizzati", c["realizzati"], COLORI["fv"],
-              nota="Cjase Sterpet, Risano, San Mauro e Selvuzzis, BESS Enel, sottostazione, biometano; superficie complessiva"),
+        _voce("Fotovoltaico realizzato", c["realizzati_rev"], COLORI["fv"], consumo="reversibile",
+              nota="Cjase Sterpet, Risano, San Mauro e Selvuzzis; superficie complessiva dei progetti"),
+        _voce("Accumuli, stazione, biometano", c["realizzati_perm"], COLORI["bess"], consumo="permanente",
+              nota="BESS Enel, sottostazione Santo Stefano, biometano; in prevalenza sigillato"),
         _voce("Nuovo consumo 2021–2025", c["netto_2021_2025"], COLORI["mais"], nota="Gli anni dei grandi fotovoltaici"),
-        _voce("Contessa ed EAGLE 1 (in istruttoria)", c["fv_contessa"] + c["bess_in_corso"], COLORI["bess_chiaro"],
-              nota="Se autorizzati, si aggiungerebbero al suolo occupato"),
+        _voce("EAGLE 1 (in istruttoria)", c["bess_in_corso"], COLORI["bess_chiaro"], consumo="permanente",
+              nota="Accumulo: se autorizzato, suolo in prevalenza sigillato"),
+        _voce("Contessa (in istruttoria)", c["fv_contessa"], COLORI["fv_chiaro"], consumo="agrivoltaico",
+              nota="Agrivoltaico a bassa densità: ISPRA non lo conta come consumo, ma occupa il suolo agricolo"),
     ]
 
 
@@ -347,20 +413,20 @@ def voci_panoramica(c: dict, territorio: bool = False) -> list[dict]:
         v.append(_voce("Territorio comunale", c["superficie"], COLORI["territorio"], nota="ISPRA 2026"))
     v += [
         _voce("Superficie agricola (SAU)", c["sau"], COLORI["agricola"], nota="Censimento dell'agricoltura 2020"),
-        _voce("Suolo già consumato", c["consumato"], COLORI["consumato"],
-              nota=f"ISPRA 2025: {_n(c['consumato_pct'], 1)}% del territorio; include il fotovoltaico a terra"),
+        _voce("Suolo consumato", c["consumato"], COLORI["consumato"], consumo="perm. + rev.",
+              nota=f"ISPRA 2025: {_n(c['consumato_pct'], 1)}% del territorio; comprende il fotovoltaico a terra (reversibile)"),
         _voce("Mais per il biometano (stima)", c["mais"], COLORI["mais"],
               nota="Dal metano prodotto: tra il 30% e il 90% da insilato di mais (55 t/ha); campi anche fuori comune",
               testo=f"{_n(round(c['mais_min'], -1), 0)}–{_n(round(c['mais_max'], -1), 0)} ha"),
-        _voce("Fotovoltaico a terra, tutti i progetti", c["fv_tutti"], COLORI["fv"],
-              nota="Realizzati, autorizzati e Contessa; esclusi i progetti respinti"),
+        _voce("Fotovoltaico a terra, tutti i progetti", c["fv_tutti"], COLORI["fv"], consumo="reversibile",
+              nota="Realizzati, autorizzati e Contessa (agrivoltaico, non conteggiato da ISPRA); esclusi i respinti"),
         _voce("Tetto del 3% (per tipologia)", c["tetto"], COLORI["tetto"], contorno=True,
               nota="3% della SAU: vale separatamente per FV a terra, accumuli, biometano"),
         _voce("Tetti adatti al fotovoltaico", c["tetti_max"], COLORI["tetti"],
               nota=f"ISPRA 2026: tra {_n(c['tetti_min'], 0)} e {_n(c['tetti_max'], 0)} ha",
               testo=f"{_n(c['tetti_min'], 0)}–{_n(c['tetti_max'], 0)} ha"),
-        _voce("Accumuli, tutti i progetti", c["bess_tutti"], COLORI["bess"], nota="Compresi EAGLE 1 e Lauzacco BESS"),
-        _voce("Impianto di biometano", c["biometano"], COLORI["biometano"], nota="Solo l'impianto, senza i campi"),
+        _voce("Accumuli, tutti i progetti", c["bess_tutti"], COLORI["bess"], consumo="permanente", nota="Compresi EAGLE 1 e Lauzacco BESS"),
+        _voce("Impianto di biometano", c["biometano"], COLORI["biometano"], consumo="permanente", nota="Solo l'impianto, senza i campi"),
     ]
     return sorted(v, key=lambda x: -x["ha"])
 
@@ -375,4 +441,6 @@ def gruppi_tetto(c: dict) -> list[tuple[str, list[dict]]]:
             _voce("Con EAGLE 1", c["bess_aut"] + c["bess_in_corso"], COLORI["bess_chiaro"],
                   nota="Lauzacco BESS è in zona H2 e non conta")]
     bio = [t, _voce("Impianto", c["biometano"], COLORI["biometano"], nota="I campi per l'alimentazione non contano")]
-    return [("Fotovoltaico a terra", fv), ("Accumuli", bess), ("Biometano", bio)]
+    return [("Fotovoltaico a terra<br><span style='font-weight:normal'>consumo reversibile</span>", fv),
+            ("Accumuli<br><span style='font-weight:normal'>consumo permanente</span>", bess),
+            ("Biometano<br><span style='font-weight:normal'>consumo permanente</span>", bio)]
