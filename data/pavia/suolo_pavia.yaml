@@ -47,8 +47,8 @@ impianti:
   - {n: "21", nome: "Lauzacco BESS", tipologia: bess, consumo: permanente, ha: 1.50, zona: non agricola, gruppo: in_corso, nota: "Zona H2"}
   - {n: "3", nome: "Sottostazione Santo Stefano", tipologia: rete, consumo: permanente, ha: 0.35, zona: agricola, gruppo: autorizzato, realizzato: true,
      nota: "Solo la sottostazione dell'impianto di Santo Stefano; non entra nel tetto"}
-  - {n: "10", nome: "Biometano GIOVE Energy Soc. Agr.", tipologia: biometano, consumo: permanente, ha: 4.70, zona: agricola, gruppo: autorizzato, realizzato: true,
-     nota: "Elenco comunale al 30/09 (4,7 ha con le mitigazioni); il portale regionale indica 0,82 ha di impianto"}
+  - {n: "10", nome: "Biometano GIOVE Energy Soc. Agr. (via Tombis)", tipologia: biometano, consumo: permanente, ha: 4.70, zona: agricola, gruppo: autorizzato, realizzato: true,
+     nota: "Riconversione del biogas 999 kWe del 2012; elenco comunale al 30/09 (4,7 ha con le mitigazioni); il portale regionale indica 0,82 ha di impianto"}
 
 # Colture del censimento 2020, in percentuale della SAU (il resto: altre colture, orti, prati, ecc.)
 colture:
@@ -66,21 +66,28 @@ contesto_2025:
 
 # Stima dei campi per l'alimentazione del biometano: non è superficie dell'impianto e non entra nel tetto.
 mais_biometano:
-  # Stima dall'energia prodotta, non dal peso della dieta (le tonnellate di effluenti pesano molto e rendono poco).
-  smc_h: 500                  # capacità dell'impianto (Hydronews, 06/07/2026)
-  ore_anno: 8000              # IPOTESI: pieno carico, come nell'esempio APE del tool
-  resa_ch4_nm3_t: 111.8       # mais insilato ceroso: Nm3 di metano per t tal quale (Tabella producibilità biogas rev. 9.00, Drive › Biogas)
-  nm3_smc: 1.055              # da Nm3 (0 °C) a Smc (15 °C)
-  resa_t_ha: 55               # insilato di mais, t/ha tal quale (stesso valore del foglio Analisi_Energetica_Biogas, Drive › Biogas)
-  quota_min: 0.3              # IPOTESI: quota del metano che viene da colture dedicate
-  quota_centrale: 0.6
-  quota_max: 0.9
+  # Piano di alimentazione dichiarato (UdineToday, inaugurazione del 29/06/2026): «fino a 30.500 t di colture
+  # energetiche, 18.000 t di effluenti zootecnici e 9.200 t di sottoprodotti», da una quarantina di imprese.
+  colture_t: 30500
+  effluenti_t: 18000
+  sottoprodotti_t: 9200
+  resa_t_ha_min: 45           # IPOTESI: insilati di cereali (mais, sorgo, triticale), t/ha tal quale
+  resa_t_ha: 55               # mais insilato (stesso valore del foglio Analisi_Energetica_Biogas, Drive › Biogas)
+  resa_t_ha_max: 60
+  smc_anno: 4200000           # produzione annua prevista (scheda impianto CH4T); 500 Smc/h (graduatoria GSE)
+  resa_ch4_nm3_t: 111.8       # mais insilato ceroso, Nm3 CH4/t (Tabella producibilità biogas rev. 9.00) — per il controllo
+  nm3_smc: 1.055
+  # Prima della riconversione: biogas con cogeneratore da 999 kWe (CH4T), fondato nel 2012 da SEBATUM.
+  biogas_kwe_prima: 999
+  rendimento_elettrico: 0.40  # IPOTESI
+  ore_prima: 8000             # IPOTESI
+  pci_ch4_kwh_nm3: 9.97
   fonte: >-
-    Hydronews, 06/07/2026: impianto Giove Energy (CH4T), 500 Smc/h, oltre 50.000 t/anno da colture energetiche,
-    effluenti e sottoprodotti, circa 40 aziende fornitrici. Il DM biometano 2022 (PNRR) lascia libera la dieta per gli
-    usi diversi dai trasporti ma chiede almeno l'80% di riduzione dei gas serra: con molto mais è difficile, e per questo
-    una parte importante della dieta è di solito effluenti e sottoprodotti. A Pavia il censimento conta circa 211.000 capi
-    avicoli: la pollina e la lettiera rendono quanto il mais per tonnellata. La dieta vera è nel piano di approvvigionamento.
+    UdineToday (piano di alimentazione: 30.500 t di colture energetiche, 18.000 t di effluenti, 9.200 t di
+    sottoprodotti, una quarantina di imprese); graduatoria GSE del bando 5 del DM 15/9/2022 (posizione 123,
+    riconversione, «altri usi», riduzione dei gas serra dichiarata 80%, 500 Smc/h); scheda impianto CH4T (999 kWe
+    prima, 4,2 milioni di Smc/anno). Gli ettari dipendono dalla resa e dalle colture, e una parte può essere di secondo
+    raccolto o fuori comune: il dettaglio è nel piano di approvvigionamento della PAS.
 
 # Conversione superficie dei tetti → potenza: ipotesi prudente
 tetti_mw_per_ha: 1.5

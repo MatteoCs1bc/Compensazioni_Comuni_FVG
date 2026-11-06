@@ -143,6 +143,7 @@ def carica_scheda() -> dict:
     with open(CARTELLA / "scheda_compensazioni.yaml", encoding="utf-8") as f:
         s = yaml.safe_load(f)
     imp = pd.DataFrame(s["impianti"])
+    imp["mw"] = pd.to_numeric(imp.mw)  # il biometano non ha MW: resta vuoto
     imp["eur_mw"] = imp.apply(lambda r: r.eur / r.mw if pd.notna(r.eur) and r.mw else None, axis=1)
     s["impianti_df"] = imp
     s["priorita_df"] = pd.DataFrame(s["priorita"])
@@ -160,6 +161,8 @@ def totali_scheda(s: dict) -> dict:
 
 
 def _mw(x) -> str:
+    if x is None or pd.isna(x):
+        return "–"
     return f"{x:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".").rstrip("0").rstrip(",")
 
 

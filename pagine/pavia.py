@@ -10,7 +10,7 @@ from core.dati import ROOT, comuni_indicatori, euro, nota_legale, num, pct, rego
 from core.pavia import (COLORI_STATO, analisi, carica_analisi, carica_scheda, excel_analisi, figura_mappa,
                         gruppi_zona, impianti_mappa, osm_pavia, scheda_docx, totali_scheda)
 from core.suolo import (carica_suolo, confronto_vicini, consumo_fvg, conti, figura_affiancati, figura_annidati,
-                        figura_pannelli, figura_rispetto_sau, figura_serie, figura_territorio, gruppi_tetto,
+                        figura_pannelli, figura_rispetto_sau, figura_serie, figura_territorio, gruppi_tetto, quota_metano_colture, smc_prima,
                         impianti_df, ripartizione_territorio, rispetto_sau, serie_consumo, voci_consumi,
                         voci_panoramica)
 
@@ -73,24 +73,28 @@ def sezione_suolo():
         st.plotly_chart(figura_annidati(voci_panoramica(cs, territorio=True)),
                         use_container_width=True, key="suolo_ann", config={"displayModeBar": False})
     st.caption("L'area di ogni quadrato è proporzionale agli ettari. Il tetto del 3% è tratteggiato perché è un limite, "
-               "non una superficie occupata. Il mais per il biometano è una stima (dettagli nel riquadro qui sotto) e comprende "
+               "non una superficie occupata. Le colture per il biometano sono una stima dalla dieta dichiarata (dettagli nel riquadro qui sotto) e comprende "
                "campi fuori comune: la dieta vera è nel piano di approvvigionamento.")
-    with st.expander("Come è stimato il mais per il biometano"):
+    with st.expander("Come sono stimate le colture per il biometano"):
         m = SUOLO["mais_biometano"]
-        smc = m["smc_h"] * m["ore_anno"]
-        per_ha = m["resa_ch4_nm3_t"] * m["nm3_smc"] * m["resa_t_ha"]
         st.markdown(
-            f"- **Metano prodotto**: {num(m['smc_h'], 0)} Smc/h × {num(m['ore_anno'], 0)} ore = **{num(smc / 1e6, 1)} milioni di Smc** "
-            "all'anno (ipotesi di pieno carico).\n"
-            f"- **Un ettaro di mais da insilato** dà {num(m['resa_t_ha'], 0)} t × {num(m['resa_ch4_nm3_t'], 1)} Nm³ di metano per tonnellata "
-            f"≈ **{num(per_ha, 0)} Smc** di metano (tabella di producibilità delle matrici, rev. 9.00).\n"
-            f"- Se tutto il metano venisse dal mais servirebbero circa **{num(smc / per_ha, 0)} ha**. Ma la dieta è mista: "
-            f"con il {num(m['quota_min'] * 100, 0)}–{num(m['quota_max'] * 100, 0)}% del metano dal mais sono "
-            f"**{num(cs['mais_min'], 0)}–{num(cs['mais_max'], 0)} ha** (valore centrale {num(cs['mais'], 0)} ha, usato nei grafici).\n"
-            "- Perché non tutto mais: l'incentivo PNRR chiede almeno l'80% di riduzione dei gas serra, che con molto mais è "
-            "difficile; e a Pavia ci sono circa 211.000 capi avicoli, la cui pollina rende per tonnellata quanto il mais. "
-            "I secondi raccolti (sorgo, triticale dopo un'altra coltura) non tolgono il campo alla coltura principale.\n"
-            "- Il dato vero è nel **piano di approvvigionamento** allegato alla PAS del 14/01/2025.")
+            f"- **Piano di alimentazione dichiarato** (UdineToday): fino a **{num(m['colture_t'], 0)} t** di colture energetiche, "
+            f"{num(m['effluenti_t'], 0)} t di effluenti zootecnici e {num(m['sottoprodotti_t'], 0)} t di sottoprodotti all'anno, "
+            "da una quarantina di imprese.\n"
+            f"- **Ettari**: {num(m['colture_t'], 0)} t diviso la resa degli insilati, {num(m['resa_t_ha_min'], 0)}–"
+            f"{num(m['resa_t_ha_max'], 0)} t/ha → **{num(cs['mais_min'], 0)}–{num(cs['mais_max'], 0)} ha** "
+            f"(valore centrale {num(cs['mais'], 0)} ha a {num(m['resa_t_ha'], 0)} t/ha, usato nei grafici).\n"
+            f"- **Controllo sull'energia**: se fossero tutte mais insilato, le colture darebbero circa il "
+            f"{num(quota_metano_colture(m) * 100, 0)}% dei {num(m['smc_anno'] / 1e6, 1)} milioni di Smc previsti; il resto "
+            "viene da effluenti e sottoprodotti. I numeri sono coerenti.\n"
+            f"- **Non è tutto suolo nuovo.** Dal 2012 c'era un biogas da {num(m['biogas_kwe_prima'], 0)} kWe, che consumava circa "
+            f"{num(smc_prima(m) / 1e6, 1)} milioni di Smc di metano l'anno (ipotesi: rendimento elettrico del "
+            f"{num(m['rendimento_elettrico'] * 100, 0)}%, {num(m['ore_prima'], 0)} ore). La riconversione circa raddoppia la "
+            f"produzione: a parità di dieta la parte nuova è di **{num(cs['mais_min'] * cs['mais_quota_nuova'], 0)}–"
+            f"{num(cs['mais_max'] * cs['mais_quota_nuova'], 0)} ha**.\n"
+            "- Gli ettari reali possono essere meno: una parte delle colture può essere di secondo raccolto (dopo un'altra "
+            "coltura sullo stesso campo) e una parte è fuori comune. Il dettaglio è nel **piano di approvvigionamento** "
+            "allegato alla PAS del 14/01/2025.")
 
     st.markdown("**Il tetto del 3%, tipologia per tipologia**")
     st.plotly_chart(figura_pannelli(gruppi_tetto(cs)), use_container_width=True,
@@ -108,9 +112,9 @@ def sezione_suolo():
                      hide_index=True, use_container_width=True)
 
     st.markdown("**Il territorio comunale: quanto è agricolo, quanto è consumato**")
-    mostra_mais = st.toggle("Mostra dove andrebbe il mais per il biometano (ipotesi)", value=True, key="suolo_mais",
-                            help="Il censimento 2020 è precedente all'impianto. Il mais da insilato è una foraggera: la stima "
-                                 "centrale viene tolta da «foraggere, orti, frutteti e altre colture», come se fosse tutto a Pavia.")
+    mostra_mais = st.toggle("Mostra dove andrebbero le colture per il biometano (ipotesi)", value=True, key="suolo_mais",
+                            help="Il censimento 2020 è precedente alla riconversione. Le 30.500 t di colture energetiche "
+                                 "dichiarate, a 55 t/ha, sono tolte in proporzione da cereali e foraggere, come se fossero tutte a Pavia.")
     rip = ripartizione_territorio(cs, SUOLO, mais=mostra_mais)
     st.markdown(
         f"Su {num(cs['superficie'], 0)} ha di territorio, la SAU è il **{num(cs['sau'] / cs['superficie'] * 100, 1)}%** "
@@ -133,8 +137,8 @@ def sezione_suolo():
     st.plotly_chart(figura_rispetto_sau(rispetto_sau(cs, SUOLO)), use_container_width=True, key="suolo_sau",
                     config={"displayModeBar": False})
     st.caption("Verde: colture; grigio: consumo di suolo ISPRA (anche se non tutto avviene su terreni agricoli); giallo: "
-               "impianti; blu: i tetti, che non tolgono suolo agricolo. Il mais per il biometano è una stima e in parte è "
-               "coltivato fuori comune: non è suolo consumato, ma terreno agricolo che cambia destinazione.")
+               "impianti; blu: i tetti, che non tolgono suolo agricolo. Le colture per il biometano sono una stima e in parte sono "
+               "coltivate fuori comune: non sono suolo consumato, ma terreno agricolo che cambia destinazione.")
 
     st.markdown("**Impianti e altri consumi di suolo**")
     st.plotly_chart(figura_affiancati(sorted(voci_consumi(cs), key=lambda v: -v["ha"]), lato_px=150, file_etichette=2),

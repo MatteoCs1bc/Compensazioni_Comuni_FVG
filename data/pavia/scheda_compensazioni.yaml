@@ -1,7 +1,7 @@
 # Scheda compensazioni del Comune di Pavia di Udine.
 # Fonte: schede FER e decreti forniti dal Comune (elenco FER al 20/10/2026), letti il 30/10/2026.
 # Importi come risultano dalle schede comunali e dai decreti; "eur_mw" = importo una tantum diviso per la potenza.
-aggiornato_al: 2026-11-03
+aggiornato_al: 2026-11-06
 titolo: "Pavia di Udine – compensazioni: stato e progetti da seguire"
 sintesi: >
   Pavia di Udine ha ottenuto quasi solo compensazioni una tantum (circa 3,4 milioni di euro noti, in opere o denaro),
@@ -27,6 +27,13 @@ novita:
     testo: >
       KI Italia a Risano e a Lauzacco, respinte a settembre 2026 per la fascia di rispetto cimiteriale: in
       autorizzazione unica varrà almeno il 3%.
+  - titolo: "Il biometano di via Tombis è una riconversione incentivata dal PNRR"
+    testo: >
+      GIOVE Energy Soc. Agr. ha convertito il biogas da 999 kWe del 2012 in un impianto da 500 Smc/h (4,2 milioni di Smc
+      l'anno), con PAS comunale e incentivo GSE (bando 5 del DM 15/9/2022, posizione 123). Dieta dichiarata: 30.500 t di
+      colture energetiche, 18.000 t di effluenti, 9.200 t di sottoprodotti. Nessuna compensazione nelle schede del Comune;
+      all'inaugurazione l'assessore Palandrani ha annunciato un confronto con CH4T sulle opere di compensazione. Il 3% dei
+      proventi varrebbe circa 140.000 euro l'anno.
   - titolo: "Ci sono clausole sfavorevoli al Comune"
     testo: >
       Nel caso RNE14 le autorizzazioni delle opere compensative sono a carico del Comune, i lavori non possono partire
@@ -58,6 +65,10 @@ impianti:
      compensazione: "Volontaria: auto e furgone elettrici", eur: null, modalita: una tantum, stato: "In definizione"}
   - {n: "12", impianto: "Tombis (Voltron, comunità energetica)", tipo: FV, mw: 0.6213, titolo: "PAS del 23/09/2025",
      compensazione: "Non richieste (zona D2)", eur: null, modalita: nessuna, stato: Autorizzato}
+  - {n: "10", impianto: "Biometano GIOVE Energy Soc. Agr. (via Tombis), riconversione del biogas 999 kWe del 2012",
+     tipo: BIOMETANO, mw: null, titolo: "PAS comunale del 14/01/2025; incentivo GSE bando 5 (pos. 123)",
+     compensazione: "Nessuna risulta dalle schede comunali", eur: null, modalita: "da verificare",
+     stato: "Realizzato (inaugurato il 29/06/2026)"}
   - {n: "0, 01", impianto: "San Mauro e Selvuzzis", tipo: FV, mw: 3.4776, titolo: "Regione, 2012",
      compensazione: Nessuna, eur: null, modalita: nessuna, stato: Realizzati}
 
@@ -106,6 +117,9 @@ priorita:
      azione: "Verificare scadenze e garanzie nella convenzione 2023 e sollecitare"}
   - {priorita: Media, n: "8", impianto: "Risano (Sunprime)", situazione: "Convenzione firmata, opere in corso",
      azione: "Seguire i lavori; rivedere la sponsorizzazione"}
+  - {priorita: Media, n: "10", impianto: "Biometano GIOVE Energy (CH4T), 500 Smc/h, via Tombis",
+     situazione: "Riconversione realizzata con PAS del 14/01/2025 e incentivo PNRR; circa 4,2 milioni di Smc l'anno; 30.500 t di colture energetiche, 18.000 t di effluenti e 9.200 t di sottoprodotti da una quarantina di imprese; nessuna compensazione nota, ma all'inaugurazione (29/06/2026) Comune e CH4T hanno annunciato un confronto sulle opere",
+     azione: "Preparare il confronto con CH4T con un riferimento scritto: 3% dei proventi, circa 140.000 €/anno per i 15 anni di incentivo, in quota annua; più impegni su viabilità dei mezzi, odori e digestato; chiedere prima il piano di approvvigionamento"}
   - {priorita: Bassa, n: "7", impianto: Marconi, situazione: "Nessun obbligo di legge, auto e furgone in definizione",
      azione: "Chiudere l'accordo volontario"}
 
@@ -127,11 +141,12 @@ documenti:
   - "DGC 145/2023 (parere su Contessa), DGC 79/2022 (parere su Enel), DGC 97/2021 e 157/2021"
   - "Verbale della conferenza Santo Stefano del 27/04/2022: cosa chiese Pavia"
   - "Convenzione Sunprime con il computo delle opere"
-  - "Biogas (n. 10): titolo e capacità in Smc/h, che mancano dal materiale"
+  - "Biometano n. 10: fascicolo PAS del 14/01/2025 con piano di approvvigionamento (dieta, aziende fornitrici, terreni) ed eventuali compensazioni"
   - "Contessa: stima di producibilità e scheda tecnica (PAV-TEC-R-61a, 22/09/2023) acquisite dalla documentazione VIA"
   - "Superficie agricola comunale di riferimento, per la verifica del tetto del 3% di suolo"
 
 fonti: >
   Schede FER e decreti forniti dal Comune di Pavia di Udine (ottobre 2026): AU 17640, 37803, 40713, 43543, 18458,
   3866 e 3953/GRFVG; decreto MASE 55/17/2022; decreto regionale 4977/2026 (VIA Contessa); scheda tecnica di Contessa PAV-TEC-R-61a (EG Equinozio, 22/09/2023); provvedimento PAS IEIS del
-  09/08/2024.
+  09/08/2024. Biometano: graduatoria GSE del bando 5 del DM 15/9/2022 (Tabella A, ammessi), scheda impianto CH4T,
+  Hydronews (06/07/2026), UdineToday (inaugurazione del 29/06/2026), Gowem/Adriacos (02/2026), BUR FVG n. 20 del 20/05/2026 (decreto 23834/GRFVG, allacciamento Snam).

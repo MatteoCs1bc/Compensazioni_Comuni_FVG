@@ -51,12 +51,24 @@ def serie_consumo(riga: pd.Series) -> pd.DataFrame:
                           "ha_anno": riga[f"netto_{p}"] / a} for p, a in PERIODI])
 
 
-def ettari_mais(m: dict, quota: float) -> float:
-    """Ettari di mais da insilato per la quota «quota» del metano prodotto dall'impianto.
-    metano annuo (Smc) / (resa in metano per tonnellata × tonnellate per ettaro)."""
-    smc_anno = m["smc_h"] * m["ore_anno"]
-    smc_per_ha = m["resa_ch4_nm3_t"] * m["nm3_smc"] * m["resa_t_ha"]
-    return quota * smc_anno / smc_per_ha
+def ettari_mais(m: dict, resa_t_ha: float | None = None) -> float:
+    """Ettari di colture energetiche: tonnellate dichiarate nel piano di alimentazione / resa per ettaro."""
+    return m["colture_t"] / (resa_t_ha or m["resa_t_ha"])
+
+
+def quota_metano_colture(m: dict) -> float:
+    """Controllo: quota del metano prodotto che le colture coprirebbero se fossero tutte mais insilato."""
+    return min(1.0, m["colture_t"] * m["resa_ch4_nm3_t"] * m["nm3_smc"] / m["smc_anno"])
+
+
+def smc_prima(m: dict) -> float:
+    """Metano che consumava il vecchio cogeneratore a biogas, in Smc/anno: kWe / rendimento × ore / PCI."""
+    return m["biogas_kwe_prima"] / m["rendimento_elettrico"] * m["ore_prima"] / m["pci_ch4_kwh_nm3"] * m["nm3_smc"]
+
+
+def quota_nuova(m: dict) -> float:
+    """Parte della produzione attuale che si aggiunge a quella del biogas del 2012."""
+    return max(0.0, 1 - smc_prima(m) / m["smc_anno"])
 
 
 def impianti_df(s: dict) -> pd.DataFrame:
@@ -84,8 +96,9 @@ def conti(s: dict, consumo: pd.Series) -> dict:
         "bess_aut": somma(agr, "bess"), "bess_in_corso": somma(agr, "bess", ("in_corso",)),
         "bess_tutti": float(imp[imp.tipologia == "bess"].ha.sum()),
         "biometano": somma(agr, "biometano"),
-        "mais": ettari_mais(m, m["quota_centrale"]), "mais_min": ettari_mais(m, m["quota_min"]),
-        "mais_max": ettari_mais(m, m["quota_max"]),
+        "mais": ettari_mais(m), "mais_min": ettari_mais(m, m["resa_t_ha_max"]),
+        "mais_max": ettari_mais(m, m["resa_t_ha_min"]),
+        "mais_quota_nuova": quota_nuova(m),
         "tetti_min": float(consumo.tetti_fv_min_ha), "tetti_max": float(consumo.tetti_fv_max_ha),
         "tetti_mw_min": float(consumo.tetti_fv_min_ha) * s["tetti_mw_per_ha"],
         "tetti_mw_max": float(consumo.tetti_fv_max_ha) * s["tetti_mw_per_ha"],
@@ -99,14 +112,14 @@ def conti(s: dict, consumo: pd.Series) -> dict:
 
 ALTRE_COLTURE = "Foraggere, orti, frutteti e altre colture"
 RESTO = "Né agricolo né consumato"
-MAIS_TILE = "Mais da insilato per il biometano (stima)"
+MAIS_TILE = "Colture per il biometano (stima)"
 
 
 def ripartizione_territorio(c: dict, s: dict, mais: bool = True) -> pd.DataFrame:
     """Territorio comunale diviso in SAU (per coltura), suolo consumato (reversibile/permanente dove si sa) e resto.
     SAU dal censimento 2020 e suolo consumato ISPRA 2025: fonti diverse, la somma è un ordine di grandezza.
     mais=True ricava dalla voce «foraggere e altre colture» (dove il censimento mette il mais da insilato) la stima
-    centrale del mais per il biometano, come se fosse tutto coltivato a Pavia."""
+    centrale delle colture per il biometano, come se fossero tutte coltivate a Pavia."""
     righe = [("Territorio comunale", "", c["superficie"])]
     righe.append(("Superficie agricola (SAU)", "Territorio comunale", c["sau"]))
     resto_sau = c["sau"]
@@ -115,9 +128,14 @@ def ripartizione_territorio(c: dict, s: dict, mais: bool = True) -> pd.DataFrame
         resto_sau -= v
         righe.append((col["nome"], "Superficie agricola (SAU)", v))
     if mais:
-        m = min(c["mais"], resto_sau)
+        # le colture energetiche sono seminativi: le tolgo in proporzione da cereali e foraggere/altre colture
+        i_cer = next(i for i, r in enumerate(righe) if r[0] == "Cereali")
+        cer = righe[i_cer][2]
+        m = min(c["mais"], 0.9 * (cer + resto_sau))
+        da_cer = m * cer / (cer + resto_sau)
+        righe[i_cer] = ("Cereali", "Superficie agricola (SAU)", cer - da_cer)
+        resto_sau -= m - da_cer
         righe.append((MAIS_TILE, "Superficie agricola (SAU)", m))
-        resto_sau -= m
     righe.append((ALTRE_COLTURE, "Superficie agricola (SAU)", resto_sau))
     righe.append(("Suolo consumato", "Territorio comunale", c["consumato"]))
     righe.append(("Fotovoltaico a terra · reversibile", "Suolo consumato", c["realizzati_rev"]))
@@ -135,7 +153,7 @@ def rispetto_sau(c: dict, s: dict) -> pd.DataFrame:
     r += [("Suolo consumato in totale (reversibile + permanente)", "Consumo di suolo (ISPRA)", c["consumato"]),
           ("Nuovo consumo 2006–2025", "Consumo di suolo (ISPRA)", c["netto_2006_2025"]),
           ("Nuovo consumo 2021–2025", "Consumo di suolo (ISPRA)", c["netto_2021_2025"]),
-          ("Mais per il biometano (stima centrale)", "Colture energetiche", c["mais"]),
+          ("Colture per il biometano (55 t/ha)", "Colture energetiche", c["mais"]),
           ("Fotovoltaico a terra autorizzato · reversibile", "Impianti · consumo reversibile", c["fv_aut"]),
           ("Contessa, agrivoltaico · non conteggiato da ISPRA", "Impianti · non conteggiato", c["fv_contessa"]),
           ("Accumuli con EAGLE 1 · permanente", "Impianti · consumo permanente", c["bess_aut"] + c["bess_in_corso"]),
@@ -331,14 +349,14 @@ def figura_territorio(df: pd.DataFrame):
            "Edifici, strade, piazzali, aree produttive (in prevalenza permanente)": "#a7adb6", RESTO: COLORI["territorio"]}
     spiega = {
         ALTRE_COLTURE: "Censimento 2020: foraggere avvicendate (anche il mais da insilato), ortive, frutteti, legumi, terreni a riposo",
-        MAIS_TILE: "Ipotesi 2026: il mais da insilato è una foraggera; stima centrale come se fosse tutto a Pavia (in realtà anche fuori comune)",
+        MAIS_TILE: "30.500 t/anno di colture energetiche a 55 t/ha, come se fossero tutte a Pavia (in realtà anche fuori comune e in parte di secondo raccolto); tolte in proporzione da cereali e foraggere. Circa metà serviva già al biogas del 2012",
         RESTO: "Corsi d'acqua e greti, boschi, incolti, terreni coltivati da aziende con sede in altri comuni",
         "Fotovoltaico a terra · reversibile": "Pannelli su suolo non sigillato: ISPRA lo conta come consumo reversibile",
         "Accumuli, stazione, biometano · permanente": "Platee, fondazioni, vasche, piazzali: suolo in prevalenza sigillato",
         "Edifici, strade, piazzali, aree produttive (in prevalenza permanente)":
             "Per singolo comune ISPRA non separa permanente e reversibile: qui ci sono anche cantieri, sterrati e cave",
     }
-    breve = {ALTRE_COLTURE: "Foraggere, orti,<br>frutteti e altro", MAIS_TILE: "Mais per il<br>biometano (stima)",
+    breve = {ALTRE_COLTURE: "Foraggere, orti,<br>frutteti e altro", MAIS_TILE: "Colture per il<br>biometano (stima)",
              "Piante industriali (soprattutto soia)": "Piante industriali<br>(soprattutto soia)",
              "Prati permanenti e pascoli": "Prati", RESTO: "Né agricolo<br>né consumato",
              "Fotovoltaico a terra · reversibile": "Fotovoltaico<br>reversibile",
@@ -415,8 +433,9 @@ def voci_panoramica(c: dict, territorio: bool = False) -> list[dict]:
         _voce("Superficie agricola (SAU)", c["sau"], COLORI["agricola"], nota="Censimento dell'agricoltura 2020"),
         _voce("Suolo consumato", c["consumato"], COLORI["consumato"], consumo="perm. + rev.",
               nota=f"ISPRA 2025: {_n(c['consumato_pct'], 1)}% del territorio; comprende il fotovoltaico a terra (reversibile)"),
-        _voce("Mais per il biometano (stima)", c["mais"], COLORI["mais"],
-              nota="Dal metano prodotto: tra il 30% e il 90% da insilato di mais (55 t/ha); campi anche fuori comune",
+        _voce("Colture per il biometano", c["mais"], COLORI["mais"],
+              nota=(f"30.500 t/anno di colture energetiche dichiarate, a 45–60 t/ha; campi anche fuori comune. "
+                    f"Circa il {_n(100 - c['mais_quota_nuova'] * 100, 0)}% serviva già al biogas del 2012"),
               testo=f"{_n(round(c['mais_min'], -1), 0)}–{_n(round(c['mais_max'], -1), 0)} ha"),
         _voce("Fotovoltaico a terra, tutti i progetti", c["fv_tutti"], COLORI["fv"], consumo="reversibile",
               nota="Realizzati, autorizzati e Contessa (agrivoltaico, non conteggiato da ISPRA); esclusi i respinti"),

@@ -244,7 +244,10 @@ def test_suolo_confronti():
 
 
 def test_mais_biometano():
-    from core.suolo import carica_suolo, ettari_mais
+    from core.suolo import carica_suolo, ettari_mais, quota_metano_colture, quota_nuova, smc_prima
     m = carica_suolo()["mais_biometano"]
-    assert abs(ettari_mais(m, 1.0) - 616.6) < 1      # 4 milioni di Smc / (111,8 × 1,055 × 55) Smc/ha
-    assert abs(ettari_mais(m, m["quota_centrale"]) - 370) < 1
+    assert abs(ettari_mais(m) - 554.5) < 1           # 30.500 t / 55 t/ha
+    assert abs(ettari_mais(m, 45) - 677.8) < 1
+    assert 0.8 < quota_metano_colture(m) <= 1.0      # le colture coprono gran parte del metano previsto
+    assert abs(smc_prima(m) - 2.114e6) < 5e3         # biogas 999 kWe del 2012
+    assert 0.45 < quota_nuova(m) < 0.55
