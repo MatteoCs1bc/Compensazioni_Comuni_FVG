@@ -238,6 +238,9 @@ def test_suolo_confronti():
     assert abs(r.loc["Suolo consumato in totale (reversibile + permanente)", "pct_sau"] - 28.84) < 0.01
     # impianti realizzati separati tra consumo reversibile (fotovoltaico) e permanente (accumuli, stazione, biometano)
     assert abs(c["realizzati_rev"] - 45.61) < 0.01 and abs(c["realizzati_perm"] - 14.11) < 0.01
+    assert c["mais_pavia"] == 6                                     # dato del Comune
+    con = ripartizione_territorio(c, s).set_index("voce")
+    assert abs(con.loc["Colture per il biometano", "ha"] - 6) < 1e-9
     senza = ripartizione_territorio(c, s, mais=False)
     assert abs(senza[senza.padre == "Superficie agricola (SAU)"].ha.sum() - c["sau"]) < 0.01
     figura_territorio(rip); figura_rispetto_sau(rispetto_sau(c, s))
@@ -251,3 +254,15 @@ def test_mais_biometano():
     assert 0.8 < quota_metano_colture(m) <= 1.0      # le colture coprono gran parte del metano previsto
     assert abs(smc_prima(m) - 2.114e6) < 5e3         # biogas 999 kWe del 2012
     assert 0.45 < quota_nuova(m) < 0.55
+
+
+def test_tetto_unico():
+    from core.suolo import carica_suolo, conti, consumo_fvg, figura_pannelli, gruppo_tetto_unico
+    s = carica_suolo()
+    c = conti(s, consumo_fvg().query("comune == 'Pavia di Udine'").iloc[0])
+    assert abs(c["unico_aut"] - (56.09 + 13.36 + 4.70)) < 0.01   # FV + accumuli + biometano autorizzati
+    assert c["unico_aut"] > c["tetto"]                             # con il tetto unico è già superato
+    assert abs(c["unico_in_corso"] - (45.75 + 10.66)) < 0.01       # Contessa + EAGLE 1
+    assert "accumulo elettrochimico" in s["tetto"]["testo_vigente"]  # testo citato alla lettera
+    assert len(s["tetto"]["letture"]) == 2
+    figura_pannelli(gruppo_tetto_unico(c))

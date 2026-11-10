@@ -272,6 +272,19 @@ def _chiavi_scheda(n) -> list[str]:
     return out
 
 
+# Dati verificati dopo la tabella comunale del 20/10/2026, che per questi impianti è incompleta:
+# n. 10 dalla graduatoria GSE (bando 5 DM 15/9/2022), dalla scheda CH4T e dal portale regionale (posizione a 76 m);
+# n. 19 e 21 dalle istanze nelle schede comunali; n. 3 è solo la sottostazione del fotovoltaico Santo Stefano.
+AGGIORNAMENTI_MAPPA = {
+    "10": {"societa": "GIOVE Energy Soc. Agr. S.r.l. (gruppo CH4T)", "localizzazione": "via Tombis",
+           "note": ("Riconversione a biometano (500 Smc/h, circa 4,2 milioni di Smc/anno) del biogas da 999 kWe del 2012; "
+                    "incentivo GSE, bando 5 del DM 15/9/2022. Nell'elenco comunale al 30/09/2026, non nella tabella del 20/10/2026")},
+    "19": {"provvedimento": "Istanza alla Regione del 05/08/2026"},
+    "21": {"provvedimento": "Istanza alla Regione del 29/07/2026"},
+}
+TIPO_ESTESO = {"3": "Sottostazione elettrica (del fotovoltaico Santo Stefano)", "10": "Biometano"}
+
+
 def impianti_mappa() -> pd.DataFrame:
     """Un poligono (o punto) per riga, con i dati dell'elenco comunale e della scheda compensazioni.
 
@@ -288,6 +301,9 @@ def impianti_mappa() -> pd.DataFrame:
               "qui sono attribuiti per vicinanza a via San Mauro e alla frazione di Selvuzzis. ")
     fer.loc["00", "note"] = dubbio + "198 kW sono pochi per un poligono di circa 3 ettari: potrebbero essere invertiti. " + fer.loc["00", "note"]
     fer.loc["01", "note"] = dubbio
+    for n, campi in AGGIORNAMENTI_MAPPA.items():
+        for col, val in campi.items():
+            fer.loc[n, col] = val
     s = carica_scheda()
     imp, pri = {}, {}
     for r in s["impianti"]:
@@ -328,7 +344,8 @@ def impianti_mappa() -> pd.DataFrame:
         val = lambda col: (f[col] if f is not None and col in f and pd.notna(f[col]) else None)
         righe.append({
             "id": p["id"], "n": "" if terna else n, "nome": nome, "tipo": tipo,
-            "tipo_esteso": ("Agrivoltaico" if f is not None and f.tipo == "AgriFV" else SIMBOLO_TIPO.get(tipo, tipo)),
+            "tipo_esteso": TIPO_ESTESO.get(n) or ("Agrivoltaico" if f is not None and f.tipo == "AgriFV"
+                                                  else SIMBOLO_TIPO.get(tipo, tipo)),
             "stato": stato, "societa": val("societa") or "", "localizzazione": val("localizzazione") or "",
             "mw": val("potenza_mw"), "ha_comune": val("sup_complessiva_ha"),
             "ha_mappa": p["ha_mappa"], "titolo": val("provvedimento") or "", "ente": val("ente") or "",

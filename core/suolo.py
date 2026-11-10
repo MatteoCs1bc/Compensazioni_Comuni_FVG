@@ -96,9 +96,13 @@ def conti(s: dict, consumo: pd.Series) -> dict:
         "bess_aut": somma(agr, "bess"), "bess_in_corso": somma(agr, "bess", ("in_corso",)),
         "bess_tutti": float(imp[imp.tipologia == "bess"].ha.sum()),
         "biometano": somma(agr, "biometano"),
+        # tetto unico: fotovoltaico a terra + accumuli + biometano autorizzati in zona agricola (art. 8, c. 3, lettura A)
+        "unico_aut": somma(agr, "fv") + somma(agr, "bess") + somma(agr, "biometano"),
+        "unico_in_corso": somma(agr, "fv", ("in_corso",)) + somma(agr, "bess", ("in_corso",)),
         "mais": ettari_mais(m), "mais_min": ettari_mais(m, m["resa_t_ha_max"]),
         "mais_max": ettari_mais(m, m["resa_t_ha_min"]),
         "mais_quota_nuova": quota_nuova(m),
+        "mais_pavia": float(m["colture_pavia_ha"]),
         "tetti_min": float(consumo.tetti_fv_min_ha), "tetti_max": float(consumo.tetti_fv_max_ha),
         "tetti_mw_min": float(consumo.tetti_fv_min_ha) * s["tetti_mw_per_ha"],
         "tetti_mw_max": float(consumo.tetti_fv_max_ha) * s["tetti_mw_per_ha"],
@@ -112,14 +116,14 @@ def conti(s: dict, consumo: pd.Series) -> dict:
 
 ALTRE_COLTURE = "Foraggere, orti, frutteti e altre colture"
 RESTO = "Né agricolo né consumato"
-MAIS_TILE = "Colture per il biometano (stima)"
+MAIS_TILE = "Colture per il biometano"
 
 
 def ripartizione_territorio(c: dict, s: dict, mais: bool = True) -> pd.DataFrame:
     """Territorio comunale diviso in SAU (per coltura), suolo consumato (reversibile/permanente dove si sa) e resto.
     SAU dal censimento 2020 e suolo consumato ISPRA 2025: fonti diverse, la somma è un ordine di grandezza.
-    mais=True ricava dalla voce «foraggere e altre colture» (dove il censimento mette il mais da insilato) la stima
-    centrale delle colture per il biometano, come se fossero tutte coltivate a Pavia."""
+    mais=True ricava dalla voce «foraggere e altre colture» (dove il censimento mette il mais da insilato) i 6 ha di
+    colture energetiche che il Comune indica sul proprio territorio."""
     righe = [("Territorio comunale", "", c["superficie"])]
     righe.append(("Superficie agricola (SAU)", "Territorio comunale", c["sau"]))
     resto_sau = c["sau"]
@@ -128,13 +132,8 @@ def ripartizione_territorio(c: dict, s: dict, mais: bool = True) -> pd.DataFrame
         resto_sau -= v
         righe.append((col["nome"], "Superficie agricola (SAU)", v))
     if mais:
-        # le colture energetiche sono seminativi: le tolgo in proporzione da cereali e foraggere/altre colture
-        i_cer = next(i for i, r in enumerate(righe) if r[0] == "Cereali")
-        cer = righe[i_cer][2]
-        m = min(c["mais"], 0.9 * (cer + resto_sau))
-        da_cer = m * cer / (cer + resto_sau)
-        righe[i_cer] = ("Cereali", "Superficie agricola (SAU)", cer - da_cer)
-        resto_sau -= m - da_cer
+        m = min(c["mais_pavia"], resto_sau)
+        resto_sau -= m
         righe.append((MAIS_TILE, "Superficie agricola (SAU)", m))
     righe.append((ALTRE_COLTURE, "Superficie agricola (SAU)", resto_sau))
     righe.append(("Suolo consumato", "Territorio comunale", c["consumato"]))
@@ -153,7 +152,8 @@ def rispetto_sau(c: dict, s: dict) -> pd.DataFrame:
     r += [("Suolo consumato in totale (reversibile + permanente)", "Consumo di suolo (ISPRA)", c["consumato"]),
           ("Nuovo consumo 2006–2025", "Consumo di suolo (ISPRA)", c["netto_2006_2025"]),
           ("Nuovo consumo 2021–2025", "Consumo di suolo (ISPRA)", c["netto_2021_2025"]),
-          ("Colture per il biometano (55 t/ha)", "Colture energetiche", c["mais"]),
+          ("Colture per il biometano a Pavia (dato del Comune)", "Colture energetiche", c["mais_pavia"]),
+          ("FV + accumuli + biometano autorizzati (tetto unico)", "Impianti · tetto unico", c["unico_aut"]),
           ("Fotovoltaico a terra autorizzato · reversibile", "Impianti · consumo reversibile", c["fv_aut"]),
           ("Contessa, agrivoltaico · non conteggiato da ISPRA", "Impianti · non conteggiato", c["fv_contessa"]),
           ("Accumuli con EAGLE 1 · permanente", "Impianti · consumo permanente", c["bess_aut"] + c["bess_in_corso"]),
@@ -335,7 +335,7 @@ def figura_serie(serie: pd.DataFrame, evidenzia_da: str = "2021–2022"):
 
 COLORI_GRUPPO = {"Colture (censimento 2020)": COLORI["agricola"], "Consumo di suolo (ISPRA)": COLORI["consumato"],
                  "Colture energetiche": COLORI["mais"], "Impianti · consumo reversibile": COLORI["fv"],
-                 "Impianti · non conteggiato": COLORI["fv_chiaro"], "Impianti · consumo permanente": COLORI["bess"],
+                 "Impianti · non conteggiato": COLORI["fv_chiaro"], "Impianti · tetto unico": "#c98a1a", "Impianti · consumo permanente": COLORI["bess"],
                  "Alternative": COLORI["tetti"]}
 
 
@@ -349,14 +349,14 @@ def figura_territorio(df: pd.DataFrame):
            "Edifici, strade, piazzali, aree produttive (in prevalenza permanente)": "#a7adb6", RESTO: COLORI["territorio"]}
     spiega = {
         ALTRE_COLTURE: "Censimento 2020: foraggere avvicendate (anche il mais da insilato), ortive, frutteti, legumi, terreni a riposo",
-        MAIS_TILE: "30.500 t/anno di colture energetiche a 55 t/ha, come se fossero tutte a Pavia (in realtà anche fuori comune e in parte di secondo raccolto); tolte in proporzione da cereali e foraggere. Circa metà serviva già al biogas del 2012",
+        MAIS_TILE: "6 ha a Pavia, dato del Comune (10/11/2026); in tutto l'impianto ne usa circa 510–680, quasi tutti in altri comuni",
         RESTO: "Corsi d'acqua e greti, boschi, incolti, terreni coltivati da aziende con sede in altri comuni",
         "Fotovoltaico a terra · reversibile": "Pannelli su suolo non sigillato: ISPRA lo conta come consumo reversibile",
         "Accumuli, stazione, biometano · permanente": "Platee, fondazioni, vasche, piazzali: suolo in prevalenza sigillato",
         "Edifici, strade, piazzali, aree produttive (in prevalenza permanente)":
             "Per singolo comune ISPRA non separa permanente e reversibile: qui ci sono anche cantieri, sterrati e cave",
     }
-    breve = {ALTRE_COLTURE: "Foraggere, orti,<br>frutteti e altro", MAIS_TILE: "Colture per il<br>biometano (stima)",
+    breve = {ALTRE_COLTURE: "Foraggere, orti,<br>frutteti e altro", MAIS_TILE: "Colture per<br>il biometano",
              "Piante industriali (soprattutto soia)": "Piante industriali<br>(soprattutto soia)",
              "Prati permanenti e pascoli": "Prati", RESTO: "Né agricolo<br>né consumato",
              "Fotovoltaico a terra · reversibile": "Fotovoltaico<br>reversibile",
@@ -433,14 +433,15 @@ def voci_panoramica(c: dict, territorio: bool = False) -> list[dict]:
         _voce("Superficie agricola (SAU)", c["sau"], COLORI["agricola"], nota="Censimento dell'agricoltura 2020"),
         _voce("Suolo consumato", c["consumato"], COLORI["consumato"], consumo="perm. + rev.",
               nota=f"ISPRA 2025: {_n(c['consumato_pct'], 1)}% del territorio; comprende il fotovoltaico a terra (reversibile)"),
-        _voce("Colture per il biometano", c["mais"], COLORI["mais"],
-              nota=(f"30.500 t/anno di colture energetiche dichiarate, a 45–60 t/ha; campi anche fuori comune. "
-                    f"Circa il {_n(100 - c['mais_quota_nuova'] * 100, 0)}% serviva già al biogas del 2012"),
-              testo=f"{_n(round(c['mais_min'], -1), 0)}–{_n(round(c['mais_max'], -1), 0)} ha"),
+        _voce("Colture per il biometano, in tutto (stima)", c["mais"], COLORI["mais"],
+              nota=(f"30.500 t/anno di colture energetiche dichiarate, a 45–60 t/ha. A Pavia solo "
+                    f"{_n(c['mais_pavia'], 0)} ha (dato del Comune): il resto è in altri comuni. Circa il "
+                    f"{_n(100 - c['mais_quota_nuova'] * 100, 0)}% serviva già al biogas del 2012"),
+              testo=f"{_n(round(c['mais_min'], -1), 0)}–{_n(round(c['mais_max'], -1), 0)} ha · a Pavia {_n(c['mais_pavia'], 0)}"),
         _voce("Fotovoltaico a terra, tutti i progetti", c["fv_tutti"], COLORI["fv"], consumo="reversibile",
               nota="Realizzati, autorizzati e Contessa (agrivoltaico, non conteggiato da ISPRA); esclusi i respinti"),
-        _voce("Tetto del 3% (per tipologia)", c["tetto"], COLORI["tetto"], contorno=True,
-              nota="3% della SAU: vale separatamente per FV a terra, accumuli, biometano"),
+        _voce("Tetto del 3% della SAU", c["tetto"], COLORI["tetto"], contorno=True,
+              nota="Unico per fotovoltaico a terra, accumuli e biometano, o uno per tipologia: il testo non è chiaro"),
         _voce("Tetti adatti al fotovoltaico", c["tetti_max"], COLORI["tetti"],
               nota=f"ISPRA 2026: tra {_n(c['tetti_min'], 0)} e {_n(c['tetti_max'], 0)} ha",
               testo=f"{_n(c['tetti_min'], 0)}–{_n(c['tetti_max'], 0)} ha"),
@@ -450,7 +451,19 @@ def voci_panoramica(c: dict, territorio: bool = False) -> list[dict]:
     return sorted(v, key=lambda x: -x["ha"])
 
 
+def gruppo_tetto_unico(c: dict) -> list[tuple[str, list[dict]]]:
+    """Lettura A dell'art. 8, c. 3: un solo tetto per fotovoltaico a terra, accumuli e biometano insieme."""
+    t = _voce("Tetto del 3%", c["tetto"], COLORI["tetto"], contorno=True, nota="3% della superficie agricola (SAU)")
+    aut = _voce("Autorizzati: FV + accumuli + biometano", c["unico_aut"], "#c98a1a",
+                nota=(f"FV {_n(c['fv_aut'], 1)} ha + accumuli {_n(c['bess_aut'], 1)} ha + biometano "
+                      f"{_n(c['biometano'], 1)} ha, in zona agricola"))
+    tutti = _voce("Con Contessa ed EAGLE 1", c["unico_aut"] + c["unico_in_corso"], "#f0d39a",
+                  nota="Progetti in istruttoria in zona agricola")
+    return [("Tetto unico<br><span style='font-weight:normal'>FV a terra + accumuli + biometano</span>", [t, aut, tutti])]
+
+
 def gruppi_tetto(c: dict) -> list[tuple[str, list[dict]]]:
+    """Lettura B dell'art. 8, c. 3: un tetto per ciascuna tipologia."""
     t = _voce("Tetto del 3%", c["tetto"], COLORI["tetto"], contorno=True, nota="3% della superficie agricola (SAU)")
     fv = [t, _voce("Autorizzato in zona agricola", c["fv_aut"], COLORI["fv"],
                    nota="Cjase Sterpet, Crimea, Risano, compensazione, San Mauro e Selvuzzis; superficie complessiva"),

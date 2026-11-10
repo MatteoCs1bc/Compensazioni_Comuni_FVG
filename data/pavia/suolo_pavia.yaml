@@ -18,10 +18,36 @@ agricoltura:
 
 tetto:
   quota: 0.03
-  norma: >-
-    L.R. FVG 2/2025, art. 8 c. 3 (testo vigente dopo la L.R. 13/2025): fino alle linee guida regionali, le superfici
-    di fotovoltaico a terra, accumuli elettrochimici e biometano, sommate a quelle degli impianti della stessa tipologia
-    già autorizzati in aree agricole, non possono superare il 3% della superficie agricola comunale.
+  # Testo citato alla lettera (regola del Project: prima il testo, poi la sintesi). Due versioni sul Drive.
+  testo_vigente: >-
+    «Fino all'adozione delle linee guida di cui all'articolo 5, comma 3, ai fini della valutazione dei progetti di
+    impianti a fonti rinnovabili, le superfici degli impianti fotovoltaici con moduli collocati a terra, di impianti di
+    accumulo elettrochimico e di produzione di biometano, sommate a quelle dei medesimi impianti della stessa tipologia,
+    già autorizzati nelle stesse aree classificate agricole, non possono eccedere il 3 per cento della superficie
+    agricola del territorio comunale.»
+  fonte_vigente: "L.R. FVG 2/2025, art. 8, c. 3, testo vigente dopo la L.R. 13/2025, art. 4, c. 8, lett. b) (Drive 1IvqiCm_IbMCEDTlPLrU65XVe7C4ELrwk)"
+  testo_originale: >-
+    «[...] le coperture delle superfici degli impianti fotovoltaici con moduli collocati a terra e di produzione di
+    biometano, sommate a quelle dei medesimi impianti della stessa tipologia, già autorizzati nelle stesse aree
+    classificate agricole, non possono eccedere il 3 per cento della superficie agricola del territorio comunale.»
+  fonte_originale: "L.R. FVG 2/2025, art. 8, c. 3, testo originale, BUR del 06/03/2025 (Drive 10qX71qT4OAMgmaSBPhRE_GNqGpA1SdZT)"
+  superficie: >-
+    «per superficie dell'impianto [...] si intende l'area complessivamente occupata dall'impianto e dalle opere e
+    infrastrutture connesse» (art. 5, c. 2).
+  letture:
+    - nome: "Tetto unico"
+      testo: >-
+        Le tre tipologie sono nominate insieme come unico soggetto e la norma serve a contenere il consumo di suolo
+        agricolo: fotovoltaico a terra, accumuli e biometano si sommano e insieme non superano il 3%. È la lettura che
+        il Comune può sostenere.
+    - nome: "Tetto per tipologia"
+      testo: >-
+        «della stessa tipologia», come negli artt. 3 e 5, indica il singolo tipo: ogni progetto si somma solo agli
+        impianti del suo tipo, con tre tetti separati (fino al 9% della SAU in tutto).
+  avvertenza: >-
+    Il testo non chiarisce quale lettura valga: serve un'interpretazione scritta della Regione o un parere legale. La
+    norma è transitoria (fino alle linee guida regionali) e il 09/11/2026 la Regione ha annunciato un disegno di legge
+    che rivede la L.R. 2/2025 (iter dal 2027).
 
 # zona: "agricola" entra nel conto del tetto; "non agricola" no; "incerta" da verificare sul PRGC.
 # gruppo: "autorizzato" (realizzati e autorizzati) oppure "in_corso" (istruttoria aperta).
@@ -69,6 +95,9 @@ mais_biometano:
   # Piano di alimentazione dichiarato (UdineToday, inaugurazione del 29/06/2026): «fino a 30.500 t di colture
   # energetiche, 18.000 t di effluenti zootecnici e 9.200 t di sottoprodotti», da una quarantina di imprese.
   colture_t: 30500
+  # Superficie agricola di Pavia di Udine coltivata a colture energetiche per l'impianto: dato del Comune.
+  colture_pavia_ha: 6
+  fonte_pavia: "Comune di Pavia di Udine, comunicazione del 10/11/2026"
   effluenti_t: 18000
   sottoprodotti_t: 9200
   resa_t_ha_min: 45           # IPOTESI: insilati di cereali (mais, sorgo, triticale), t/ha tal quale

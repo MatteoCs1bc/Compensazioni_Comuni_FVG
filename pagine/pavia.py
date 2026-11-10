@@ -10,7 +10,7 @@ from core.dati import ROOT, comuni_indicatori, euro, nota_legale, num, pct, rego
 from core.pavia import (COLORI_STATO, analisi, carica_analisi, carica_scheda, excel_analisi, figura_mappa,
                         gruppi_zona, impianti_mappa, osm_pavia, scheda_docx, totali_scheda)
 from core.suolo import (carica_suolo, confronto_vicini, consumo_fvg, conti, figura_affiancati, figura_annidati,
-                        figura_pannelli, figura_rispetto_sau, figura_serie, figura_territorio, gruppi_tetto, quota_metano_colture, smc_prima,
+                        figura_pannelli, figura_rispetto_sau, figura_serie, figura_territorio, gruppi_tetto, gruppo_tetto_unico, quota_metano_colture, smc_prima,
                         impianti_df, ripartizione_territorio, rispetto_sau, serie_consumo, voci_consumi,
                         voci_panoramica)
 
@@ -49,9 +49,11 @@ def sezione_suolo():
     st.subheader("Suolo: quanto pesano gli impianti")
     st.markdown(
         f"Pavia di Udine ha **{num(cs['consumato_pct'], 1)}%** di suolo consumato, il doppio della media regionale "
-        f"({num(CONSUMO[CONSUMO.pro_com == 0].iloc[0].consumato_2025_pct, 1)}%). Il fotovoltaico a terra già autorizzato "
-        f"in zona agricola occupa circa **{num(cs['fv_aut'], 0)} ha**: è a ridosso del tetto regionale del 3% "
-        f"(**{num(cs['tetto'], 0)} ha**), e Contessa lo porterebbe oltre. Gli accumuli restano sotto. "
+        f"({num(CONSUMO[CONSUMO.pro_com == 0].iloc[0].consumato_2025_pct, 1)}%). Il tetto regionale del 3% della "
+        f"superficie agricola vale circa **{num(cs['tetto'], 0)} ha**. Se è un tetto unico per fotovoltaico a terra, "
+        f"accumuli e biometano, è **già superato**: gli impianti autorizzati in zona agricola occupano circa "
+        f"**{num(cs['unico_aut'], 0)} ha**. Se vale per tipologia, il fotovoltaico (circa {num(cs['fv_aut'], 0)} ha) è a "
+        "ridosso e gli accumuli sono sotto. Il testo non lo chiarisce: le due letture sono spiegate più sotto. "
         f"I tetti del comune adatti al fotovoltaico valgono **{num(cs['tetti_min'], 0)}–{num(cs['tetti_max'], 0)} ha**, "
         f"cioè circa {num(cs['tetti_mw_min'], 0)}–{num(cs['tetti_mw_max'], 0)} MW: quanto Cjase Sterpet."
     )
@@ -60,7 +62,9 @@ def sezione_suolo():
                 delta_color="inverse", help="ISPRA 2026. Comprende il fotovoltaico a terra, che ISPRA conta come consumo reversibile")
     k[1].metric("Superficie agricola (SAU)", f"{num(cs['sau'], 0)} ha",
                 help="Censimento dell'agricoltura 2020: terreni delle aziende con centro aziendale a Pavia")
-    k[2].metric("Tetto del 3% per tipologia", f"{num(cs['tetto'], 0)} ha", help=SUOLO["tetto"]["norma"].strip())
+    k[2].metric("Tetto del 3% della SAU", f"{num(cs['tetto'], 0)} ha",
+                f"{num(cs['unico_aut'], 0)} ha autorizzati (tetto unico)", delta_color="inverse",
+                help=SUOLO["tetto"]["fonte_vigente"] + ": " + SUOLO["tetto"]["testo_vigente"].strip())
     k[3].metric("Tetti adatti al fotovoltaico", f"{num(cs['tetti_min'], 0)}–{num(cs['tetti_max'], 0)} ha",
                 help=f"ISPRA 2026, superficie minima e massima; potenza stimata con {num(SUOLO['tetti_mw_per_ha'], 1)} MW per ettaro")
 
@@ -73,11 +77,14 @@ def sezione_suolo():
         st.plotly_chart(figura_annidati(voci_panoramica(cs, territorio=True)),
                         use_container_width=True, key="suolo_ann", config={"displayModeBar": False})
     st.caption("L'area di ogni quadrato è proporzionale agli ettari. Il tetto del 3% è tratteggiato perché è un limite, "
-               "non una superficie occupata. Le colture per il biometano sono una stima dalla dieta dichiarata (dettagli nel riquadro qui sotto) e comprende "
-               "campi fuori comune: la dieta vera è nel piano di approvvigionamento.")
+               "non una superficie occupata. Le colture per il biometano sono una stima dalla dieta dichiarata (dettagli nel riquadro qui sotto): "
+               f"a Pavia ne sono coltivati solo {num(cs['mais_pavia'], 0)} ha, secondo il Comune, il resto è in altri comuni.")
     with st.expander("Come sono stimate le colture per il biometano"):
         m = SUOLO["mais_biometano"]
         st.markdown(
+            f"- **A Pavia: {num(cs['mais_pavia'], 0)} ha** di colture energetiche per l'impianto ({m['fonte_pavia']}). "
+            "Quasi tutta la biomassa arriva quindi da altri comuni: per Pavia l'impatto non è sul suolo agricolo ma sulla "
+            "viabilità verso via Tombis (trasporto di biomasse e digestato) e su odori e digestato.\n"
             f"- **Piano di alimentazione dichiarato** (UdineToday): fino a **{num(m['colture_t'], 0)} t** di colture energetiche, "
             f"{num(m['effluenti_t'], 0)} t di effluenti zootecnici e {num(m['sottoprodotti_t'], 0)} t di sottoprodotti all'anno, "
             "da una quarantina di imprese.\n"
@@ -96,13 +103,30 @@ def sezione_suolo():
             "coltura sullo stesso campo) e una parte è fuori comune. Il dettaglio è nel **piano di approvvigionamento** "
             "allegato alla PAS del 14/01/2025.")
 
-    st.markdown("**Il tetto del 3%, tipologia per tipologia**")
+    t = SUOLO["tetto"]
+    st.markdown("**Il tetto del 3% di suolo agricolo: due letture della norma**")
+    st.markdown(f"> {t['testo_vigente'].strip()}\n>\n> — {t['fonte_vigente']}")
+    with st.expander("Testo originale e definizione di superficie"):
+        st.markdown(f"> {t['testo_originale'].strip()}\n>\n> — {t['fonte_originale']}\n\n"
+                    "La L.R. 13/2025 ha aggiunto gli accumuli e tolto «le coperture delle»: conta la superficie "
+                    f"dell'impianto, non solo quella coperta dai pannelli. {t['superficie'].strip()}")
+    st.table(pd.DataFrame([
+        {"Lettura": t["letture"][0]["nome"], "Argomento": t["letture"][0]["testo"].strip(),
+         "Pavia oggi": f"{num(cs['unico_aut'], 0)} ha autorizzati su {num(cs['tetto'], 0)}: tetto già superato"},
+        {"Lettura": t["letture"][1]["nome"], "Argomento": t["letture"][1]["testo"].strip(),
+         "Pavia oggi": (f"FV {num(cs['fv_aut'], 0)} ha, accumuli {num(cs['bess_aut'], 0)} ha, biometano "
+                        f"{num(cs['biometano'], 1)} ha, ciascuno su {num(cs['tetto'], 0)}")}]).set_index("Lettura"))
+    st.warning(t["avvertenza"].strip())
+    st.markdown("*Lettura A — tetto unico (quella che il Comune può sostenere)*")
+    st.plotly_chart(figura_pannelli(gruppo_tetto_unico(cs)), use_container_width=True,
+                    key="suolo_tetto_unico", config={"displayModeBar": False})
+    st.markdown("*Lettura B — un tetto per tipologia*")
     st.plotly_chart(figura_pannelli(gruppi_tetto(cs)), use_container_width=True,
                     key="suolo_tetto", config={"displayModeBar": False})
     st.caption(
-        "Contano solo gli impianti in zona agricola e, per il tetto, quelli già autorizzati (L.R. 2/2025, art. 8 c. 3). "
+        "Contano solo gli impianti in zona agricola già autorizzati; in chiaro i progetti in istruttoria. "
         f"Esclusi Tombis (zona D2) e Lauzacco BESS (zona H2); Marconi ({num(cs['fv_incerta'], 1)} ha, zona S/E) è da "
-        "verificare. Superficie complessiva, o recintata dove manca. Da chiarire con la Regione: se l'agrivoltaico conta "
+        "verificare. Superficie complessiva (art. 5, c. 2), o recintata dove manca. Da chiarire con la Regione: se l'agrivoltaico conta "
         "come «moduli a terra» e se il tetto vale per i procedimenti avviati prima del 2025. La zona urbanistica di ogni "
         "impianto va confermata sul PRGC.")
     with st.expander("Impianti nel conto"):
@@ -112,10 +136,7 @@ def sezione_suolo():
                      hide_index=True, use_container_width=True)
 
     st.markdown("**Il territorio comunale: quanto è agricolo, quanto è consumato**")
-    mostra_mais = st.toggle("Mostra dove andrebbero le colture per il biometano (ipotesi)", value=True, key="suolo_mais",
-                            help="Il censimento 2020 è precedente alla riconversione. Le 30.500 t di colture energetiche "
-                                 "dichiarate, a 55 t/ha, sono tolte in proporzione da cereali e foraggere, come se fossero tutte a Pavia.")
-    rip = ripartizione_territorio(cs, SUOLO, mais=mostra_mais)
+    rip = ripartizione_territorio(cs, SUOLO)
     st.markdown(
         f"Su {num(cs['superficie'], 0)} ha di territorio, la SAU è il **{num(cs['sau'] / cs['superficie'] * 100, 1)}%** "
         f"e il suolo consumato il **{num(cs['consumato_pct'], 1)}%**. Dentro il suolo consumato gli impianti energetici già "
@@ -137,8 +158,8 @@ def sezione_suolo():
     st.plotly_chart(figura_rispetto_sau(rispetto_sau(cs, SUOLO)), use_container_width=True, key="suolo_sau",
                     config={"displayModeBar": False})
     st.caption("Verde: colture; grigio: consumo di suolo ISPRA (anche se non tutto avviene su terreni agricoli); giallo: "
-               "impianti; blu: i tetti, che non tolgono suolo agricolo. Le colture per il biometano sono una stima e in parte sono "
-               "coltivate fuori comune: non sono suolo consumato, ma terreno agricolo che cambia destinazione.")
+               "impianti; blu: i tetti, che non tolgono suolo agricolo. Le colture per il biometano sono quelle coltivate a Pavia "
+               "secondo il Comune: non sono suolo consumato, ma terreno agricolo che cambia destinazione.")
 
     st.markdown("**Impianti e altri consumi di suolo**")
     st.plotly_chart(figura_affiancati(sorted(voci_consumi(cs), key=lambda v: -v["ha"]), lato_px=150, file_etichette=2),
@@ -458,9 +479,10 @@ with t3:
         f"- Superficie comunale: **{num(km2, 1)} km²** ({num(km2 * 100, 0)} ha)\n"
         f"- Suolo agricolo occupato da impianti (con mitigazioni): **{num(agri_ha, 1)} ha**, pari al "
         f"**{pct(agri_ha / (km2 * 100), 1)} dell'intero territorio comunale**\n"
-        f"- Il limite regionale del **3%** (L.R. 2/2025, art. 8 c. 3) vale **per tipologia** (fotovoltaico a terra, "
-        f"accumuli, biometano) e si calcola sulla **superficie agricola** del comune: con la SAU del censimento sono "
-        f"circa **{num(cs['tetto'], 0)} ha** per tipologia. Il conto è nella sezione qui sotto."
+        f"- Il limite regionale del **3% della superficie agricola** (L.R. 2/2025, art. 8, c. 3) vale circa "
+        f"**{num(cs['tetto'], 0)} ha**. Riguarda fotovoltaico a terra, accumuli e biometano; il testo non chiarisce se il "
+        f"tetto sia unico per le tre tipologie (a Pavia già superato: circa {num(cs['unico_aut'], 0)} ha) o uno per "
+        "tipologia. Norma transitoria, in revisione. Il conto è nella sezione qui sotto."
     )
     st.markdown(
         "**Opposizione censita**: Comitato per la tutela del suolo agricolo (dal 2024), contro il consumo di suolo fertile "
